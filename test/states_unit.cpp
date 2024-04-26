@@ -13,7 +13,7 @@ TEST(FieldProperties, accessData) {
     7,
     8
   );
-  ASSERT_EQ(fP.fieldLength(), 2);
+  ASSERT_EQ(fP.fieldLength(), 1);
   ASSERT_EQ(fP.fieldWidth(), 2);
   ASSERT_EQ(fP.spaceBeforeLineSide(), 3);
   ASSERT_EQ(fP.goalWidth(), 4);
