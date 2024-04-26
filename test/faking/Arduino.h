@@ -1,7 +1,7 @@
 #ifndef FAKE_ARDUINO_H
 #define FAKE_ARDUINO_H
 
-#include <math.h>
+#include <cmath>
 #include <cctype>
 #include <queue>
 #include <string>
