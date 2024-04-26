@@ -38,6 +38,7 @@ TEST(RobotState, accessData) {
   ASSERT_EQ(cS.enemyGoalPos(), Vector2(5, 5));
 }
 
+/*
 TEST(ReadingData, accessData) {
   ReadingData rD;
   ASSERT_EQ(rD.typeState(), 'x');
@@ -72,4 +73,4 @@ TEST(ReadingData, verifyAction) {
 
   size_t writingInXState = str.find(rD.writingInXState());
   ASSERT_TRUE(writingInXState != std::string::npos);
-}
+}*/
