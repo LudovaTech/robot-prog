@@ -1,4 +1,4 @@
-/* #ifndef LIDAR_ANALYZER2_H
+#ifndef LIDAR_ANALYZER2_H
 #define LIDAR_ANALYZER2_H
 
 #include "utilities.h"
@@ -14,14 +14,16 @@ class HoughLine {
   HoughLine(const double rho, const double theta, const double nb_accumulators, const double length);
 };
 
-class RobotPosition {
+class LidarInfos {
  private:
   Vector2 coordinates;
   Radians orientation;
   MutableVector2[] walls;
 
  public:
-  RobotPosition(const Vector2 coordinates, Radians orientation, std::vector<MutableVector2> walls);
+  LidarInfos(const Vector2 coordinates, Radians orientation, std::vector<MutableVector2> walls);
+
+  LidarInfos getFromLidarBuffer()
 
   /* Retourne les coordonnées du robot dans le référentiel du terrain. Centre du terrain: x=0, y=0.
    Axe y positif dans la direction du regard du robot
@@ -32,4 +34,6 @@ class RobotPosition {
   inline std::vector<MutableVector2> getWalls() { return walls; }
 };
 
-#endif */
+bool filterDistance(LidarPoint lidarPoint);
+
+#endif

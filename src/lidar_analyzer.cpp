@@ -1,12 +1,12 @@
-/* #include "lidar_analyzer.h"
+#include "lidar_analyzer.h"
 
 HoughLine::HoughLine(const double rho, const double theta, const double nb_accumulators, const double length)
     : rho(rho), theta(theta), nb_accumulators(nb_accumulators), length(length) {}
 
-RobotPosition::RobotPosition(const Vector2 coordinates, Radians orientation, std::vector<MutableVector2> walls)
+LidarInfos::LidarInfos(const Vector2 coordinates, Radians orientation, std::vector<MutableVector2> walls)
     : coordinates(coordinates), orientation(orientation), walls(walls) {}
 
-LidarPoint[] filterDistance(CircularLidarPointsBuffer lidarPointsBuffer, unsigned int LidarDistanceMin, unsigned int lidarDistanceMax) {
+LidarPoint[] ancfilterDistance(CircularLidarPointsBuffer lidarPointsBuffer, unsigned int LidarDistanceMin, unsigned int lidarDistanceMax) {
   points[];
   for (lidarPoint point in lidarPointsBuffer) {
     // on ne prend pas les points < 10cm et > 300cm
@@ -40,4 +40,9 @@ Vector2[] convCoordonneesCartesiennes(LidarPoint[] lidarPoints, size_t nbrVal) {
 houghTransform(std::vector<MutableVector2> points, int nbPoints, int distanceMax);
 
 HoughLine[] sortLines(HoughLine[]);
- */
+
+
+bool filterDistance(LidarPoint lidarPoint) {
+  return lidarPoint.distance() > lidarDistanceMin && lidarPoint.distance() < lidarDistanceMax;
+}
+
