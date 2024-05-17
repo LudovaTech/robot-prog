@@ -3,6 +3,9 @@
 
 #include "utilities.h"
 
+const unsigned int nbrLidarPoints = 20;
+Vector2[nbrLidarPoints] convPoints;
+
 class HoughLine {
  private:
   const double rho;
@@ -35,5 +38,7 @@ class LidarInfos {
 };
 
 bool filterDistance(LidarPoint lidarPoint);
+bool convCoordonneesCartesiennes(LidarPoint lidarPoint, unsigned int indice, Vector2* finalPoints);
+bool convFromBuffer(CircularLidarPointsBuffer lidarPointsBuffer, Vector2* finalPoints);
 
 #endif
