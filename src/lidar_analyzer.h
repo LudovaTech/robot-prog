@@ -2,6 +2,7 @@
 #define LIDAR_ANALYZER2_H
 
 #include "utilities.h"
+#include "lidar.h"
 
 class HoughLine {
  private:
@@ -16,28 +17,28 @@ class HoughLine {
 
 class LidarInfos {
  private:
-  Vector2 coordinates;
+  Vector2 _coordinates;
   Radians orientation;
-  MutableVector2[] walls;
+  MutableVector2 walls[4];
 
  public:
-  LidarInfos(const Vector2 coordinates, Radians orientation, std::vector<MutableVector2> walls);
+  LidarInfos(const Vector2 vcoordinates, Radians orientation, std::vector<MutableVector2> walls);
 
-  LidarInfos getFromLidarBuffer()
+  LidarInfos getFromLidarBuffer();
 
-      /* Retourne les coordonnées du robot dans le référentiel du terrain. Centre du terrain: x=0, y=0.
-       Axe y positif dans la direction du regard du robot
-      */
-      inline Vector2 coordinates() const { return coordinates; }
+  /* Retourne les coordonnées du robot dans le référentiel du terrain. Centre du terrain: x=0, y=0.
+   Axe y positif dans la direction du regard du robot
+  */
+  inline Vector2 coordinates() const { return _coordinates; }
 
   /* retourne les murs (le point le plus proche de chaque mur) */
-  inline std::vector<MutableVector2> getWalls() { return walls; }
+  //TODO inline MutableVector2 getWalls() { return walls; }
 };
 
 class AnalyseLidarData {
  private:
-  const unsigned int nbrLidarPoints = 20;
-  Vector2[nbrLidarPoints] convPoints;
+  const static unsigned int nbrLidarPoints = 20;
+  Vector2 convPoints[nbrLidarPoints];
 
  public:
   AnalyseLidarData() {}
@@ -46,6 +47,6 @@ class AnalyseLidarData {
   bool filterDistance(LidarPoint lidarPoint);
   bool convCoordonneesCartesiennes(LidarPoint lidarPoint, unsigned int indice);
   bool convFromBuffer(CircularLidarPointsBuffer lidarPointsBuffer);
-}
+};
 
 #endif

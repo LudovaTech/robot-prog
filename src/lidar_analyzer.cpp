@@ -3,8 +3,8 @@
 HoughLine::HoughLine(const double rho, const double theta, const double nb_accumulators, const double length)
     : rho(rho), theta(theta), nb_accumulators(nb_accumulators), length(length) {}
 
-LidarInfos::LidarInfos(const Vector2 coordinates, Radians orientation, std::vector<MutableVector2> walls)
-    : coordinates(coordinates), orientation(orientation), walls(walls) {}
+LidarInfos::LidarInfos(const Vector2 vcoordinates, Radians orientation, std::vector<MutableVector2> walls)
+    : _coordinates(vcoordinates), orientation(orientation), walls(walls) {}
 
 bool AnalyseLidarData::filterDistance(LidarPoint lidarPoint) {
   return lidarPoint.distance() > lidarDistanceMin && lidarPoint.distance() < lidarDistanceMax;
