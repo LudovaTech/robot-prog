@@ -3,9 +3,6 @@
 
 #include "utilities.h"
 
-const unsigned int nbrLidarPoints = 20;
-Vector2[nbrLidarPoints] convPoints;
-
 class HoughLine {
  private:
   const double rho;
@@ -28,17 +25,27 @@ class LidarInfos {
 
   LidarInfos getFromLidarBuffer()
 
-  /* Retourne les coordonnées du robot dans le référentiel du terrain. Centre du terrain: x=0, y=0.
-   Axe y positif dans la direction du regard du robot
-  */
-  inline Vector2 coordinates() const { return coordinates; }
+      /* Retourne les coordonnées du robot dans le référentiel du terrain. Centre du terrain: x=0, y=0.
+       Axe y positif dans la direction du regard du robot
+      */
+      inline Vector2 coordinates() const { return coordinates; }
 
   /* retourne les murs (le point le plus proche de chaque mur) */
   inline std::vector<MutableVector2> getWalls() { return walls; }
 };
 
-bool filterDistance(LidarPoint lidarPoint);
-bool convCoordonneesCartesiennes(LidarPoint lidarPoint, unsigned int indice, Vector2* finalPoints);
-bool convFromBuffer(CircularLidarPointsBuffer lidarPointsBuffer, Vector2* finalPoints);
+class AnalyseLidarData {
+ private:
+  const unsigned int nbrLidarPoints = 20;
+  Vector2[nbrLidarPoints] convPoints;
+
+ public:
+  AnalyseLidarData() {}
+  inline Vector2* getConvPoints() { return convPoints; }
+
+  bool filterDistance(LidarPoint lidarPoint);
+  bool convCoordonneesCartesiennes(LidarPoint lidarPoint, unsigned int indice);
+  bool convFromBuffer(CircularLidarPointsBuffer lidarPointsBuffer);
+}
 
 #endif
