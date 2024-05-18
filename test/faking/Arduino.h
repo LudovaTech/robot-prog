@@ -10,6 +10,7 @@
 #include <stdexcept>
 #include <string>
 #include <chrono>
+#include <algorithm>
 
 #define PI 3.1415926535897932384626433832795
 #define DEG_TO_RAD 0.017453292519943295769236907684886

@@ -2,14 +2,16 @@
 
 //////////// HoughLine
 
-
-
 //////////// LidarInfos
 
 LidarInfos::LidarInfos(const Vector2 vcoordinates, Radians orientation)
     : _coordinates(vcoordinates), orientation(orientation) {}
 
 //////////// AnalyzeLidarData
+bool AnalyzeLidarData::analyze(CircularLidarPointsBuffer from) {
+  // TODO
+  return true;
+}
 
 bool AnalyzeLidarData::filterDistance(LidarPoint lidarPoint) const {
   return lidarPoint.distance() > lidarDistanceMin && lidarPoint.distance() < lidarDistanceMax;
@@ -70,19 +72,26 @@ bool AnalyzeLidarData::houghTransform() {
       if (indice >= 0 && indice < HoughTransformMemorySize) {
         if (accumulator[indice] >= HoughTransformAccumulatorsThreshold) {
           lines[indice_ajout] = HoughLine(
-            rhoIndex * rhoStep - distanceMax,
-            thetaIndex * thetaStep / degreStep,
-            accumulator[indice]
-          );
+              rhoIndex * rhoStep - distanceMax,
+              thetaIndex * thetaStep / degreStep,
+              accumulator[indice]);
           indice_ajout++;
-          if (indice_ajout >= 4095) {  // pour éviter le CRASH quand lines.size() == 4096 !!
-            //log vérifier combien de fois cela arrive
+          if (indice_ajout >= 4095) {
+            // log vérifier combien de fois cela arrive
             return true;
           }
         }
       }
     }
   }
+  return true;
+}
+
+bool AnalyzeLidarData::sortLines() {
+  // Tri des lignes selon nb_accumulators du plus grand au plus petit
+  std::sort(lines, lines + sizeof(lines) / sizeof(lines[0]), [](const HoughLine& a, const HoughLine& b) {
+    return a.nb_accumulators() > b.nb_accumulators();
+  });
   return true;
 }
 

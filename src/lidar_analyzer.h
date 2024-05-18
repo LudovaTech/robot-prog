@@ -3,6 +3,7 @@
 
 #include "lidar.h"
 #include "utilities.h"
+#include <algorithm>
 
 class HoughLine {
  private:
@@ -16,6 +17,11 @@ class HoughLine {
       : _rho(rho), _theta(theta), _nb_accumulators(nb_accumulators), _length(0) {}
   HoughLine()
       : _rho(0), _theta(0), _nb_accumulators(0), _length(0) {}
+
+  inline double rho() const { return _rho; }
+  inline double theta() const { return _theta; }
+  inline double nb_accumulators() const { return _nb_accumulators; }
+  inline double length() const { return _length; }
 };
 
 class LidarInfos {
@@ -61,10 +67,12 @@ class AnalyzeLidarData {
   AnalyzeLidarData() {}
   inline MutableVector2* _getConvPoints() { return convPoints; }
 
+  bool analyze(CircularLidarPointsBuffer from);
   bool filterDistance(LidarPoint lidarPoint) const;
   bool convCoordonneesCartesiennes(LidarPoint lidarPoint, unsigned int indice);
   bool convFromBuffer(CircularLidarPointsBuffer lidarPointsBuffer);
   bool houghTransform();
+  bool sortLines();
 };
 
 #endif
