@@ -11,7 +11,7 @@ bool AnalyzeLidarData::filterDistance(LidarPoint lidarPoint) const {
 }
 
 bool AnalyzeLidarData::convCoordonneesCartesiennes(LidarPoint lidarPoint, unsigned int indice) {
-  convPoints[indice] = Vector2(
+  convPoints[indice] = MutableVector2(
     lidarPoint.distance() * cos(lidarPoint.angle() / 18000.0 * PI),
     -lidarPoint.distance() * sin(lidarPoint.angle() / 18000.0 * PI)
   );
