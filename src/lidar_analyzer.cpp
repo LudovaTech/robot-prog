@@ -2,6 +2,17 @@
 
 //////////// HoughLine
 
+// calcul la distance entre deux lignes de Hough
+double HoughLine::calculateDistanceBetweenLines(HoughLine other) {
+  float x1 = rho() * cos(theta());
+  float y1 = -rho() * sin(theta());
+
+  float x2 = other.rho() * cos(other.theta());
+  float y2 = -other.rho() * sin(other.theta());
+
+  return Vector2(x1, y1).distance(Vector2(x2, y2));
+}
+
 CarthesianLine::CarthesianLine(HoughLine line)
     : _a(cos(line.theta())), _b(sin(line.theta())), _c(-line.rho()) {}
 
@@ -180,8 +191,9 @@ bool AnalyzeLidarData::detectParalleleWall(HoughLine line) {
     return false;
   }
   // testons la distance entre ce mur et le premier mur
-  
+  double distanceBetweenParallelWalls = calculateDistanceBetweenLines(firstWall, *parallelWall);
 }
 
 ResultOrError<bool> AnalyzeLidarData::checkGroups(HoughLine line) {
+
 }

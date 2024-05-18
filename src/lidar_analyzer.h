@@ -23,6 +23,8 @@ class HoughLine {
   inline double theta() const { return _theta; }
   inline double nb_accumulators() const { return _nb_accumulators; }
   inline double length() const { return _length; }
+
+  double calculateDistanceBetweenLines(HoughLine other);
 };
 
 class CarthesianLine {
@@ -99,6 +101,7 @@ class AnalyzeLidarData {
   bool findWalls();
   bool detectFirstWall(HoughLine line);
   bool detectParalleleWall(HoughLine line);
+  int NewFunction(const HoughLine& line);
   bool detectPerpendicularWall(HoughLine line, bool isFirst);
   ResultOrError<bool> checkGroups(HoughLine line);
 };
