@@ -2,6 +2,50 @@
 
 //////////// HoughLine
 
+void HoughLine::convertToGeneralForm(double& a, double& b, double& c) {
+  a = cos(theta());
+  b = sin(theta());
+  c = -rho();
+}
+// Calcul l'angle entre deux droites d'équation ax + by + c = 0
+double calculateAngleBetweenLines(double a1, double b1, double c1, double a2, double b2, double c2) {
+  // Calculer les vecteurs directeurs des droites
+  double v1x = b1;
+  double v1y = -a1;
+  double v2x = b2;
+  double v2y = -a2;
+
+  // Calculer le produit scalaire des vecteurs directeurs
+  double dotProduct = v1x * v2x + v1y * v2y;
+
+  // Calculer les normes des vecteurs directeurs
+  double norm1 = sqrt(v1x * v1x + v1y * v1y);
+  double norm2 = sqrt(v2x * v2x + v2y * v2y);
+
+  if (norm1 * norm2 == 0) {  // pour éviter une division par 0
+    return PI / 4.0;
+  }
+
+  // Calculer l'angle entre les droites en radians
+  double angle = safe_acos(dotProduct / (norm1 * norm2));
+
+  if (angle > PI / 2.0) {
+    return PI - angle;  // retourne toujours l'angle aigu
+  }
+  return angle;
+}
+
+// acos qui retourne toujours une valeur valide
+double safe_acos(double value) {
+  if (value <= -1.0) {
+    return PI;
+  } else if (value >= 1.0) {
+    return 0;
+  } else {
+    return acos(value);
+  }
+}
+
 //////////// LidarInfos
 
 LidarInfos::LidarInfos(const Vector2 vcoordinates, Radians orientation)

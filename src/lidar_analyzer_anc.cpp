@@ -301,6 +301,7 @@ LidarInfos getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool sho
   });
 
   std::vector<HoughLine> walls;
+  //TODO
   if (lines.empty()) {
     SerialDebug.println("lines empty!");
     return LidarInfos(Vector2(-9999, -9999), orientation, points_walls);

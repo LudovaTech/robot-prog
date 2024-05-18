@@ -22,7 +22,11 @@ class HoughLine {
   inline double theta() const { return _theta; }
   inline double nb_accumulators() const { return _nb_accumulators; }
   inline double length() const { return _length; }
+
+  void convertToGeneralForm(double& a, double& b, double& c);
 };
+
+
 
 class LidarInfos {
  private:
@@ -62,6 +66,9 @@ class AnalyzeLidarData {
   uint16_t distanceMax;
   MutableVector2 convPoints[nbrLidarPoints];
   HoughLine lines[4095];  // The previous version already stopped at 4000
+  Optional<HoughLine> paralleleWall;
+  Optional<HoughLine> firstPerpendicularWall;
+  Optional<HoughLine> secondPerpendicularWall;
 
  public:
   AnalyzeLidarData() {}
@@ -74,5 +81,8 @@ class AnalyzeLidarData {
   bool houghTransform();
   bool sortLines();
 };
+
+double calculateAngleBetweenLines(double a1, double b1, double c1, double a2, double b2, double c2);
+double safe_acos(double value);
 
 #endif
