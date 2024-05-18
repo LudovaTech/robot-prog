@@ -54,7 +54,7 @@ class CircularLidarPointsBuffer {
   size_t sizeFilled() const;
   inline size_t lastRoundIndex() const { return _lastRoundIndex; }
   inline size_t index() const { return _index; }
-  int savePointsLocal(int alreadySavedIndex) const;
+  int savePointsLocal(unsigned int alreadySavedIndex) const;
   String toString() const;
 
   void readPointsAndAddToBuffer();

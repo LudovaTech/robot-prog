@@ -110,7 +110,7 @@ void CircularLidarPointsBuffer::_printSpecificValue(size_t valueIndex) const {
   }
 }
 
-int CircularLidarPointsBuffer::savePointsLocal(int alreadySavedIndex) const {
+int CircularLidarPointsBuffer::savePointsLocal(unsigned int alreadySavedIndex) const {
   if (alreadySavedIndex <= _index) {
     // a full lap has not been completed or more than one full lap has been completed
     for (size_t i = alreadySavedIndex; i < _index; i++) {

@@ -3,7 +3,7 @@
 #include "utilities.h"
 #include "logger.h"
 #include "lidar.h"
-#include "lidar_analyzer_anc.h"
+#include "lidar_analyzer.h"
 #include "movements.h"
 #include "states.h"
 #include "strategy.h"
@@ -101,8 +101,8 @@ void loop() {
   SerialDebug.println("***");
 
   // testsLidar(fieldProperties); // tests du LIDAR
-  LidarInfos lidarInfos = getLidarInfos(fieldProperties, true, false);
-  SerialDebug.println("Coordonnées robot: x=" + String(lidarInfos.getCoordinates().x() / 10.0) + " cm, y=" + String(lidarInfos.getCoordinates().y() / 10.0) + " cm, orientation: " + String(lidarInfos.getOrientation()) + "°, Nearest Wall distance=" + String(lidarInfos.getNearestWall().distance({0, 0}) / 10.0) + " cm");
+  // LidarInfos lidarInfos = getLidarInfos(fieldProperties, true, false);
+  // SerialDebug.println("Coordonnées robot: x=" + String(lidarInfos.getCoordinates().x() / 10.0) + " cm, y=" + String(lidarInfos.getCoordinates().y() / 10.0) + " cm, orientation: " + String(lidarInfos.getOrientation()) + "°, Nearest Wall distance=" + String(lidarInfos.getNearestWall().distance({0, 0}) / 10.0) + " cm");
 
   RobotState camInfos = getCamInfos();
 
@@ -122,7 +122,7 @@ void loop() {
   if (camInfos.ballPos().x() == 0 && camInfos.ballPos().y() == 0) {
     motors.fullStop();
   } else {
-    motors.goTo(Vector2(camInfos.ballPos().x(), camInfos.ballPos().y()), speedMotors, lidarInfos.getOrientation());
+    //motors.goTo(Vector2(camInfos.ballPos().x(), camInfos.ballPos().y()), speedMotors, lidarInfos.getOrientation());
   }
 
   // DOING ACTION

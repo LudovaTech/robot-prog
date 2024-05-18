@@ -4,6 +4,9 @@
 #include "utilities.h"
 #include "lidar.h"
 
+const int lidarDistanceMax = 3000;
+const int lidarDistanceMin = 100;
+
 class HoughLine {
  private:
   const double rho;
@@ -22,7 +25,7 @@ class LidarInfos {
   MutableVector2 walls[4];
 
  public:
-  LidarInfos(const Vector2 vcoordinates, Radians orientation, std::vector<MutableVector2> walls);
+  LidarInfos(const Vector2 vcoordinates, Radians orientation);
 
   LidarInfos getFromLidarBuffer();
 
