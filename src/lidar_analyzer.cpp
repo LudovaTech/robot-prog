@@ -44,6 +44,11 @@ Radians CarthesianLine::calculateAngleBetweenLines(CarthesianLine other) {
   return Radians(angle);
 }
 
+// distance d'un point à une droite d'équation ax + by + c = 0
+double CarthesianLine::calculateDistanceToPoint(Vector2 point) {
+  return abs(a() * point.x() + b() * point.y() + c()) / sqrt(sq(a()) + sq(b()));
+}
+
 // acos qui retourne toujours une valeur valide
 double safe_acos(double value) {
   if (value <= -1.0) {
@@ -171,7 +176,9 @@ bool AnalyzeLidarData::detectFirstWall(HoughLine line) {
   // On décide que la première ligne, comme elle est la plus grande, appartient au terrain
   // Le seul cas où elle n'est pas la première ligne serait que sa longeur sa inférieur
   // au minimum auquel cas l'ensemble de la détection échoue
-  ResultOrError<bool> r = checkGroups(line);
+
+
+  ResultOrError<bool> r = distanceCalculatedWithGroups(line);
   if (r.hasError()) {
     // log
     return false;
@@ -185,15 +192,63 @@ bool AnalyzeLidarData::detectFirstWall(HoughLine line) {
   }
 }
 
-bool AnalyzeLidarData::detectParalleleWall(HoughLine line) {
+bool AnalyzeLidarData::detectParalleleWall(HoughLine line, FieldProperties fP) {
   // testons l'angle entre ce mur et le premier
   if (!(abs(CarthesianLine(line).calculateAngleBetweenLines(firstWall.value()) - PI / 2.0) < thetaTolerancePerpendiculaire)) {
     return false;
   }
+
   // testons la distance entre ce mur et le premier mur
-  double distanceBetweenParallelWalls = calculateDistanceBetweenLines(firstWall, *parallelWall);
+  double distanceBetweenParallelWalls = line.calculateDistanceBetweenLines(firstWall.value());
+  if (distanceBetweenParallelWalls > 0.9 * fP.fieldLength() && distanceBetweenParallelWalls < 1.1 * fP.fieldWidth()) {
+    if (!firstWallIsLengh.value()) {
+      //log incohérent
+      return false;
+    }
+  } else if (distanceBetweenParallelWalls > 0.9 * fP.fieldWidth() && distanceBetweenParallelWalls < 1.1 * fP.fieldWidth()) {
+    if (firstWallIsLengh.value()) {
+      //log incohérent
+      return false;
+    }
+  } else {
+    // log incohérent
+    return false;
+  }
+
+  //TODO GROUPS
 }
 
-ResultOrError<bool> AnalyzeLidarData::checkGroups(HoughLine line) {
+bool detectPerpendicularWall(HoughLine line, FieldProperties fP) {
 
+}
+
+ResultOrError<float> AnalyzeLidarData::distanceCalculatedWithGroups(HoughLine line) {
+  float maxDistance = 0.0;
+  Optional<MutableVector2> groupFront;
+  Optional<MutableVector2> groupEnd;
+  unsigned int groupLen = 0;
+  for (unsigned int i = 0; i < nbrLidarPoints; i++) {
+    MutableVector2 point = convPoints[i];
+    if (CarthesianLine(line).calculateDistanceToPoint(point.toVector2()) <= pointToLineDistanceMax) {
+      if (!groupFront.hasValue()) {
+        groupFront = Optional<MutableVector2>(point);
+        groupEnd = Optional<MutableVector2>(point);
+        groupLen = 1;
+      } else {
+        if (point.toVector2().distance(groupEnd.value().toVector2()) <= pointToPointDistanceMax) {
+          groupEnd = Optional<MutableVector2>(point);
+          groupLen++;
+        } else {
+          //alors c'est la fin de ce groupe, on le compare à la plus grande valeure
+          if (groupLen >= 2) {
+            maxDistance = max(maxDistance, groupFront.value().toVector2().distance(groupEnd.value().toVector2()));
+          }
+          groupFront = Optional<MutableVector2>(point);
+          groupEnd = Optional<MutableVector2>(point);
+          groupLen = 1;
+        }
+      }
+    }
+  }
+  return ResultOrError<float>(maxDistance);
 }

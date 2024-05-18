@@ -4,6 +4,7 @@
 #include <algorithm>
 
 #include "lidar.h"
+#include "states.h"
 #include "utilities.h"
 
 class HoughLine {
@@ -34,14 +35,15 @@ class CarthesianLine {
  public:
   CarthesianLine(double a, double b, double c)
       : _a(a), _b(b), _c(c) {}
-  
+
   CarthesianLine(HoughLine line);
 
-  inline double a() const { return _a;}
-  inline double b() const { return _b;}
-  inline double c() const { return _c;}
+  inline double a() const { return _a; }
+  inline double b() const { return _b; }
+  inline double c() const { return _c; }
 
   Radians calculateAngleBetweenLines(CarthesianLine other);
+  double calculateDistanceToPoint(Vector2 point);
 };
 
 class LidarInfos {
@@ -80,6 +82,11 @@ class AnalyzeLidarData {
   const double thetaToleranceParallel = 0.2;           // pour trouver le mur parallèle au premier, il faut une différence d'angle inférieur à 0,2 rad
   const double thetaTolerancePerpendiculaire = 0.2;    // pour trouver les murs perpendiculaires, il faut une différence d'angle inférieur à 0,2 rad (après - PI/2)
 
+  // Longueur des segments sur les lignes de Hough
+  const int pointToLineDistanceMax = 20;   // un point doit être à moins de 2cm d'une ligne pour en faire partie
+  const int pointToPointDistanceMax = 70;  // un point doit être à moins de 7cm du prochain pour faire partie du même groupe
+  const int LineLengthMin = 250;           // une ligne doit être longue d'au moins 25cm pour être prise en compte (permet de filtrer les robots)
+
   uint16_t distanceMax;
   MutableVector2 convPoints[nbrLidarPoints];
   HoughLine lines[nbrLinesMax];  // The previous version already stopped at 4000
@@ -87,6 +94,7 @@ class AnalyzeLidarData {
   Optional<HoughLine> paralleleWall;
   Optional<HoughLine> firstPerpendicularWall;
   Optional<HoughLine> secondPerpendicularWall;
+  Optional<bool> firstWallIsLengh;
 
  public:
   AnalyzeLidarData() {}
@@ -99,11 +107,10 @@ class AnalyzeLidarData {
   bool houghTransform();
   bool sortLines();
   bool findWalls();
-  bool detectFirstWall(HoughLine line);
-  bool detectParalleleWall(HoughLine line);
-  int NewFunction(const HoughLine& line);
-  bool detectPerpendicularWall(HoughLine line, bool isFirst);
-  ResultOrError<bool> checkGroups(HoughLine line);
+  bool detectFirstWall(HoughLine line, FieldProperties fP);
+  bool detectParalleleWall(HoughLine line, FieldProperties fP);
+  bool detectPerpendicularWall(HoughLine line, FieldProperties fP);
+  ResultOrError<float> distanceCalculatedWithGroups(HoughLine line);
 };
 
 double calculateAngleBetweenLines(double a1, double b1, double c1, double a2, double b2, double c2);
