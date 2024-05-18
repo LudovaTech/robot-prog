@@ -4,9 +4,6 @@
 #include "utilities.h"
 #include "lidar.h"
 
-const int lidarDistanceMax = 3000;
-const int lidarDistanceMin = 100;
-
 class HoughLine {
  private:
   const double rho;
@@ -38,16 +35,18 @@ class LidarInfos {
   //TODO inline MutableVector2 getWalls() { return walls; }
 };
 
-class AnalyseLidarData {
+class AnalyzeLidarData {
  private:
   const static unsigned int nbrLidarPoints = 20;
+  const int lidarDistanceMax = 3000;
+  const int lidarDistanceMin = 100;
   MutableVector2 convPoints[nbrLidarPoints];
 
  public:
-  AnalyseLidarData() {}
-  inline MutableVector2* getConvPoints() { return convPoints; }
+  AnalyzeLidarData() {}
+  inline MutableVector2* _getConvPoints() { return convPoints; }
 
-  bool filterDistance(LidarPoint lidarPoint);
+  bool filterDistance(LidarPoint lidarPoint) const;
   bool convCoordonneesCartesiennes(LidarPoint lidarPoint, unsigned int indice);
   bool convFromBuffer(CircularLidarPointsBuffer lidarPointsBuffer);
 };

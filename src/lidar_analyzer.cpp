@@ -6,11 +6,11 @@ HoughLine::HoughLine(const double rho, const double theta, const double nb_accum
 LidarInfos::LidarInfos(const Vector2 vcoordinates, Radians orientation)
     : _coordinates(vcoordinates), orientation(orientation) {}
 
-bool AnalyseLidarData::filterDistance(LidarPoint lidarPoint) {
+bool AnalyzeLidarData::filterDistance(LidarPoint lidarPoint) const {
   return lidarPoint.distance() > lidarDistanceMin && lidarPoint.distance() < lidarDistanceMax;
 }
 
-bool AnalyseLidarData::convCoordonneesCartesiennes(LidarPoint lidarPoint, unsigned int indice) {
+bool AnalyzeLidarData::convCoordonneesCartesiennes(LidarPoint lidarPoint, unsigned int indice) {
   convPoints[indice] = Vector2(
     lidarPoint.distance() * cos(lidarPoint.angle() / 18000.0 * PI),
     -lidarPoint.distance() * sin(lidarPoint.angle() / 18000.0 * PI)
@@ -18,14 +18,14 @@ bool AnalyseLidarData::convCoordonneesCartesiennes(LidarPoint lidarPoint, unsign
   return true;
 }
 
-bool AnalyseLidarData::convFromBuffer(CircularLidarPointsBuffer lidarPointsBuffer) {
+bool AnalyzeLidarData::convFromBuffer(CircularLidarPointsBuffer lidarPointsBuffer) {
   //TODO: must detect the last tour only
   for (unsigned int i = 0; i <= nbrLidarPoints; i++) {
     if (!lidarPointsBuffer.existValue(i)) {
       //log
       return false;
     }
-    int distanceMax;
+    uint16_t distanceMax;
     LidarPoint lidarPoint = lidarPointsBuffer.getValue(i);
     if (filterDistance(lidarPoint)) {
       distanceMax = max(distanceMax, lidarPoint.distance());

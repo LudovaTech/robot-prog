@@ -48,16 +48,16 @@ class MutableVector2 {
   String toString() const;
   Vector2 toVector2() const;
 
-  inline bool operator==(const Vector2 &other) {
+  inline bool operator==(const Vector2 &other) const {
     return (_x == other.x() && _y == other.y());
   }
-  inline bool operator!=(const Vector2 &other) {
+  inline bool operator!=(const Vector2 &other) const {
     return (_x != other.x() || _y != other.y());
   }
-  inline bool operator==(const MutableVector2 &other) {
+  inline bool operator==(const MutableVector2 &other) const {
     return (_x == other._x && _y == other._y);
   }
-  inline bool operator!=(const MutableVector2 &other) {
+  inline bool operator!=(const MutableVector2 &other) const {
     return (_x != other._x || _y != other._y);
   }
 

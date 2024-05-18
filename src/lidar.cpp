@@ -130,7 +130,7 @@ int CircularLidarPointsBuffer::savePointsLocal(unsigned int alreadySavedIndex) c
 
 String CircularLidarPointsBuffer::toString() const {
   String result = "CircularLidarPointsBuffer";
-  result += String(_size);
+  result += String((unsigned long)_size);
   result += "[";
   for (size_t i = 0; i < sizeFilled(); ++i) {
     result += String(_buffer[i].toString());
@@ -151,7 +151,7 @@ void CircularLidarPointsBuffer::readPointsAndAddToBuffer() {
     byte buffer[45];
     size_t nbrBytesReceived = SerialLidar.readBytes(buffer, 45);
     if (nbrBytesReceived != 45) {
-      SerialDebug.println("error, wrong number of bytes received (" + String(nbrBytesReceived) + ")");
+      SerialDebug.println("error, wrong number of bytes received (" + String((unsigned long)nbrBytesReceived) + ")");
     } else {
       uint16_t speed = _get2BytesLsbMsb(buffer, 0);
       uint16_t startAngle = _get2BytesLsbMsb(buffer, 2);
