@@ -1,18 +1,21 @@
 #ifndef LIDAR_ANALYZER2_H
 #define LIDAR_ANALYZER2_H
 
-#include "utilities.h"
 #include "lidar.h"
+#include "utilities.h"
 
 class HoughLine {
  private:
-  const double rho;
-  const double theta;
-  const double nb_accumulators;
-  const double length;
+  double _rho;
+  double _theta;
+  double _nb_accumulators;
+  double _length;
 
  public:
-  HoughLine(const double rho, const double theta, const double nb_accumulators, const double length);
+  HoughLine(const double rho, const double theta, const double nb_accumulators)
+      : _rho(rho), _theta(theta), _nb_accumulators(nb_accumulators), _length(0) {}
+  HoughLine()
+      : _rho(0), _theta(0), _nb_accumulators(0), _length(0) {}
 };
 
 class LidarInfos {
@@ -32,7 +35,7 @@ class LidarInfos {
   inline Vector2 coordinates() const { return _coordinates; }
 
   /* retourne les murs (le point le plus proche de chaque mur) */
-  //TODO inline MutableVector2 getWalls() { return walls; }
+  // TODO inline MutableVector2 getWalls() { return walls; }
 };
 
 class AnalyzeLidarData {
@@ -40,7 +43,19 @@ class AnalyzeLidarData {
   const static unsigned int nbrLidarPoints = 20;
   const int lidarDistanceMax = 3000;
   const int lidarDistanceMin = 100;
+
+  // Hough transform
+  const int degreStep = 3;                             // degrés entre chaque droite calculée par Hough transform (3° -> 30 ms, 1° -> 90ms)
+  const int HoughTransformAccumulatorsThreshold = 10;  // on exclut les lignes qui contiennent moins de 10 points
+  const int HoughTransformMemorySize = 24000;          // taille de la matrice de Hough
+  const double rhoTolerance = 500.0;                   // si une ligne est proche d'une autre de moins de 50cm, on l'exclut
+  const double thetaMargin = 0.5;                      // si une ligne a un angle theta inférieur à 0,5 rad d'une autre, on l'exclut
+  const double thetaToleranceParallel = 0.2;           // pour trouver le mur parallèle au premier, il faut une différence d'angle inférieur à 0,2 rad
+  const double thetaTolerancePerpendiculaire = 0.2;    // pour trouver les murs perpendiculaires, il faut une différence d'angle inférieur à 0,2 rad (après - PI/2)
+
+  uint16_t distanceMax;
   MutableVector2 convPoints[nbrLidarPoints];
+  HoughLine lines[4095];  // The previous version already stopped at 4000
 
  public:
   AnalyzeLidarData() {}
@@ -49,6 +64,7 @@ class AnalyzeLidarData {
   bool filterDistance(LidarPoint lidarPoint) const;
   bool convCoordonneesCartesiennes(LidarPoint lidarPoint, unsigned int indice);
   bool convFromBuffer(CircularLidarPointsBuffer lidarPointsBuffer);
+  bool houghTransform();
 };
 
 #endif
