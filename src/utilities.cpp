@@ -84,6 +84,9 @@ MutableVector2::MutableVector2(Vector2 vector2)
 MutableVector2::MutableVector2(float x, float y)
     : _x(x), _y(y) {}
 
+MutableVector2::MutableVector2()
+    : _x(0), _y(0) {}
+
 String MutableVector2::toString() const {
   return "(Mutable," + String(_x) + ", " + String(_y) + ")";
 }

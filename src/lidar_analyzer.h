@@ -38,11 +38,11 @@ class LidarInfos {
 class AnalyseLidarData {
  private:
   const static unsigned int nbrLidarPoints = 20;
-  Vector2 convPoints[nbrLidarPoints];
+  MutableVector2 convPoints[nbrLidarPoints];
 
  public:
   AnalyseLidarData() {}
-  inline Vector2* getConvPoints() { return convPoints; }
+  inline MutableVector2* getConvPoints() { return convPoints; }
 
   bool filterDistance(LidarPoint lidarPoint);
   bool convCoordonneesCartesiennes(LidarPoint lidarPoint, unsigned int indice);
