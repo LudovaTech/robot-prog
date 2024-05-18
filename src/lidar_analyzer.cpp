@@ -2,18 +2,16 @@
 
 //////////// HoughLine
 
-void HoughLine::convertToGeneralForm(double& a, double& b, double& c) {
-  a = cos(theta());
-  b = sin(theta());
-  c = -rho();
-}
+CarthesianLine::CarthesianLine(HoughLine line)
+    : _a(cos(line.theta())), _b(sin(line.theta())), _c(-line.rho()) {}
+
 // Calcul l'angle entre deux droites d'équation ax + by + c = 0
-double calculateAngleBetweenLines(double a1, double b1, double c1, double a2, double b2, double c2) {
+Radians CarthesianLine::calculateAngleBetweenLines(CarthesianLine other) {
   // Calculer les vecteurs directeurs des droites
-  double v1x = b1;
-  double v1y = -a1;
-  double v2x = b2;
-  double v2y = -a2;
+  double v1x = b();
+  double v1y = -a();
+  double v2x = other.b();
+  double v2y = -other.a();
 
   // Calculer le produit scalaire des vecteurs directeurs
   double dotProduct = v1x * v2x + v1y * v2y;
@@ -23,16 +21,16 @@ double calculateAngleBetweenLines(double a1, double b1, double c1, double a2, do
   double norm2 = sqrt(v2x * v2x + v2y * v2y);
 
   if (norm1 * norm2 == 0) {  // pour éviter une division par 0
-    return PI / 4.0;
+    return Radians(PI / 4.0);
   }
 
   // Calculer l'angle entre les droites en radians
   double angle = safe_acos(dotProduct / (norm1 * norm2));
 
   if (angle > PI / 2.0) {
-    return PI - angle;  // retourne toujours l'angle aigu
+    return Radians(PI - angle);  // retourne toujours l'angle aigu
   }
-  return angle;
+  return Radians(angle);
 }
 
 // acos qui retourne toujours une valeur valide
@@ -139,3 +137,51 @@ bool AnalyzeLidarData::sortLines() {
   return true;
 }
 
+bool AnalyzeLidarData::findWalls() {
+  if (detectFirstWall(lines[0])) {
+    // si la première ligne est inféreure au minimum (= erreur), l'ensemble de la détection échoue
+    // log
+    return false;
+  }
+  for (unsigned int i = 1; i < nbrLinesMax; i++) {
+    HoughLine line = lines[i];
+    if (!paralleleWall.hasValue()) {
+      detectParalleleWall(line);
+    }
+    if (!firstPerpendicularWall.hasValue()) {
+      detectPerpendicularWall(line, true);
+    } else if (!secondPerpendicularWall.hasValue()) {
+      detectPerpendicularWall(line, false);
+    }
+  }
+}
+
+bool AnalyzeLidarData::detectFirstWall(HoughLine line) {
+  // On décide que la première ligne, comme elle est la plus grande, appartient au terrain
+  // Le seul cas où elle n'est pas la première ligne serait que sa longeur sa inférieur
+  // au minimum auquel cas l'ensemble de la détection échoue
+  ResultOrError<bool> r = checkGroups(line);
+  if (r.hasError()) {
+    // log
+    return false;
+  } else {
+    if (!r.value()) {
+      return false;
+    } else {
+      firstWall = Optional<HoughLine>(line);
+      return true;
+    }
+  }
+}
+
+bool AnalyzeLidarData::detectParalleleWall(HoughLine line) {
+  // testons l'angle entre ce mur et le premier
+  if (!(abs(CarthesianLine(line).calculateAngleBetweenLines(firstWall.value()) - PI / 2.0) < thetaTolerancePerpendiculaire)) {
+    return false;
+  }
+  // testons la distance entre ce mur et le premier mur
+  
+}
+
+ResultOrError<bool> AnalyzeLidarData::checkGroups(HoughLine line) {
+}

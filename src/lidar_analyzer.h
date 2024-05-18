@@ -1,9 +1,10 @@
 #ifndef LIDAR_ANALYZER2_H
 #define LIDAR_ANALYZER2_H
 
+#include <algorithm>
+
 #include "lidar.h"
 #include "utilities.h"
-#include <algorithm>
 
 class HoughLine {
  private:
@@ -22,11 +23,24 @@ class HoughLine {
   inline double theta() const { return _theta; }
   inline double nb_accumulators() const { return _nb_accumulators; }
   inline double length() const { return _length; }
-
-  void convertToGeneralForm(double& a, double& b, double& c);
 };
 
+class CarthesianLine {
+ private:
+  double _a, _b, _c;
 
+ public:
+  CarthesianLine(double a, double b, double c)
+      : _a(a), _b(b), _c(c) {}
+  
+  CarthesianLine(HoughLine line);
+
+  inline double a() const { return _a;}
+  inline double b() const { return _b;}
+  inline double c() const { return _c;}
+
+  Radians calculateAngleBetweenLines(CarthesianLine other);
+};
 
 class LidarInfos {
  private:
@@ -51,6 +65,7 @@ class LidarInfos {
 class AnalyzeLidarData {
  private:
   const static unsigned int nbrLidarPoints = 20;
+  const static unsigned int nbrLinesMax = 4095;
   const int lidarDistanceMax = 3000;
   const int lidarDistanceMin = 100;
 
@@ -65,7 +80,8 @@ class AnalyzeLidarData {
 
   uint16_t distanceMax;
   MutableVector2 convPoints[nbrLidarPoints];
-  HoughLine lines[4095];  // The previous version already stopped at 4000
+  HoughLine lines[nbrLinesMax];  // The previous version already stopped at 4000
+  Optional<HoughLine> firstWall;
   Optional<HoughLine> paralleleWall;
   Optional<HoughLine> firstPerpendicularWall;
   Optional<HoughLine> secondPerpendicularWall;
@@ -80,6 +96,11 @@ class AnalyzeLidarData {
   bool convFromBuffer(CircularLidarPointsBuffer lidarPointsBuffer);
   bool houghTransform();
   bool sortLines();
+  bool findWalls();
+  bool detectFirstWall(HoughLine line);
+  bool detectParalleleWall(HoughLine line);
+  bool detectPerpendicularWall(HoughLine line, bool isFirst);
+  ResultOrError<bool> checkGroups(HoughLine line);
 };
 
 double calculateAngleBetweenLines(double a1, double b1, double c1, double a2, double b2, double c2);

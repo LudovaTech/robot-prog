@@ -105,7 +105,7 @@ template <typename T>
 class Optional {
  private:
   T _value;
-  const bool _hasValue;
+  bool _hasValue;
 
  public:
   Optional() : _hasValue(false) {}
