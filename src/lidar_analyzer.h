@@ -128,6 +128,7 @@ class AnalyzeLidarData {
   bool findLongestRealWall();
   bool calculateAngle();
   bool calculateCoordinates();
+  LidarInfos getLidarInfos() const;
 };
 
 double calculateAngleBetweenLines(double a1, double b1, double c1, double a2, double b2, double c2);

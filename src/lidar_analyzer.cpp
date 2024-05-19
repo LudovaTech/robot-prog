@@ -235,6 +235,13 @@ bool AnalyzeLidarData::findWalls(FieldProperties fP) {
 
 }
 
+LidarInfos AnalyzeLidarData::getLidarInfos() const {
+  return LidarInfos(
+    coordinates.toVector2(),
+    orientation
+  );
+}
+
 bool AnalyzeLidarData::calculateCoordinates() {
   coordinates = MutableVector2(
     -centroid.y() * sin(orientation) - centroid.x() * cos(orientation),
