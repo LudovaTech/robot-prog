@@ -64,6 +64,7 @@ class LidarInfos {
   */
   inline Vector2 coordinates() const { return _coordinates; }
 
+  String toString() const;
   /* retourne les murs (le point le plus proche de chaque mur) */
   // TODO inline MutableVector2 getWalls() { return walls; }
 };

@@ -2,37 +2,42 @@
 
 #include "../src/lidar_analyzer.h"
 
-// Fonction pour diviser une chaîne de caractères en utilisant un délimiteur
-std::vector<std::string> split(const std::string& s, char delimiter) {
-  std::vector<std::string> tokens;
-  std::string token;
-  std::istringstream tokenStream(s);
-  while (std::getline(tokenStream, token, delimiter)) {
-    tokens.push_back(token);
-  }
-  return tokens;
-}
+CircularLidarPointsBuffer parseAndPrintPairs(String input) {
+  CircularLidarPointsBuffer buffer(AnalyzeLidarData::nbrLidarPoints);
+  int index = 0;
+  while (index < input.length()) {
+    // Trouver les indices des parenthèses
+    int startIdx = input.indexOf('(', index);
+    int endIdx = input.indexOf(')', startIdx);
 
-CircularLidarPointsBuffer bufferFromString(String input) {
-  CircularLidarPointsBuffer buffer = CircularLidarPointsBuffer(AnalyzeLidarData::nbrLidarPoints);
-  // Suppression des parenthèses et division par point-virgule
-  input.erase(std::remove(input.begin(), input.end(), '('), input.end());
-  input.erase(std::remove(input.begin(), input.end(), ')'), input.end());
-  std::vector<std::string> pairs = split(input, ';');
-
-  // Boucle sur chaque paire (x, y)
-  for (const std::string& pair : pairs) {
-    std::vector<std::string> coordinates = split(pair, ',');
-    if (coordinates.size() == 2) {
-      int x = std::stoi(coordinates[0]);
-      int y = std::stoi(coordinates[1]);
-      buffer.addValue(LidarPoint(
-          x,
-          0,
-          y));
+    // Si on ne trouve plus de parenthèses, arrêter la boucle
+    if (startIdx == -1 || endIdx == -1) {
+      break;
     }
+
+    // Extraire la sous-chaîne correspondant à une paire (x, y)
+    String pair = input.substring(startIdx + 1, endIdx);
+
+    // Trouver la virgule qui sépare x et y
+    int commaIdx = pair.indexOf(',');
+
+    // Extraire x et y en tant que sous-chaînes
+    String xStr = pair.substring(0, commaIdx);
+    String yStr = pair.substring(commaIdx + 1);
+
+    // Convertir les sous-chaînes en entiers
+    int x = xStr.toInt();
+    int y = yStr.toInt();
+
+    buffer.addValue(
+        LidarPoint(
+            x,
+            0,
+            y));
+
+    // Mettre à jour l'index pour le prochain tour de boucle
+    index = endIdx + 1;
   }
-  return buffer;
 }
 
 bool checkCoordinates(AnalyzeLidarData ald, FieldProperties fP, String text, double x, double y, String input) {

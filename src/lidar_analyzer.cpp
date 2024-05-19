@@ -82,6 +82,9 @@ double safe_acos(double value) {
 LidarInfos::LidarInfos(const Vector2 vcoordinates, Radians orientation)
     : _coordinates(vcoordinates), orientation(orientation) {}
 
+String LidarInfos::toString() const {
+  return _coordinates.toString();
+}
 //////////// AnalyzeLidarData
 bool AnalyzeLidarData::analyze(CircularLidarPointsBuffer from) {
   // TODO
