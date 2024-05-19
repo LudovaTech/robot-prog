@@ -106,7 +106,20 @@ class AnalyzeLidarData {
 
  public:
   AnalyzeLidarData() {}
+  inline uint16_t* _getDistanceMax() { return &distanceMax; }
   inline MutableVector2* _getConvPoints() { return convPoints; }
+  inline HoughLine* _getLines() { return lines; }
+  inline Optional<HoughLine>* _getFirstWall() { return &firstWall; }
+  inline Optional<HoughLine>* _getParalleleWall() { return &paralleleWall; }
+  inline Optional<HoughLine>* _getFirstPerpendicularWall() { return &firstPerpendicularWall; }
+  inline Optional<HoughLine>* _getSecondPerpendicularWall() { return &secondPerpendicularWall; }
+  inline Optional<bool>* _getFirstWallIsLengh() { return &firstWallIsLengh; }
+  inline MutableVector2* _getCorners() { return corners; }
+  inline MutableVector2* _getCentroid() { return &centroid; }
+  inline MutableVector2* _getLongestWallFirstCorner() { return &longestWallFirstCorner; }
+  inline MutableVector2* _getLongestWallSecondCorner() { return &longestWallSecondCorner; }
+  inline Radians* _getOrientation() { return &orientation; }
+  inline MutableVector2* _getCoordinates() { return &coordinates; }
 
   bool analyze(CircularLidarPointsBuffer from);
   bool filterDistance(LidarPoint lidarPoint) const;
