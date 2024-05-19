@@ -112,8 +112,8 @@ class AnalyzeLidarData {
   bool detectParalleleWall(HoughLine line, FieldProperties fP);
   bool detectPerpendicularWall(HoughLine line, FieldProperties fP);
   ResultOrError<float> distanceCalculatedWithGroups(CarthesianLine line);
-  bool isLength(double distance, FieldProperties fP);
-  bool isWidth(double distance, FieldProperties fP);
+  bool isLength(double distance, FieldProperties fP) const;
+  bool isWidth(double distance, FieldProperties fP) const;
 };
 
 double calculateAngleBetweenLines(double a1, double b1, double c1, double a2, double b2, double c2);

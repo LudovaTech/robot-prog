@@ -153,12 +153,12 @@ bool AnalyzeLidarData::sortLines() {
   return true;
 }
 
-bool isLength(double distance, FieldProperties fP) {
+bool AnalyzeLidarData::isLength(double distance, FieldProperties fP) const {
   return (distance > 0.9 * fP.fieldLength()
       && distance < 1.1 * fP.fieldLength());
 }
 
-bool isWidth(double distance, FieldProperties fP) {
+bool AnalyzeLidarData::isWidth(double distance, FieldProperties fP) const {
   return (distance > 0.9 * fP.fieldWidth()
       && distance < 1.1 * fP.fieldWidth());
 }
