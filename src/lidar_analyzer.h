@@ -69,7 +69,7 @@ class LidarInfos {
 };
 
 class AnalyzeLidarData {
- private:
+ public:
   const static unsigned int nbrLidarPoints = 20;
   const static unsigned int nbrLinesMax = 4095;
   const int lidarDistanceMax = 3000;
@@ -89,6 +89,7 @@ class AnalyzeLidarData {
   const int pointToPointDistanceMax = 70;  // un point doit être à moins de 7cm du prochain pour faire partie du même groupe
   const int lineLengthMin = 250;           // une ligne doit être longue d'au moins 25cm pour être prise en compte (permet de filtrer les robots)
 
+ private:
   uint16_t distanceMax;
   MutableVector2 convPoints[nbrLidarPoints];
   HoughLine lines[nbrLinesMax];  // The previous version already stopped at 4000
