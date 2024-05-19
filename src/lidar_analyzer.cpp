@@ -13,7 +13,7 @@ double HoughLine::calculateDistanceBetweenLines(HoughLine other) {
   return Vector2(x1, y1).distance(Vector2(x2, y2));
 }
 
-Optional<Vector2> HoughLine::intersectWith(HoughLine other) {
+Optional<MutableVector2> HoughLine::intersectWith(HoughLine other) {
   double sinTheta1 = sin(theta());
   double sinTheta2 = sin(other.theta());
   double cosTheta1 = cos(theta());
@@ -22,10 +22,10 @@ Optional<Vector2> HoughLine::intersectWith(HoughLine other) {
 
   // Si le déterminant est 0, les lignes sont parallèles ou coïncidentes
   if (abs(determinant) < 1e-10) {
-    return Optional<Vector2>();
+    return Optional<MutableVector2>();
   }
 
-  return Optional<Vector2>(Vector2(
+  return Optional<MutableVector2>(MutableVector2(
       (rho() * sinTheta2 - other.rho() * sinTheta1) / determinant,
       (other.rho() * cosTheta1 - rho() * cosTheta2) / determinant));
 }
@@ -313,25 +313,25 @@ bool AnalyzeLidarData::computeCentroid() {
 
 bool AnalyzeLidarData::calculateCorners() {
   // TODO protection
-  Optional<Vector2> c1 = firstWall.value().intersectWith(firstPerpendicularWall.value());
+  Optional<MutableVector2> c1 = firstWall.value().intersectWith(firstPerpendicularWall.value());
   if (!c1.hasValue()) {
     return false;
   } else {
     corners[0] = c1.value();
   }
-  Optional<Vector2> c2 = firstWall.value().intersectWith(firstPerpendicularWall.value());
+  Optional<MutableVector2> c2 = firstWall.value().intersectWith(firstPerpendicularWall.value());
   if (!c2.hasValue()) {
     return false;
   } else {
     corners[0] = c2.value();
   }
-  Optional<Vector2> c3 = firstWall.value().intersectWith(firstPerpendicularWall.value());
+  Optional<MutableVector2> c3 = firstWall.value().intersectWith(firstPerpendicularWall.value());
   if (!c3.hasValue()) {
     return false;
   } else {
     corners[0] = c3.value();
   }
-  Optional<Vector2> c4 = firstWall.value().intersectWith(firstPerpendicularWall.value());
+  Optional<MutableVector2> c4 = firstWall.value().intersectWith(firstPerpendicularWall.value());
   if (!c4.hasValue()) {
     return false;
   } else {
