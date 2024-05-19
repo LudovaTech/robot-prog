@@ -17,11 +17,11 @@ FutureAction chooseStrategy(FieldProperties fP, RobotState cS) {
   if (robotIsLost(fP, cS)) {
 
     if (!ballIsDetected(fP, cS)) {
-      return stopRobot
+      return stopRobot;
 
     } else if (ballIsCaught(fP, cS)) {
       if (!goalIsDetected(fP, cS)) {
-        return stopRobot
+        return stopRobot;
       } else if (targetJustInFrontOfRobot(fP, cS, cS.enemyGoalPos())) {
         return shootStrategy(fP, cS);
       } else {
@@ -142,12 +142,12 @@ FutureAction goToBallStrategy(FieldProperties fP, RobotState cS) {
   return FutureAction(
       Vector2(
           cS.ballPos().x(),
-          cS.ballPos().y() - fP.robotRadius() * 5),
+          cS.ballPos().y() - fP.robotRadius() * 1.5),
       false);
 }
 
 FutureAction goToBallAvoidingBallStrategyWithCam(FieldProperties fP, RobotState cS) {
-  
+
   if (targetJustBehindOfRobot(fP, cS, cS.ballPos())) {
     return FutureAction(
         Vector2(10, -10),
