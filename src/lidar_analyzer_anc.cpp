@@ -563,6 +563,7 @@ LidarInfos getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool sho
     }
   }
 
+  ///TODO
   // points correspondants à la distance min à chaque mur
   for (size_t i = 0; i < walls.size(); i++) {
     HoughLine wall = walls[i];

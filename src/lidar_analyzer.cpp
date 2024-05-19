@@ -26,9 +26,8 @@ Optional<Vector2> HoughLine::intersectWith(HoughLine other) {
   }
 
   return Optional<Vector2>(Vector2(
-    (rho() * sinTheta2 - other.rho() * sinTheta1) / determinant,
-    (other.rho() * cosTheta1 - rho() * cosTheta2) / determinant
-  ));
+      (rho() * sinTheta2 - other.rho() * sinTheta1) / determinant,
+      (other.rho() * cosTheta1 - rho() * cosTheta2) / determinant));
 }
 
 CarthesianLine::CarthesianLine(HoughLine line)
@@ -209,6 +208,48 @@ bool AnalyzeLidarData::findWalls(FieldProperties fP) {
     return false;
   }
   // now, we have 4 walls
+  if (!calculateCorners()) {
+    //log
+    return false;
+  }
+
+}
+
+bool AnalyzeLidarData::computeCentroid() {
+  centroid = MutableVector2(
+    (corners[0].x() + corners[1].x() + corners[2].x() + corners[3].x()) / 4,
+    (corners[0].y() + corners[1].y() + corners[2].y() + corners[3].y()) / 4
+  );
+  return true;
+}
+
+bool AnalyzeLidarData::calculateCorners() {
+  // TODO protection
+  Optional<Vector2> c1 = firstWall.value().intersectWith(firstPerpendicularWall.value());
+  if (!c1.hasValue()) {
+    return false;
+  } else {
+    corners[0] = c1.value();
+  }
+  Optional<Vector2> c2 = firstWall.value().intersectWith(firstPerpendicularWall.value());
+  if (!c2.hasValue()) {
+    return false;
+  } else {
+    corners[0] = c2.value();
+  }
+  Optional<Vector2> c3 = firstWall.value().intersectWith(firstPerpendicularWall.value());
+  if (!c3.hasValue()) {
+    return false;
+  } else {
+    corners[0] = c3.value();
+  }
+  Optional<Vector2> c4 = firstWall.value().intersectWith(firstPerpendicularWall.value());
+  if (!c4.hasValue()) {
+    return false;
+  } else {
+    corners[0] = c4.value();
+  }
+  return true;
 }
 
 bool AnalyzeLidarData::detectFirstWall(HoughLine line, FieldProperties fP) {

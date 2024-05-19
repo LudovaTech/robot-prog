@@ -97,6 +97,8 @@ class AnalyzeLidarData {
   Optional<HoughLine> firstPerpendicularWall;
   Optional<HoughLine> secondPerpendicularWall;
   Optional<bool> firstWallIsLengh;
+  MutableVector2 corners[4];
+  MutableVector2 centroid;
 
  public:
   AnalyzeLidarData() {}
@@ -116,6 +118,8 @@ class AnalyzeLidarData {
   bool isLength(double distance, FieldProperties fP) const;
   bool isWidth(double distance, FieldProperties fP) const;
   bool has4Walls() const;
+  bool calculateCorners();
+  bool computeCentroid();
 };
 
 double calculateAngleBetweenLines(double a1, double b1, double c1, double a2, double b2, double c2);
