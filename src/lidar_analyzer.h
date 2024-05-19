@@ -12,18 +12,19 @@ class HoughLine {
   double _rho;
   double _theta;
   double _nb_accumulators;
-  double _length;
+  Optional<double> _length;
 
  public:
   HoughLine(const double rho, const double theta, const double nb_accumulators)
-      : _rho(rho), _theta(theta), _nb_accumulators(nb_accumulators), _length(0) {}
+      : _rho(rho), _theta(theta), _nb_accumulators(nb_accumulators), _length(Optional<double>()) {}
   HoughLine()
       : _rho(0), _theta(0), _nb_accumulators(0), _length(0) {}
 
   inline double rho() const { return _rho; }
   inline double theta() const { return _theta; }
   inline double nb_accumulators() const { return _nb_accumulators; }
-  inline double length() const { return _length; }
+  inline Optional<double> length() const { return _length; }
+  inline void setLength(double nLength) { _length = Optional<double>(nLength); }
 
   double calculateDistanceBetweenLines(HoughLine other);
 };
@@ -85,7 +86,7 @@ class AnalyzeLidarData {
   // Longueur des segments sur les lignes de Hough
   const int pointToLineDistanceMax = 20;   // un point doit être à moins de 2cm d'une ligne pour en faire partie
   const int pointToPointDistanceMax = 70;  // un point doit être à moins de 7cm du prochain pour faire partie du même groupe
-  const int LineLengthMin = 250;           // une ligne doit être longue d'au moins 25cm pour être prise en compte (permet de filtrer les robots)
+  const int lineLengthMin = 250;           // une ligne doit être longue d'au moins 25cm pour être prise en compte (permet de filtrer les robots)
 
   uint16_t distanceMax;
   MutableVector2 convPoints[nbrLidarPoints];
@@ -110,7 +111,9 @@ class AnalyzeLidarData {
   bool detectFirstWall(HoughLine line, FieldProperties fP);
   bool detectParalleleWall(HoughLine line, FieldProperties fP);
   bool detectPerpendicularWall(HoughLine line, FieldProperties fP);
-  ResultOrError<float> distanceCalculatedWithGroups(HoughLine line);
+  ResultOrError<float> distanceCalculatedWithGroups(CarthesianLine line);
+  bool isLength(double distance, FieldProperties fP);
+  bool isWidth(double distance, FieldProperties fP);
 };
 
 double calculateAngleBetweenLines(double a1, double b1, double c1, double a2, double b2, double c2);

@@ -153,6 +153,16 @@ bool AnalyzeLidarData::sortLines() {
   return true;
 }
 
+bool isLength(double distance, FieldProperties fP) {
+  return (distance > 0.9 * fP.fieldLength()
+      && distance < 1.1 * fP.fieldLength());
+}
+
+bool isWidth(double distance, FieldProperties fP) {
+  return (distance > 0.9 * fP.fieldWidth()
+      && distance < 1.1 * fP.fieldWidth());
+}
+
 bool AnalyzeLidarData::findWalls() {
   if (detectFirstWall(lines[0])) {
     // si la première ligne est inféreure au minimum (= erreur), l'ensemble de la détection échoue
@@ -172,27 +182,43 @@ bool AnalyzeLidarData::findWalls() {
   }
 }
 
-bool AnalyzeLidarData::detectFirstWall(HoughLine line) {
+bool AnalyzeLidarData::detectFirstWall(HoughLine line, FieldProperties fP) {
   // On décide que la première ligne, comme elle est la plus grande, appartient au terrain
   // Le seul cas où elle n'est pas la première ligne serait que sa longeur sa inférieur
-  // au minimum auquel cas l'ensemble de la détection échoue
+  // au minimum ou ne correspond pas à la largeur ou la longueur
+  // auquel cas l'ensemble de la détection échoue
+  
+  //bypass angle
 
+  //bypass distance
 
-  ResultOrError<bool> r = distanceCalculatedWithGroups(line);
-  if (r.hasError()) {
+  //testons la distance de la ligne pour voir si elle correspont à la largeur ou la longueur du terrain
+  ResultOrError<float> distance = distanceCalculatedWithGroups(line);
+  if (distance.hasError()) {
     // log
     return false;
   } else {
-    if (!r.value()) {
-      return false;
-    } else {
+    if (distance.value() > lineLengthMin) {
+      if (isLength(distance.value(), fP)) {
+        firstWallIsLengh = Optional<bool>(true);
+      } else if (isWidth(distance.value(), fP)) {
+        firstWallIsLengh = Optional<bool>(false);
+      } else {
+        //log incohérent
+        return false;
+      }
+      line.setLength(distance.value());
       firstWall = Optional<HoughLine>(line);
       return true;
+    } else {
+      //log
+      return false;
     }
   }
 }
 
 bool AnalyzeLidarData::detectParalleleWall(HoughLine line, FieldProperties fP) {
+  // TODO teste si firstWall vide
   // testons l'angle entre ce mur et le premier
   if (!(abs(CarthesianLine(line).calculateAngleBetweenLines(firstWall.value()) - PI / 2.0) < thetaTolerancePerpendiculaire)) {
     return false;
@@ -200,12 +226,12 @@ bool AnalyzeLidarData::detectParalleleWall(HoughLine line, FieldProperties fP) {
 
   // testons la distance entre ce mur et le premier mur
   double distanceBetweenParallelWalls = line.calculateDistanceBetweenLines(firstWall.value());
-  if (distanceBetweenParallelWalls > 0.9 * fP.fieldLength() && distanceBetweenParallelWalls < 1.1 * fP.fieldWidth()) {
+  if (isLength(distanceBetweenParallelWalls, fP)) {
     if (!firstWallIsLengh.value()) {
       //log incohérent
       return false;
     }
-  } else if (distanceBetweenParallelWalls > 0.9 * fP.fieldWidth() && distanceBetweenParallelWalls < 1.1 * fP.fieldWidth()) {
+  } else if (isWidth(distanceBetweenParallelWalls, fP)) {
     if (firstWallIsLengh.value()) {
       //log incohérent
       return false;
@@ -215,21 +241,30 @@ bool AnalyzeLidarData::detectParalleleWall(HoughLine line, FieldProperties fP) {
     return false;
   }
 
-  //TODO GROUPS
+  //testons la distance de la ligne pour voir si elle correspont à la largeur ou la longueur du terrain
+  ResultOrError<float> distance = distanceCalculatedWithGroups(line);
+  if (distance.hasError()) {
+    //log strange
+  } else {
+    if (distance.value() > lineLengthMin) {
+      line.setLength(distance.value());
+
+    }
+  }
 }
 
 bool detectPerpendicularWall(HoughLine line, FieldProperties fP) {
 
 }
 
-ResultOrError<float> AnalyzeLidarData::distanceCalculatedWithGroups(HoughLine line) {
+ResultOrError<float> AnalyzeLidarData::distanceCalculatedWithGroups(CarthesianLine line) {
   float maxDistance = 0.0;
   Optional<MutableVector2> groupFront;
   Optional<MutableVector2> groupEnd;
   unsigned int groupLen = 0;
   for (unsigned int i = 0; i < nbrLidarPoints; i++) {
     MutableVector2 point = convPoints[i];
-    if (CarthesianLine(line).calculateDistanceToPoint(point.toVector2()) <= pointToLineDistanceMax) {
+    if (line.calculateDistanceToPoint(point.toVector2()) <= pointToLineDistanceMax) {
       if (!groupFront.hasValue()) {
         groupFront = Optional<MutableVector2>(point);
         groupEnd = Optional<MutableVector2>(point);
