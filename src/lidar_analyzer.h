@@ -107,10 +107,10 @@ class AnalyzeLidarData {
   bool convFromBuffer(CircularLidarPointsBuffer lidarPointsBuffer);
   bool houghTransform();
   bool sortLines();
-  bool findWalls();
+  bool findWalls(FieldProperties fP);
   bool detectFirstWall(HoughLine line, FieldProperties fP);
   bool detectParalleleWall(HoughLine line, FieldProperties fP);
-  bool detectPerpendicularWall(HoughLine line, FieldProperties fP);
+  bool detectPerpendicularWall(HoughLine line, FieldProperties fP, bool isFirst);
   ResultOrError<float> distanceCalculatedWithGroups(CarthesianLine line);
   bool isLength(double distance, FieldProperties fP) const;
   bool isWidth(double distance, FieldProperties fP) const;

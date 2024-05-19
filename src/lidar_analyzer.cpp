@@ -163,8 +163,8 @@ bool AnalyzeLidarData::isWidth(double distance, FieldProperties fP) const {
       && distance < 1.1 * fP.fieldWidth());
 }
 
-bool AnalyzeLidarData::findWalls() {
-  if (detectFirstWall(lines[0])) {
+bool AnalyzeLidarData::findWalls(FieldProperties fP) {
+  if (detectFirstWall(lines[0], fP)) {
     // si la première ligne est inféreure au minimum (= erreur), l'ensemble de la détection échoue
     // log
     return false;
@@ -172,12 +172,12 @@ bool AnalyzeLidarData::findWalls() {
   for (unsigned int i = 1; i < nbrLinesMax; i++) {
     HoughLine line = lines[i];
     if (!paralleleWall.hasValue()) {
-      detectParalleleWall(line);
+      detectParalleleWall(line, fP);
     }
     if (!firstPerpendicularWall.hasValue()) {
-      detectPerpendicularWall(line, true);
+      detectPerpendicularWall(line, fP, true);
     } else if (!secondPerpendicularWall.hasValue()) {
-      detectPerpendicularWall(line, false);
+      detectPerpendicularWall(line, fP, false);
     }
   }
 }
@@ -253,7 +253,7 @@ bool AnalyzeLidarData::detectParalleleWall(HoughLine line, FieldProperties fP) {
   }
 }
 
-bool detectPerpendicularWall(HoughLine line, FieldProperties fP) {
+bool AnalyzeLidarData::detectPerpendicularWall(HoughLine line, FieldProperties fP, bool isFirst) {
 
 }
 
