@@ -292,48 +292,78 @@ TEST(FutureAction, ballIsCaught) {
       2               // ballRadius
   );
 
-  RobotState cS = RobotState(
-      Vector2(0, 0),  // ballPos
+  RobotState cS0 = RobotState(
+      Vector2(0, 16),  // ballPos
       Vector2(0, 0),  // myPos
       Vector2(0, 0),  // partnerPos
       Vector2(0, 0),  // myGoalPos
       Vector2(0, 0)   // enemyGoalPos
   );
 
-  ASSERT_TRUE(ballIsCaught(fP, cS, Vector2(0, 16)));
-  ASSERT_FALSE(ballIsCaught(fP, cS, Vector2(0, 17)));
-  ASSERT_TRUE(ballIsCaught(fP, cS, Vector2(-6, 16)));
-  ASSERT_FALSE(ballIsCaught(fP, cS, Vector2(-7, 16)));
-  ASSERT_TRUE(ballIsCaught(fP, cS, Vector2(6, 16)));
-  ASSERT_FALSE(ballIsCaught(fP, cS, Vector2(7, 16)));
-  ASSERT_FALSE(ballIsCaught(fP, cS, Vector2(-6, 17)));
-  ASSERT_FALSE(ballIsCaught(fP, cS, Vector2(6, 17)));
-}
+  ASSERT_TRUE(ballIsCaught(fP, cS0));
 
-TEST(FutureAction, getBallSidePositionFromRobot) {
-  FieldProperties fP = FieldProperties(
-      243,            // fieldLength
-      182,            // fieldWidth
-      12,             // spaceBeforeLineSide
-      60,             // goalWidth
-      Vector2(0, 0),  // myGoalPos
-      Vector2(0, 0),  // enemyGoalPos
-      9,              // robotRadius
-      2               // ballRadius
-  );
-
-  RobotState cS = RobotState(
-      Vector2(0, 0),  // ballPos
+  RobotState cS1 = RobotState(
+      Vector2(0, 17),  // ballPos
       Vector2(0, 0),  // myPos
       Vector2(0, 0),  // partnerPos
       Vector2(0, 0),  // myGoalPos
       Vector2(0, 0)   // enemyGoalPos
   );
+  ASSERT_FALSE(ballIsCaught(fP, cS1));
 
-  ASSERT_EQ(getBallSidePositionFromRobot(fP, cS, Vector2(-7, 0)), -1);
-  ASSERT_EQ(getBallSidePositionFromRobot(fP, cS, Vector2(-6, 0)), 0);
-  ASSERT_EQ(getBallSidePositionFromRobot(fP, cS, Vector2(6, 0)), 0);
-  ASSERT_EQ(getBallSidePositionFromRobot(fP, cS, Vector2(7, 0)), 1);
+  RobotState cS2 = RobotState(
+      Vector2(-6, 16),  // ballPos
+      Vector2(0, 0),  // myPos
+      Vector2(0, 0),  // partnerPos
+      Vector2(0, 0),  // myGoalPos
+      Vector2(0, 0)   // enemyGoalPos
+  );
+  ASSERT_TRUE(ballIsCaught(fP, cS2));
+
+  RobotState cS3 = RobotState(
+      Vector2(-7, 16),  // ballPos
+      Vector2(0, 0),  // myPos
+      Vector2(0, 0),  // partnerPos
+      Vector2(0, 0),  // myGoalPos
+      Vector2(0, 0)   // enemyGoalPos
+  );
+  ASSERT_FALSE(ballIsCaught(fP, cS3));
+
+  RobotState cS4 = RobotState(
+      Vector2(6, 16),  // ballPos
+      Vector2(0, 0),  // myPos
+      Vector2(0, 0),  // partnerPos
+      Vector2(0, 0),  // myGoalPos
+      Vector2(0, 0)   // enemyGoalPos
+  );
+  ASSERT_TRUE(ballIsCaught(fP, cS4));
+
+  RobotState cS5 = RobotState(
+      Vector2(7, 16),  // ballPos
+      Vector2(0, 0),  // myPos
+      Vector2(0, 0),  // partnerPos
+      Vector2(0, 0),  // myGoalPos
+      Vector2(0, 0)   // enemyGoalPos
+  );
+  ASSERT_FALSE(ballIsCaught(fP, cS5));
+
+  RobotState cS6 = RobotState(
+      Vector2(-6, 17),  // ballPos
+      Vector2(0, 0),  // myPos
+      Vector2(0, 0),  // partnerPos
+      Vector2(0, 0),  // myGoalPos
+      Vector2(0, 0)   // enemyGoalPos
+  );
+  ASSERT_FALSE(ballIsCaught(fP, cS6));
+
+  RobotState cS7 = RobotState(
+      Vector2(6, 17),  // ballPos
+      Vector2(0, 0),  // myPos
+      Vector2(0, 0),  // partnerPos
+      Vector2(0, 0),  // myGoalPos
+      Vector2(0, 0)   // enemyGoalPos
+  );
+  ASSERT_FALSE(ballIsCaught(fP, cS7));
 }
 
 TEST(FutureAction, refrainFromLeavingStrategy) {
@@ -514,6 +544,6 @@ TEST(FutureAction, goToBallStrategy) {
       Vector2(0, 0)   // enemyGoalPos
   );
 
-  ASSERT_EQ(goToBallStrategy(fP, cS).target(), Vector2(50, 5));
+  ASSERT_EQ(goToBallStrategy(fP, cS).target(), Vector2(50, 13.5));
   ASSERT_FALSE(goToBallStrategy(fP, cS).activeKicker());
 }
