@@ -262,16 +262,31 @@ bool AnalyzeLidarData::detectParalleleWall(HoughLine line, FieldProperties fP) {
 }
 
 bool AnalyzeLidarData::detectPerpendicularWall(HoughLine line, FieldProperties fP, bool isFirst) {
-  // TODO teste si firstWall vide
+  // TODO teste si firstWall vide et firstPerpendicularWall
   // testons l'angle entre ce mur et le premier
   if (!(abs(CarthesianLine(line).calculateAngleBetweenLines(firstWall.value()) - PI / 2.0) < thetaTolerancePerpendiculaire)) {
     return false;
   }
 
   // Si un mur perpendiculaire a déjà été trouvé, testons si cette ligne est à la bonne distance
-  if (firstPerpendicularWall.hasValue()) {
-    
+  if (!isFirst) {
+    double distanceBetweenPerpendicularWalls = line.calculateDistanceBetweenLines(firstPerpendicularWall.value());
+    if (isWidth(distanceBetweenPerpendicularWalls, fP)) {
+      if (firstWallIsLengh.value()) {
+        //log incohérent
+        return false;
+      }
+    } else if (isLength(distanceBetweenPerpendicularWalls, fP)) {
+      if (!firstWallIsLengh.value()) {
+        //log incohérent
+        return false;
+      }
+    } else {
+      //log incohérent
+      return false;
+    }
   }
+
 
 }
 
