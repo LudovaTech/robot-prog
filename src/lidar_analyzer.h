@@ -121,6 +121,7 @@ class AnalyzeLidarData {
   bool calculateCorners();
   bool computeCentroid();
   bool sortCornersClockwise();
+  ResultOrError<Vector2> findLongestRealWall() const;
   
 };
 

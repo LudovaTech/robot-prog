@@ -209,12 +209,39 @@ bool AnalyzeLidarData::findWalls(FieldProperties fP) {
   }
   // now, we have 4 walls
   if (!calculateCorners()) {
-    //log
+    // log
     return false;
   }
   computeCentroid();
   sortCornersClockwise();
+  ResultOrError<Vector2> longestRealWall = findLongestRealWall();
+  if (longestRealWall.hasError()) {
+    //log strange
+    return false;
+  }
+  
+}
 
+ResultOrError<Vector2> AnalyzeLidarData::findLongestRealWall() const {
+  double maxDistance = 0;
+  int firstCornerIndex = -1;
+  int secondCornerIndex = -1;
+  for (unsigned int i = 0; i < 4; i++) {
+    unsigned int nextIndex = (i + 1) % 4;
+    double distanceBetweenCorners = corners[i].toVector2().distance(corners[nextIndex].toVector2());
+    if (distanceBetweenCorners > maxDistance) {
+      maxDistance = distanceBetweenCorners;
+      firstCornerIndex = i;
+      secondCornerIndex = nextIndex;
+    }
+  }
+  if (firstCornerIndex == -1 || secondCornerIndex == -1) {
+    return ResultOrError<Vector2>("");
+  } else {
+    return ResultOrError<Vector2>(Vector2(
+        firstCornerIndex,
+        secondCornerIndex));
+  }
 }
 
 bool AnalyzeLidarData::sortCornersClockwise() {
@@ -235,9 +262,8 @@ bool AnalyzeLidarData::sortCornersClockwise() {
 
 bool AnalyzeLidarData::computeCentroid() {
   centroid = MutableVector2(
-    (corners[0].x() + corners[1].x() + corners[2].x() + corners[3].x()) / 4,
-    (corners[0].y() + corners[1].y() + corners[2].y() + corners[3].y()) / 4
-  );
+      (corners[0].x() + corners[1].x() + corners[2].x() + corners[3].x()) / 4,
+      (corners[0].y() + corners[1].y() + corners[2].y() + corners[3].y()) / 4);
   return true;
 }
 
