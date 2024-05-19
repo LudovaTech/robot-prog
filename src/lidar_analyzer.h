@@ -101,7 +101,7 @@ class AnalyzeLidarData {
   MutableVector2 centroid;
   MutableVector2 longestWallFirstCorner;
   MutableVector2 longestWallSecondCorner;
-  Radians orientation;
+  Radians orientation = Radians(0);
   MutableVector2 coordinates;
 
  public:
