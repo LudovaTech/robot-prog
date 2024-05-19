@@ -154,13 +154,11 @@ bool AnalyzeLidarData::sortLines() {
 }
 
 bool AnalyzeLidarData::isLength(double distance, FieldProperties fP) const {
-  return (distance > 0.9 * fP.fieldLength()
-      && distance < 1.1 * fP.fieldLength());
+  return (distance > 0.9 * fP.fieldLength() && distance < 1.1 * fP.fieldLength());
 }
 
 bool AnalyzeLidarData::isWidth(double distance, FieldProperties fP) const {
-  return (distance > 0.9 * fP.fieldWidth()
-      && distance < 1.1 * fP.fieldWidth());
+  return (distance > 0.9 * fP.fieldWidth() && distance < 1.1 * fP.fieldWidth());
 }
 
 bool AnalyzeLidarData::findWalls(FieldProperties fP) {
@@ -187,12 +185,12 @@ bool AnalyzeLidarData::detectFirstWall(HoughLine line, FieldProperties fP) {
   // Le seul cas où elle n'est pas la première ligne serait que sa longeur sa inférieur
   // au minimum ou ne correspond pas à la largeur ou la longueur
   // auquel cas l'ensemble de la détection échoue
-  
-  //bypass angle
 
-  //bypass distance
+  // bypass angle
 
-  //testons la distance de la ligne pour voir si elle correspont à la largeur ou la longueur du terrain
+  // bypass distance
+
+  // testons la distance de la ligne pour voir si elle correspont à la largeur ou la longueur du terrain
   ResultOrError<float> distance = distanceCalculatedWithGroups(line);
   if (distance.hasError()) {
     // log
@@ -204,14 +202,14 @@ bool AnalyzeLidarData::detectFirstWall(HoughLine line, FieldProperties fP) {
       } else if (isWidth(distance.value(), fP)) {
         firstWallIsLengh = Optional<bool>(false);
       } else {
-        //log incohérent
+        // log incohérent
         return false;
       }
       line.setLength(distance.value());
       firstWall = Optional<HoughLine>(line);
       return true;
     } else {
-      //log
+      // log
       return false;
     }
   }
@@ -228,12 +226,12 @@ bool AnalyzeLidarData::detectParalleleWall(HoughLine line, FieldProperties fP) {
   double distanceBetweenParallelWalls = line.calculateDistanceBetweenLines(firstWall.value());
   if (isLength(distanceBetweenParallelWalls, fP)) {
     if (!firstWallIsLengh.value()) {
-      //log incohérent
+      // log incohérent
       return false;
     }
   } else if (isWidth(distanceBetweenParallelWalls, fP)) {
     if (firstWallIsLengh.value()) {
-      //log incohérent
+      // log incohérent
       return false;
     }
   } else {
@@ -241,17 +239,17 @@ bool AnalyzeLidarData::detectParalleleWall(HoughLine line, FieldProperties fP) {
     return false;
   }
 
-  //testons la distance de la ligne pour voir si elle correspont à la largeur ou la longueur du terrain
+  // testons la distance de la ligne pour voir si elle correspont à la largeur ou la longueur du terrain
   ResultOrError<float> distance = distanceCalculatedWithGroups(line);
   if (distance.hasError()) {
-    //log strange
+    // log strange
     return false;
   } else {
     if (distance.value() > lineLengthMin) {
       if (firstWallIsLengh.value() && isLength(distance.value(), fP)) {
       } else if ((!firstWallIsLengh.value()) && isWidth(distance.value(), fP)) {
       } else {
-        //log incohérent
+        // log incohérent
         return false;
       }
       line.setLength(distance.value());
@@ -273,21 +271,42 @@ bool AnalyzeLidarData::detectPerpendicularWall(HoughLine line, FieldProperties f
     double distanceBetweenPerpendicularWalls = line.calculateDistanceBetweenLines(firstPerpendicularWall.value());
     if (isWidth(distanceBetweenPerpendicularWalls, fP)) {
       if (firstWallIsLengh.value()) {
-        //log incohérent
+        // log incohérent
         return false;
       }
     } else if (isLength(distanceBetweenPerpendicularWalls, fP)) {
       if (!firstWallIsLengh.value()) {
-        //log incohérent
+        // log incohérent
         return false;
       }
     } else {
-      //log incohérent
+      // log incohérent
       return false;
     }
   }
 
-
+  // testons la distance de la ligne pour voir si elle correspont à la largeur ou la longueur du terrain
+  ResultOrError<float> distance = distanceCalculatedWithGroups(line);
+  if (distance.hasError()) {
+    // log strange
+    return false;
+  } else {
+    if (distance.value() > lineLengthMin) {
+      if (firstWallIsLengh.value() && isWidth(distance.value(), fP)) {
+      } else if ((!firstWallIsLengh.value()) && isLength(distance.value(), fP)) {
+      } else {
+        // log incohérent
+        return false;
+      }
+      line.setLength(distance.value());
+      if (isFirst) {
+        firstPerpendicularWall = Optional<HoughLine>(line);
+      } else {
+        secondPerpendicularWall = Optional<HoughLine>(line);
+      }
+      return true;
+    }
+  }
 }
 
 ResultOrError<float> AnalyzeLidarData::distanceCalculatedWithGroups(CarthesianLine line) {
@@ -307,7 +326,7 @@ ResultOrError<float> AnalyzeLidarData::distanceCalculatedWithGroups(CarthesianLi
           groupEnd = Optional<MutableVector2>(point);
           groupLen++;
         } else {
-          //alors c'est la fin de ce groupe, on le compare à la plus grande valeure
+          // alors c'est la fin de ce groupe, on le compare à la plus grande valeure
           if (groupLen >= 2) {
             maxDistance = max(maxDistance, groupFront.value().toVector2().distance(groupEnd.value().toVector2()));
           }
