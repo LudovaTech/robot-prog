@@ -12,32 +12,57 @@ FutureAction::FutureAction(
 
 ////////
 const int goalMinDistance = 35;
+const FutureAction stopRobot = FutureAction(Vector2(0,0), false);
 FutureAction chooseStrategy(FieldProperties fP, RobotState cS) {
-  Vector2 bL = cS.ballPos();
-  // Vector2 bL = cS.myPos().distanceRef(cS.ballPos());
-  // Vector2 gL = cS.myPos().distanceRef(fP.enemyGoalPos());
-  if (leavingField(fP, cS)) {
-    return refrainFromLeavingStrategy(fP, cS);
+  if (robotIsLost(fP, cS)) {
 
-  } else if (!ballIsDetected(fP, cS)) {
-    return FutureAction(false);
-    // return slalowingBackwardsStrategy(fP, cS);
+    if (!ballIsDetected(fP, cS)) {
+      return stopRobot
 
-  } else if (ballIsCaught(fP, cS, bL)) {
-    return accelerateToGoalStrategy(fP, cS);
-    // if (closeToShoot(fP, cS, gL)) {
-    //   return shootStrategy(fP, cS);
-    // } else {
-    //   return accelerateToGoalStrategy(fP, cS);
-    // }
+    } else if (ballIsCaught(fP, cS)) {
+      if (!goalIsDetected(fP, cS)) {
+        return stopRobot
+      } else if (targetJustInFrontOfRobot(fP, cS, cS.enemyGoalPos())) {
+        return shootStrategy(fP, cS);
+      } else {
+        return accelerateToGoalStrategyWithCam(fP, cS);
+      }
+
+    } else {
+      if (targetInFrontOfRobotFromFront(fP, cS, cS.ballPos())) {
+        return goToBallStrategy(fP, cS);
+      } else {
+        return goToBallAvoidingBallStrategyWithCam(fP, cS);
+      }
+    }
 
   } else {
-    if (targetInFrontOfRobotFromFront(fP, cS, bL)) {
-      return goToBallStrategy(fP, cS);
+
+    if (leavingField(fP, cS)) {
+      return refrainFromLeavingStrategy(fP, cS);
+
+    } else if (!ballIsDetected(fP, cS)) {
+      return slalowingBackwardsStrategy(fP, cS);
+
+    } else if (ballIsCaught(fP, cS)) {
+      if (targetJustInFrontOfRobot(fP, cS, cS.myPos().distanceRef(fP.enemyGoalPos()))) {
+        return shootStrategy(fP, cS);
+      } else {
+        return accelerateToGoalStrategyWithLidar(fP, cS);
+      }
+
     } else {
-      return goToBallAvoidingBallStrategy(fP, cS, bL);
+      if (targetInFrontOfRobotFromFront(fP, cS, cS.ballPos())) {
+        return goToBallStrategy(fP, cS);
+      } else {
+        return goToBallAvoidingBallStrategyWithLidar(fP, cS);
+      }
     }
   }
+}
+
+bool robotIsLost(FieldProperties fP, RobotState cS) {
+  return cS.myPos() == Vector2(-9999,-9999);
 }
 
 bool leavingField(FieldProperties fP, RobotState cS) {
@@ -50,8 +75,11 @@ bool leavingField(FieldProperties fP, RobotState cS) {
 }
 
 bool ballIsDetected(FieldProperties fP, RobotState cS) {
-  // return cS.ballPos() != fP.noneVect();
-  return true;
+  return cS.ballPos() != Vector2(0, 0);
+}
+
+bool goalIsDetected(FieldProperties fP, RobotState cS) {
+  return cS.enemyGoalPos() != Vector2(0, 0);
 }
 
 bool targetInFrontOfRobotFromFront(FieldProperties fP, RobotState cS, Vector2 tL) {
@@ -75,22 +103,8 @@ bool targetJustBehindOfRobot(FieldProperties fP, RobotState cS, Vector2 tL) {
   return (!targetInFrontOfRobotFromMiddle(fP, cS, tL)) && targetCenterOfRobot(fP, cS, tL);
 }
 
-bool ballIsCaught(FieldProperties fP, RobotState cS, Vector2 bL) {
-  return targetJustInFrontOfRobot(fP, cS, bL) && bL.y() <= (fP.robotRadius() + 2 * fP.ballRadius()) * 1.25;
-}
-
-bool closeToShoot(FieldProperties fP, RobotState cS, Vector2 gL) {
-  return targetJustInFrontOfRobot(fP, cS, gL);
-}
-
-int getBallSidePositionFromRobot(FieldProperties fP, RobotState cS, Vector2 bL) {
-  if (bL.x() < -6) {
-    return -1;
-  } else if (6 < bL.x()) {
-    return 1;
-  } else {
-    return 0;
-  }
+bool ballIsCaught(FieldProperties fP, RobotState cS) {
+  return targetJustInFrontOfRobot(fP, cS, cS.ballPos()) && cS.ballPos().y() <= (fP.robotRadius() + 2 * fP.ballRadius()) * 1.25;
 }
 
 FutureAction refrainFromLeavingStrategy(FieldProperties fP, RobotState cS) {
@@ -132,70 +146,57 @@ FutureAction goToBallStrategy(FieldProperties fP, RobotState cS) {
       false);
 }
 
-FutureAction goToBallAvoidingBallStrategy(FieldProperties fP, RobotState cS, Vector2 bL) {
-  int distanceDevitement = fP.robotRadius() * 5;
-  if (cS.ballPos().x() < 0) {
-    if (getBallSidePositionFromRobot(fP, cS, bL) == -1) {
-      SerialDebug.println("full gauche");
-      return FutureAction(
-          Vector2(
-              cS.myPos().x(),
-              cS.myPos().y() - distanceDevitement),
-          false);
+FutureAction goToBallAvoidingBallStrategyWithCam(FieldProperties fP, RobotState cS) {
+  
+  if (targetJustBehindOfRobot(fP, cS, cS.ballPos())) {
+    return FutureAction(
+        Vector2(10, -10),
+        false);
 
-    } else if (bL.norm() < distanceDevitement) {
-      SerialDebug.println("proche du robot");
+  } else {
+    return FutureAction(
+          Vector2(0, -10),
+          false);
+  }
+}
+
+FutureAction goToBallAvoidingBallStrategyWithLidar(FieldProperties fP, RobotState cS) {
+
+  if (targetJustBehindOfRobot(fP, cS, cS.ballPos())) {
+    if (cS.myPos().x() < 0) {
       return FutureAction(
-          Vector2(
-              cS.myPos().x() + distanceDevitement,
-              cS.myPos().y()),
+          Vector2(10, -10),
           false);
 
     } else {
-      SerialDebug.println("derriere le robot gauche");
       return FutureAction(
-          Vector2(
-              cS.myPos().x() + distanceDevitement,
-              cS.myPos().y() - distanceDevitement),
+          Vector2(-10, -10),
           false);
     }
 
   } else {
-    if (getBallSidePositionFromRobot(fP, cS, bL) == 1) {
-      SerialDebug.println("full droite");
-      return FutureAction(
-          Vector2(
-              cS.myPos().x(),
-              cS.myPos().y() - distanceDevitement),
+    return FutureAction(
+          Vector2(0, -10),
           false);
-
-    } else if (bL.norm() < distanceDevitement) {
-      SerialDebug.println("proche du robot");
-      return FutureAction(
-          Vector2(
-              cS.myPos().x() - distanceDevitement,
-              cS.myPos().y()),
-          false);
-
-    } else {
-      SerialDebug.println("derriere le robot droite");
-      return FutureAction(
-          Vector2(
-              cS.myPos().x() - distanceDevitement,
-              cS.myPos().y() - distanceDevitement),
-          false);
-    }
   }
 }
 
-FutureAction accelerateToGoalStrategy(FieldProperties fP, RobotState cS) {
+FutureAction accelerateToGoalStrategyWithCam(FieldProperties fP, RobotState cS) {
   SerialDebug.println("accelerateToGoalStrategy");
   return FutureAction(
       Vector2(
-          fP.enemyGoalPos().x(),
-          fP.enemyGoalPos().y() + 15),
+          cS.enemyGoalPos().x(),
+          cS.enemyGoalPos().y() - 15),
       false);
-  // return cS.enemyGoalPos();
+}
+
+FutureAction accelerateToGoalStrategyWithLidar(FieldProperties fP, RobotState cS) {
+  SerialDebug.println("accelerateToGoalStrategy");
+  return FutureAction(
+      Vector2(
+          fP.enemyGoalPos().x() - cS.myPos().x(),
+          fP.enemyGoalPos().y() - cS.myPos().y() - 15),
+      false);
 }
 
 FutureAction slalowingBackwardsStrategy(FieldProperties fP, RobotState cS) {
@@ -203,46 +204,33 @@ FutureAction slalowingBackwardsStrategy(FieldProperties fP, RobotState cS) {
   if (cS.myPos().y() < -70) {
     if (cS.myPos().x() < -5) {
       return FutureAction(
-          Vector2(
-              cS.myPos().x() + 10,
-              cS.myPos().y()),
+          Vector2(10, 0),
           false);
     } else if (5 < cS.myPos().x()) {
       return FutureAction(
-          Vector2(
-              cS.myPos().x() - 10,
-              cS.myPos().y()),
+          Vector2(-10, 0),
           false);
     } else {
       return FutureAction(
-          Vector2(
-              cS.myPos().x(),
-              cS.myPos().y() + 10),
+          Vector2(0, 10),
           false);
     }
 
   } else if (50 < cS.myPos().y()) {
     return FutureAction(
-        Vector2(
-            cS.myPos().x() - 20,
-            cS.myPos().y() - 10),
+        Vector2(-20, -10),
         false);
 
   } else {
     if (cS.myPos().x() < -fP.fieldWidth() / 6) {
       return FutureAction(
-          Vector2(
-              cS.myPos().x() + 20,
-              cS.myPos().y() - 10),
+          Vector2(20, -10),
           false);
     } else if (fP.fieldWidth() / 6 < cS.myPos().x()) {
       return FutureAction(
-          Vector2(
-              cS.myPos().x() - 20,
-              cS.myPos().y() - 10),
+          Vector2(-20, -10),
           false);
     } else {
-      // On ne change pas la direction du robot (ajouter une condition pour ne rien changer si noneVect est renvoyé)
       return FutureAction(false);
     }
   }
@@ -250,9 +238,6 @@ FutureAction slalowingBackwardsStrategy(FieldProperties fP, RobotState cS) {
 
 FutureAction shootStrategy(FieldProperties fP, RobotState cS) {
   SerialDebug.println("shootStrategy");
-  // digitalWrite(KICKER, HIGH);
-  // sleep(0.01);
-  // digitalWrite(KICKER, LOW);
   return FutureAction(
       Vector2(0, 20),
       true);
