@@ -99,6 +99,10 @@ class AnalyzeLidarData {
   Optional<bool> firstWallIsLengh;
   MutableVector2 corners[4];
   MutableVector2 centroid;
+  MutableVector2 longestWallFirstCorner;
+  MutableVector2 longestWallSecondCorner;
+  Radians orientation;
+  MutableVector2 coordinates;
 
  public:
   AnalyzeLidarData() {}
@@ -121,8 +125,9 @@ class AnalyzeLidarData {
   bool calculateCorners();
   bool computeCentroid();
   bool sortCornersClockwise();
-  ResultOrError<Vector2> findLongestRealWall() const;
-  
+  bool findLongestRealWall();
+  bool calculateAngle();
+  bool calculateCoordinates();
 };
 
 double calculateAngleBetweenLines(double a1, double b1, double c1, double a2, double b2, double c2);

@@ -212,35 +212,72 @@ bool AnalyzeLidarData::findWalls(FieldProperties fP) {
     // log
     return false;
   }
-  computeCentroid();
-  sortCornersClockwise();
-  ResultOrError<Vector2> longestRealWall = findLongestRealWall();
-  if (longestRealWall.hasError()) {
-    //log strange
+  if (!computeCentroid()) {
+    // log strange
     return false;
   }
-  
+  if (!sortCornersClockwise()) {
+    // log strange
+    return false;
+  }
+  if (!findLongestRealWall()) {
+    // log strange
+    return false;
+  }
+  if (!calculateAngle()) {
+    // log strange
+    return false;
+  }
+  if (!calculateCoordinates()) {
+    // log strange
+    return false;
+  }
+
 }
 
-ResultOrError<Vector2> AnalyzeLidarData::findLongestRealWall() const {
+bool AnalyzeLidarData::calculateCoordinates() {
+  coordinates = MutableVector2(
+    -centroid.y() * sin(orientation) - centroid.x() * cos(orientation),
+    -centroid.y() * cos(orientation) + centroid.x() * sin(orientation)
+  );
+  return true;
+}
+
+bool AnalyzeLidarData::calculateAngle() {
+  double deltaY = longestWallSecondCorner.y() - longestWallFirstCorner.y();
+  double deltaX = longestWallSecondCorner.x() - longestWallFirstCorner.x();
+
+  if (longestWallSecondCorner.y() < longestWallFirstCorner.y()) {
+    deltaY = -deltaY;
+    deltaX = -deltaX;
+  }
+
+  double angleRadians = atan2(deltaY, deltaX);  // renvoie un angle entre -PI et +PI
+  double adjustedAngleRadians = angleRadians - PI / 2.0;
+  orientation = Radians(adjustedAngleRadians);
+  return true;
+}
+
+bool AnalyzeLidarData::findLongestRealWall() {
   double maxDistance = 0;
-  int firstCornerIndex = -1;
-  int secondCornerIndex = -1;
+  Optional<MutableVector2> firstCornerIndex;
+  Optional<MutableVector2> secondCornerIndex;
   for (unsigned int i = 0; i < 4; i++) {
-    unsigned int nextIndex = (i + 1) % 4;
-    double distanceBetweenCorners = corners[i].toVector2().distance(corners[nextIndex].toVector2());
+    MutableVector2 actualFirstCornerIndex = corners[i];
+    MutableVector2 actualSecondCornerIndex = corners[(i + 1) % 4];
+    double distanceBetweenCorners = actualFirstCornerIndex.toVector2().distance(actualSecondCornerIndex.toVector2());
     if (distanceBetweenCorners > maxDistance) {
       maxDistance = distanceBetweenCorners;
-      firstCornerIndex = i;
-      secondCornerIndex = nextIndex;
+      firstCornerIndex = Optional<MutableVector2>(actualFirstCornerIndex);
+      secondCornerIndex = Optional<MutableVector2>(actualSecondCornerIndex);
     }
   }
-  if (firstCornerIndex == -1 || secondCornerIndex == -1) {
-    return ResultOrError<Vector2>("");
+  if (firstCornerIndex.hasValue() && secondCornerIndex.hasValue()) {
+    longestWallFirstCorner = firstCornerIndex.value();
+    longestWallSecondCorner = secondCornerIndex.value();
+    return true;
   } else {
-    return ResultOrError<Vector2>(Vector2(
-        firstCornerIndex,
-        secondCornerIndex));
+    return false;
   }
 }
 
