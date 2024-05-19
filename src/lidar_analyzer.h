@@ -27,6 +27,7 @@ class HoughLine {
   inline void setLength(double nLength) { _length = Optional<double>(nLength); }
 
   double calculateDistanceBetweenLines(HoughLine other);
+  Optional<Vector2> intersectWith(HoughLine other);
 };
 
 class CarthesianLine {

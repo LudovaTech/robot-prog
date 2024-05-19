@@ -13,6 +13,24 @@ double HoughLine::calculateDistanceBetweenLines(HoughLine other) {
   return Vector2(x1, y1).distance(Vector2(x2, y2));
 }
 
+Optional<Vector2> HoughLine::intersectWith(HoughLine other) {
+  double sinTheta1 = sin(theta());
+  double sinTheta2 = sin(other.theta());
+  double cosTheta1 = cos(theta());
+  double cosTheta2 = cos(other.theta());
+  double determinant = cosTheta1 * sinTheta2 - sinTheta1 * cosTheta2;
+
+  // Si le déterminant est 0, les lignes sont parallèles ou coïncidentes
+  if (abs(determinant) < 1e-10) {
+    return Optional<Vector2>();
+  }
+
+  return Optional<Vector2>(Vector2(
+    (rho() * sinTheta2 - other.rho() * sinTheta1) / determinant,
+    (other.rho() * cosTheta1 - rho() * cosTheta2) / determinant
+  ));
+}
+
 CarthesianLine::CarthesianLine(HoughLine line)
     : _a(cos(line.theta())), _b(sin(line.theta())), _c(-line.rho()) {}
 
@@ -186,6 +204,11 @@ bool AnalyzeLidarData::findWalls(FieldProperties fP) {
       break;
     }
   }
+  if (!has4Walls()) {
+    // TODO
+    return false;
+  }
+  // now, we have 4 walls
 }
 
 bool AnalyzeLidarData::detectFirstWall(HoughLine line, FieldProperties fP) {

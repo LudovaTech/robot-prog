@@ -466,6 +466,7 @@ LidarInfos getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool sho
     }
   }
 
+  //TODO
   if (walls.size() == 3) {
     // ** on va deviner le 4ème mur
     double distance = fP.fieldWidth() * 10.0;
