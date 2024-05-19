@@ -232,7 +232,7 @@ bool AnalyzeLidarData::findWalls(FieldProperties fP) {
     // log strange
     return false;
   }
-
+  return true;
 }
 
 LidarInfos AnalyzeLidarData::getLidarInfos() const {
