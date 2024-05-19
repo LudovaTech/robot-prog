@@ -212,7 +212,25 @@ bool AnalyzeLidarData::findWalls(FieldProperties fP) {
     //log
     return false;
   }
+  computeCentroid();
+  sortCornersClockwise();
 
+}
+
+bool AnalyzeLidarData::sortCornersClockwise() {
+  MutableVector2 center = centroid;
+  std::sort(corners, corners + sizeof(corners) / sizeof(corners[0]), [center](MutableVector2 a, MutableVector2 b) {
+    double angleA = atan2(a.y() - center.y(), a.x() - center.x());
+    double angleB = atan2(b.y() - center.y(), b.x() - center.x());
+
+    // Normalisation des angles pour s'assurer qu'ils sont dans le même intervalle
+    angleA = fmod(angleA, 2 * PI);
+    angleB = fmod(angleB, 2 * PI);
+
+    // Comparaison des angles normalisés
+    return angleA > angleB;
+  });
+  return true;
 }
 
 bool AnalyzeLidarData::computeCentroid() {
