@@ -57,6 +57,7 @@ class LidarInfos {
 
  public:
   LidarInfos(const Vector2 vcoordinates, Radians orientation);
+  LidarInfos() : _coordinates(Vector2(0, 0)), orientation(0) {}
 
   LidarInfos getFromLidarBuffer();
 
@@ -81,10 +82,10 @@ class AnalyzeLidarData {
   const static int degreStep = 3;                             // degrés entre chaque droite calculée par Hough transform (3° -> 30 ms, 1° -> 90ms)
   const static int HoughTransformAccumulatorsThreshold = 10;  // on exclut les lignes qui contiennent moins de 10 points
   const static int HoughTransformMemorySize = 24000;          // taille de la matrice de Hough
-  const static double rhoTolerance = 500.0;                   // si une ligne est proche d'une autre de moins de 50cm, on l'exclut
-  const static double thetaMargin = 0.5;                      // si une ligne a un angle theta inférieur à 0,5 rad d'une autre, on l'exclut
-  const static double thetaToleranceParallel = 0.2;           // pour trouver le mur parallèle au premier, il faut une différence d'angle inférieur à 0,2 rad
-  const static double thetaTolerancePerpendiculaire = 0.2;    // pour trouver les murs perpendiculaires, il faut une différence d'angle inférieur à 0,2 rad (après - PI/2)
+  const double rhoTolerance = 500.0;                   // si une ligne est proche d'une autre de moins de 50cm, on l'exclut
+  const double thetaMargin = 0.5;                      // si une ligne a un angle theta inférieur à 0,5 rad d'une autre, on l'exclut
+  const double thetaToleranceParallel = 0.2;           // pour trouver le mur parallèle au premier, il faut une différence d'angle inférieur à 0,2 rad
+  const double thetaTolerancePerpendiculaire = 0.2;    // pour trouver les murs perpendiculaires, il faut une différence d'angle inférieur à 0,2 rad (après - PI/2)
 
   // Longueur des segments sur les lignes de Hough
   const static int pointToLineDistanceMax = 20;   // un point doit être à moins de 2cm d'une ligne pour en faire partie
@@ -160,7 +161,7 @@ class AnalyzeLidarData {
   bool findLongestRealWall();
   bool calculateAngle();
   bool calculateCoordinates();
-  LidarInfos getLidarInfos() const;
+  ResultOrError<LidarInfos> getLidarInfos() const;
 };
 
 double calculateAngleBetweenLines(double a1, double b1, double c1, double a2, double b2, double c2);
