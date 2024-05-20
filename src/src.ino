@@ -155,7 +155,7 @@ void setup() {
   SerialCam.setTimeout(10);
   SerialLidar.setTimeout(10);
 
-  setupLog(NoteLevel, true);
+  setupLog(ErrorLevel, true);
 }
 
 void loop() {

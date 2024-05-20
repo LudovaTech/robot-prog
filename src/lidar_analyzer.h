@@ -74,27 +74,28 @@ class AnalyzeLidarData {
  public:
   const static unsigned int nbrLidarPoints = 20;
   const static unsigned int nbrLinesMax = 4095;
-  const int lidarDistanceMax = 3000;
-  const int lidarDistanceMin = 100;
+  const static int lidarDistanceMax = 3000;
+  const static int lidarDistanceMin = 100;
 
   // Hough transform
-  const int degreStep = 3;                             // degrés entre chaque droite calculée par Hough transform (3° -> 30 ms, 1° -> 90ms)
-  const int HoughTransformAccumulatorsThreshold = 10;  // on exclut les lignes qui contiennent moins de 10 points
-  const int HoughTransformMemorySize = 24000;          // taille de la matrice de Hough
-  const double rhoTolerance = 500.0;                   // si une ligne est proche d'une autre de moins de 50cm, on l'exclut
-  const double thetaMargin = 0.5;                      // si une ligne a un angle theta inférieur à 0,5 rad d'une autre, on l'exclut
-  const double thetaToleranceParallel = 0.2;           // pour trouver le mur parallèle au premier, il faut une différence d'angle inférieur à 0,2 rad
-  const double thetaTolerancePerpendiculaire = 0.2;    // pour trouver les murs perpendiculaires, il faut une différence d'angle inférieur à 0,2 rad (après - PI/2)
+  const static int degreStep = 3;                             // degrés entre chaque droite calculée par Hough transform (3° -> 30 ms, 1° -> 90ms)
+  const static int HoughTransformAccumulatorsThreshold = 10;  // on exclut les lignes qui contiennent moins de 10 points
+  const static int HoughTransformMemorySize = 24000;          // taille de la matrice de Hough
+  const static double rhoTolerance = 500.0;                   // si une ligne est proche d'une autre de moins de 50cm, on l'exclut
+  const static double thetaMargin = 0.5;                      // si une ligne a un angle theta inférieur à 0,5 rad d'une autre, on l'exclut
+  const static double thetaToleranceParallel = 0.2;           // pour trouver le mur parallèle au premier, il faut une différence d'angle inférieur à 0,2 rad
+  const static double thetaTolerancePerpendiculaire = 0.2;    // pour trouver les murs perpendiculaires, il faut une différence d'angle inférieur à 0,2 rad (après - PI/2)
 
   // Longueur des segments sur les lignes de Hough
-  const int pointToLineDistanceMax = 20;   // un point doit être à moins de 2cm d'une ligne pour en faire partie
-  const int pointToPointDistanceMax = 70;  // un point doit être à moins de 7cm du prochain pour faire partie du même groupe
-  const int lineLengthMin = 250;           // une ligne doit être longue d'au moins 25cm pour être prise en compte (permet de filtrer les robots)
+  const static int pointToLineDistanceMax = 20;   // un point doit être à moins de 2cm d'une ligne pour en faire partie
+  const static int pointToPointDistanceMax = 70;  // un point doit être à moins de 7cm du prochain pour faire partie du même groupe
+  const static int lineLengthMin = 250;           // une ligne doit être longue d'au moins 25cm pour être prise en compte (permet de filtrer les robots)
 
  private:
   uint16_t distanceMax;
   MutableVector2 convPoints[nbrLidarPoints];
   HoughLine lines[nbrLinesMax];  // The previous version already stopped at 4000
+  int accumulator[HoughTransformMemorySize] = {0};
   Optional<HoughLine> firstWall;
   Optional<HoughLine> paralleleWall;
   Optional<HoughLine> firstPerpendicularWall;
@@ -106,6 +107,21 @@ class AnalyzeLidarData {
   MutableVector2 longestWallSecondCorner;
   Radians orientation = Radians(0);
   MutableVector2 coordinates;
+
+  bool doneDistanceMax = false;
+  bool doneConvPoints = false;
+  bool doneLines = false;
+  bool doneAccumulator = false;
+  // bool doneFirstWall = false;
+  // bool doneParalleleWall = false;
+  // bool doneFirstPerpendicularWall = false;
+  // bool doneSecondPerpendicularWall = false;
+  // bool doneFirstWallIsLengh = false;
+  bool doneCorners = false;
+  bool doneLongestWallFirstCorner = false;
+  bool doneLongestWallSecondCorner = false;
+  bool doneOrientation = false;
+  bool doneCoordinates = false;
 
  public:
   AnalyzeLidarData() {}

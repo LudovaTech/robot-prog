@@ -7,6 +7,7 @@ bool _onSerial;
 
 void setupLog(int logLevel, bool onSerial) {
   _onSerial = onSerial;
+  _logLevel = logLevel;
   if (!SD.begin(BUILTIN_SDCARD)) {
     Serial.println("logger.setupLog : Erreur lors de l'initialisation de la carte microSD !, maybe there is no SD card, logger desactivated");
     return;
@@ -15,7 +16,6 @@ void setupLog(int logLevel, bool onSerial) {
     log_a(ErrorLevel, "logger.setupLog", "already setup");
   } else {
     _logFile = SD.open("log1.log", FILE_WRITE);
-    _logLevel = logLevel;
     if (!_logFile) {
       SerialDebug.println("logger.setupLog : cannot open a file, logger desactivated");
     }

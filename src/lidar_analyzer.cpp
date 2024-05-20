@@ -95,6 +95,7 @@ bool AnalyzeLidarData::filterDistance(LidarPoint lidarPoint) const {
   return lidarPoint.distance() > lidarDistanceMin && lidarPoint.distance() < lidarDistanceMax;
 }
 
+// Please check
 bool AnalyzeLidarData::convCoordonneesCartesiennes(LidarPoint lidarPoint, unsigned int indice) {
   convPoints[indice] = MutableVector2(
       lidarPoint.distance() * cos(lidarPoint.angle() / 18000.0 * PI),
@@ -103,6 +104,17 @@ bool AnalyzeLidarData::convCoordonneesCartesiennes(LidarPoint lidarPoint, unsign
 }
 
 bool AnalyzeLidarData::convFromBuffer(CircularLidarPointsBuffer lidarPointsBuffer) {
+  if (doneConvPoints) {
+    log_a(ErrorLevel, "AnalyzeLidarData::convFromBuffer for convCoordonneesCartesiennes",
+          "convPoints has already been set");
+  }
+  // need distanceMax
+  if (doneDistanceMax) {
+    log_a(ErrorLevel, "AnalyzeLidarData::convFromBuffer",
+          "distanceMax has already been modified, aborting");
+    return false;
+  }
+
   // TODO: must detect the last tour only
   for (unsigned int i = 0; i < lidarPointsBuffer.sizeFilled(); i++) {
     if (!lidarPointsBuffer.existValue(i)) {
@@ -112,11 +124,14 @@ bool AnalyzeLidarData::convFromBuffer(CircularLidarPointsBuffer lidarPointsBuffe
     }
     LidarPoint lidarPoint = lidarPointsBuffer.getValue(i);
     if (filterDistance(lidarPoint)) {
+      doneDistanceMax = true;
       distanceMax = max(distanceMax, lidarPoint.distance());
-      if (!convCoordonneesCartesiennes(lidarPoint, i)) {
+      if (!convCoordonneesCartesiennes(lidarPoint, i)) {  // need convPoints
         log_a(ErrorLevel, "AnalyzeLidarData::convFromBuffer",
               "failed to convert (" + String(i) + ") " + lidarPoint.toString() + " to carthesian point");
         return false;
+      } else {
+        doneConvPoints = true;
       }
     }
   }
@@ -127,11 +142,31 @@ bool AnalyzeLidarData::convFromBuffer(CircularLidarPointsBuffer lidarPointsBuffe
  *  algo : https://www.keymolen.com/2013/05/hough-transformation-c-implementation.html
  */
 bool AnalyzeLidarData::houghTransform() {
+  if (!doneDistanceMax) {
+    log_a(ErrorLevel, "AnalyzeLidarData::houghTransform",
+          "distanceMax has not been set, aborting");
+    return false;
+  }
+  if (!doneConvPoints) {
+    log_a(ErrorLevel, "AnalyzeLidarData::houghTransform",
+          "doneConvPoints has not been set, aborting");
+    return false;
+  }
+  if (doneLines) {
+    log_a(ErrorLevel, "AnalyzeLidarData::houghTransform",
+          "lines has already been set, aborting");
+    return false;
+  }
+  if (doneAccumulator) {
+    log_a(ErrorLevel, "AnalyzeLidarData::houghTransform",
+          "accumulator has already been set, aborting");
+    return false;
+  }
+
   const int numTheta = 180;
   double thetaStep = degreStep * PI / 180.0;
   double rhoStep = distanceMax * 2.0 * numTheta / HoughTransformMemorySize;
   unsigned int indice_ajout = 0;
-  int accumulator[HoughTransformMemorySize] = {0};
 
   // calcul de rho pour chaque valeur de theta
   for (unsigned int i = 0; i < nbrLidarPoints; i++) {
@@ -169,6 +204,11 @@ bool AnalyzeLidarData::houghTransform() {
 }
 
 bool AnalyzeLidarData::sortLines() {
+  if (!doneLines) {
+    log_a(ErrorLevel, "AnalyzeLidarData::sortLines",
+          "lines has not been set, aborting");
+    return false;
+  }
   // Tri des lignes selon nb_accumulators du plus grand au plus petit
   std::sort(lines, lines + sizeof(lines) / sizeof(lines[0]), [](const HoughLine& a, const HoughLine& b) {
     return a.nb_accumulators() > b.nb_accumulators();
@@ -189,6 +229,12 @@ bool AnalyzeLidarData::has4Walls() const {
 }
 
 bool AnalyzeLidarData::findWalls(FieldProperties fP) {
+  if (!doneLines) {
+    log_a(ErrorLevel, "AnalyzeLidarData::findWalls",
+          "lines has not been set, aborting");
+    return false;
+  }
+
   if (detectFirstWall(lines[0], fP)) {
     // si la première ligne est inféreure au minimum (= erreur) ou ne correspond
     // pas à une longueure connue, l'ensemble de la détection échoue
@@ -216,52 +262,88 @@ bool AnalyzeLidarData::findWalls(FieldProperties fP) {
   }
   // now, we have 4 walls
   if (!calculateCorners()) {
-    log_a(InfoLevel, "AnalyzeLidarData::findWalls",
+    log_a(ErrorLevel, "AnalyzeLidarData::findWalls",
           "calculateCorners failed, strange, aborting");
     return false;
   }
   if (!computeCentroid()) {
-    log_a(InfoLevel, "AnalyzeLidarData::findWalls",
+    log_a(ErrorLevel, "AnalyzeLidarData::findWalls",
           "computeCentroid failed, strange, aborting");
     return false;
   }
   if (!sortCornersClockwise()) {
-    log_a(InfoLevel, "AnalyzeLidarData::findWalls",
+    log_a(ErrorLevel, "AnalyzeLidarData::findWalls",
           "sortCornersClockwise failed, strange, aborting");
     return false;
   }
   if (!findLongestRealWall()) {
-    log_a(InfoLevel, "AnalyzeLidarData::findWalls",
+    log_a(ErrorLevel, "AnalyzeLidarData::findWalls",
           "findLongestRealWall failed, strange, aborting");
     return false;
   }
   if (!calculateAngle()) {
-    log_a(InfoLevel, "AnalyzeLidarData::findWalls",
+    log_a(ErrorLevel, "AnalyzeLidarData::findWalls",
           "calculateAngle failed, strange, aborting");
     return false;
   }
   if (!calculateCoordinates()) {
-    log_a(InfoLevel, "AnalyzeLidarData::findWalls",
+    log_a(ErrorLevel, "AnalyzeLidarData::findWalls",
           "calculateCoordinates failed, strange, aborting");
     return false;
   }
   return true;
 }
 
-LidarInfos AnalyzeLidarData::getLidarInfos() const {
-  return LidarInfos(
+ResultOrError<LidarInfos> AnalyzeLidarData::getLidarInfos() const {
+  if (!doneOrientation) {
+    log_a(ErrorLevel, "AnalyzeLidarData::getLidarInfos",
+          "orientation has not been set, aborting");
+    return ResultOrError<LidarInfos>("orientation has not been set, aborting");
+  }
+  if (!doneCoordinates) {
+    log_a(ErrorLevel, "AnalyzeLidarData::getLidarInfos",
+          "coordinates has not been set, aborting");
+    return ResultOrError<LidarInfos>("coordinates has not been set, aborting");
+  }
+  return ResultOrError<LidarInfos>(LidarInfos(
       coordinates.toVector2(),
-      orientation);
+      orientation));
 }
 
 bool AnalyzeLidarData::calculateCoordinates() {
+  if (!doneOrientation) {
+    log_a(ErrorLevel, "AnalyzeLidarData::calculateCoordinates",
+          "orientation has not been set, aborting");
+    return false;
+  }
+  if (doneCoordinates) {
+    log_a(ErrorLevel, "AnalyzeLidarData::calculateCoordinates",
+          "coordinates has already been set, aborting");
+    return false;
+  }
   coordinates = MutableVector2(
       -centroid.y() * sin(orientation) - centroid.x() * cos(orientation),
       -centroid.y() * cos(orientation) + centroid.x() * sin(orientation));
+  doneCoordinates = true;
   return true;
 }
 
 bool AnalyzeLidarData::calculateAngle() {
+  if (!doneLongestWallFirstCorner) {
+    log_a(ErrorLevel, "AnalyzeLidarData::calculateAngle",
+          "longestWallFirstCorner has not been set, aborting");
+    return false;
+  }
+  if (!doneLongestWallSecondCorner) {
+    log_a(ErrorLevel, "AnalyzeLidarData::calculateAngle",
+          "doneLongestWallSecondCorner has not been set, aborting");
+    return false;
+  }
+  if (doneOrientation) {
+    log_a(ErrorLevel, "AnalyzeLidarData::calculateCoordinates",
+          "orientation has already been set, aborting");
+    return false;
+  }
   double deltaY = longestWallSecondCorner.y() - longestWallFirstCorner.y();
   double deltaX = longestWallSecondCorner.x() - longestWallFirstCorner.x();
 
@@ -273,10 +355,25 @@ bool AnalyzeLidarData::calculateAngle() {
   double angleRadians = atan2(deltaY, deltaX);  // renvoie un angle entre -PI et +PI
   double adjustedAngleRadians = angleRadians - PI / 2.0;
   orientation = Radians(adjustedAngleRadians);
+  doneOrientation = true;
   return true;
 }
 
 bool AnalyzeLidarData::findLongestRealWall() {
+  if (!doneConvPoints) {
+    log_a(ErrorLevel, "AnalyzeLidarData::findLongestRealWall",
+          "convPoints has not been set");
+  }
+  if (doneLongestWallFirstCorner) {
+    log_a(ErrorLevel, "AnalyzeLidarData::findLongestRealWall",
+          "longestWallFirstCorner has already been set, aborting");
+    return false;
+  }
+  if (doneLongestWallSecondCorner) {
+    log_a(ErrorLevel, "AnalyzeLidarData::findLongestRealWall",
+          "doneLongestWallSecondCorner has already been set, aborting");
+    return false;
+  }
   double maxDistance = 0;
   Optional<MutableVector2> firstCornerIndex;
   Optional<MutableVector2> secondCornerIndex;
@@ -293,6 +390,8 @@ bool AnalyzeLidarData::findLongestRealWall() {
   if (firstCornerIndex.hasValue() && secondCornerIndex.hasValue()) {
     longestWallFirstCorner = firstCornerIndex.value();
     longestWallSecondCorner = secondCornerIndex.value();
+    doneLongestWallFirstCorner = true;
+    doneLongestWallSecondCorner = true;
     return true;
   } else {
     return false;
@@ -300,6 +399,10 @@ bool AnalyzeLidarData::findLongestRealWall() {
 }
 
 bool AnalyzeLidarData::sortCornersClockwise() {
+  if (!doneConvPoints) {
+    log_a(ErrorLevel, "AnalyzeLidarData::sortCornersClockwise",
+          "convPoints has not been set");
+  }
   MutableVector2 center = centroid;
   std::sort(corners, corners + sizeof(corners) / sizeof(corners[0]), [center](MutableVector2 a, MutableVector2 b) {
     double angleA = atan2(a.y() - center.y(), a.x() - center.x());
@@ -316,6 +419,10 @@ bool AnalyzeLidarData::sortCornersClockwise() {
 }
 
 bool AnalyzeLidarData::computeCentroid() {
+  if (!doneConvPoints) {
+    log_a(ErrorLevel, "AnalyzeLidarData::computeCentroid",
+          "convPoints has not been set");
+  }
   centroid = MutableVector2(
       (corners[0].x() + corners[1].x() + corners[2].x() + corners[3].x()) / 4,
       (corners[0].y() + corners[1].y() + corners[2].y() + corners[3].y()) / 4);
@@ -323,7 +430,10 @@ bool AnalyzeLidarData::computeCentroid() {
 }
 
 bool AnalyzeLidarData::calculateCorners() {
-  // TODO protection
+  if (doneCorners) {
+    log_a(ErrorLevel, "AnalyzeLidarData::calculateCorners",
+          "corners has already been set");
+  }
   Optional<MutableVector2> c1 = firstWall.value().intersectWith(firstPerpendicularWall.value());
   if (!c1.hasValue()) {
     return false;
@@ -348,6 +458,7 @@ bool AnalyzeLidarData::calculateCorners() {
   } else {
     corners[0] = c4.value();
   }
+  doneCorners = true;
   return true;
 }
 
@@ -364,7 +475,7 @@ bool AnalyzeLidarData::detectFirstWall(HoughLine line, FieldProperties fP) {
   // testons la distance de la ligne pour voir si elle correspont à la largeur ou la longueur du terrain
   ResultOrError<float> distance = distanceCalculatedWithGroups(line);
   if (distance.hasError()) {
-    log_a(InfoLevel, "AnalyzeLidarData::detectFirstWall",
+    log_a(ErrorLevel, "AnalyzeLidarData::detectFirstWall",
           "distanceCalculatedWithGroups failed, strange, aborting");
     return false;
   } else {
@@ -497,6 +608,11 @@ bool AnalyzeLidarData::detectPerpendicularWall(HoughLine line, FieldProperties f
 }
 
 ResultOrError<float> AnalyzeLidarData::distanceCalculatedWithGroups(CarthesianLine line) {
+  if (!doneConvPoints) {
+    log_a(ErrorLevel, "AnalyzeLidarData::distanceCalculatedWithGroups",
+          "convPoints has not been set, aborting");
+    return false;
+  }
   float maxDistance = 0.0;
   Optional<MutableVector2> groupFront;
   Optional<MutableVector2> groupEnd;
