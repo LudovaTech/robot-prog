@@ -104,15 +104,18 @@ bool AnalyzeLidarData::convCoordonneesCartesiennes(LidarPoint lidarPoint, unsign
 
 bool AnalyzeLidarData::convFromBuffer(CircularLidarPointsBuffer lidarPointsBuffer) {
   // TODO: must detect the last tour only
-  for (unsigned int i = 0; i <= nbrLidarPoints; i++) {
+  for (unsigned int i = 0; i < lidarPointsBuffer.sizeFilled(); i++) {
     if (!lidarPointsBuffer.existValue(i)) {
-      // log
+      log_a(ErrorLevel, "AnalyzeLidarData::convFromBuffer",
+            "value " + String(i) + " do not exist in buffer : " + lidarPointsBuffer.toString());
       return false;
     }
     LidarPoint lidarPoint = lidarPointsBuffer.getValue(i);
     if (filterDistance(lidarPoint)) {
       distanceMax = max(distanceMax, lidarPoint.distance());
       if (!convCoordonneesCartesiennes(lidarPoint, i)) {
+        log_a(ErrorLevel, "AnalyzeLidarData::convFromBuffer",
+              "failed to convert (" + String(i) + ") " + lidarPoint.toString() + " to carthesian point");
         return false;
       }
     }
@@ -189,7 +192,8 @@ bool AnalyzeLidarData::findWalls(FieldProperties fP) {
   if (detectFirstWall(lines[0], fP)) {
     // si la première ligne est inféreure au minimum (= erreur) ou ne correspond
     // pas à une longueure connue, l'ensemble de la détection échoue
-    // log
+    log_a(InfoLevel, "AnalyzeLidarData::findWalls",
+          "biggest line failed to be the first wall, aborting");
     return false;
   }
   for (unsigned int i = 1; i < nbrLinesMax; i++) {
@@ -212,27 +216,33 @@ bool AnalyzeLidarData::findWalls(FieldProperties fP) {
   }
   // now, we have 4 walls
   if (!calculateCorners()) {
-    // log
+    log_a(InfoLevel, "AnalyzeLidarData::findWalls",
+          "calculateCorners failed, strange, aborting");
     return false;
   }
   if (!computeCentroid()) {
-    // log strange
+    log_a(InfoLevel, "AnalyzeLidarData::findWalls",
+          "computeCentroid failed, strange, aborting");
     return false;
   }
   if (!sortCornersClockwise()) {
-    // log strange
+    log_a(InfoLevel, "AnalyzeLidarData::findWalls",
+          "sortCornersClockwise failed, strange, aborting");
     return false;
   }
   if (!findLongestRealWall()) {
-    // log strange
+    log_a(InfoLevel, "AnalyzeLidarData::findWalls",
+          "findLongestRealWall failed, strange, aborting");
     return false;
   }
   if (!calculateAngle()) {
-    // log strange
+    log_a(InfoLevel, "AnalyzeLidarData::findWalls",
+          "calculateAngle failed, strange, aborting");
     return false;
   }
   if (!calculateCoordinates()) {
-    // log strange
+    log_a(InfoLevel, "AnalyzeLidarData::findWalls",
+          "calculateCoordinates failed, strange, aborting");
     return false;
   }
   return true;
@@ -240,16 +250,14 @@ bool AnalyzeLidarData::findWalls(FieldProperties fP) {
 
 LidarInfos AnalyzeLidarData::getLidarInfos() const {
   return LidarInfos(
-    coordinates.toVector2(),
-    orientation
-  );
+      coordinates.toVector2(),
+      orientation);
 }
 
 bool AnalyzeLidarData::calculateCoordinates() {
   coordinates = MutableVector2(
-    -centroid.y() * sin(orientation) - centroid.x() * cos(orientation),
-    -centroid.y() * cos(orientation) + centroid.x() * sin(orientation)
-  );
+      -centroid.y() * sin(orientation) - centroid.x() * cos(orientation),
+      -centroid.y() * cos(orientation) + centroid.x() * sin(orientation));
   return true;
 }
 
@@ -356,7 +364,8 @@ bool AnalyzeLidarData::detectFirstWall(HoughLine line, FieldProperties fP) {
   // testons la distance de la ligne pour voir si elle correspont à la largeur ou la longueur du terrain
   ResultOrError<float> distance = distanceCalculatedWithGroups(line);
   if (distance.hasError()) {
-    // log
+    log_a(InfoLevel, "AnalyzeLidarData::detectFirstWall",
+          "distanceCalculatedWithGroups failed, strange, aborting");
     return false;
   } else {
     if (distance.value() > lineLengthMin) {
@@ -365,7 +374,8 @@ bool AnalyzeLidarData::detectFirstWall(HoughLine line, FieldProperties fP) {
       } else if (isWidth(distance.value(), fP)) {
         firstWallIsLengh = Optional<bool>(false);
       } else {
-        // log incohérent
+        log_a(ErrorLevel, "AnalyzeLidarData::detectFirstWall",
+              "length/width (" + String(distance.value()) + ") inconsistent with first wall");
         return false;
       }
       line.setLength(distance.value());
@@ -389,30 +399,35 @@ bool AnalyzeLidarData::detectParalleleWall(HoughLine line, FieldProperties fP) {
   double distanceBetweenParallelWalls = line.calculateDistanceBetweenLines(firstWall.value());
   if (isLength(distanceBetweenParallelWalls, fP)) {
     if (!firstWallIsLengh.value()) {
-      // log incohérent
+      log_a(InfoLevel, "AnalyzeLidarData::detectParalleleWall",
+            "distanceBetweenParallelWalls (" + String(distanceBetweenParallelWalls) + ") inconsistent with first wall");
       return false;
     }
   } else if (isWidth(distanceBetweenParallelWalls, fP)) {
     if (firstWallIsLengh.value()) {
-      // log incohérent
+      log_a(InfoLevel, "AnalyzeLidarData::detectParalleleWall",
+            "distanceBetweenParallelWalls (" + String(distanceBetweenParallelWalls) + ") inconsistent with first wall");
       return false;
     }
   } else {
-    // log incohérent
+    log_a(InfoLevel, "AnalyzeLidarData::detectParalleleWall",
+          "distanceBetweenParallelWalls (" + String(distanceBetweenParallelWalls) + ") inconsistent with first wall");
     return false;
   }
 
   // testons la distance de la ligne pour voir si elle correspont à la largeur ou la longueur du terrain
   ResultOrError<float> distance = distanceCalculatedWithGroups(line);
   if (distance.hasError()) {
-    // log strange
+    log_a(ErrorLevel, "AnalyzeLidarData::detectParalleleWall",
+          "distanceCalculatedWithGroups failed, strange, aborting");
     return false;
   } else {
     if (distance.value() > lineLengthMin) {
       if (firstWallIsLengh.value() && isLength(distance.value(), fP)) {
       } else if ((!firstWallIsLengh.value()) && isWidth(distance.value(), fP)) {
       } else {
-        // log incohérent
+        log_a(ErrorLevel, "AnalyzeLidarData::detectParalleleWall",
+              "length/width (" + String(distance.value()) + ") inconsistent with first wall");
         return false;
       }
       line.setLength(distance.value());
@@ -436,16 +451,19 @@ bool AnalyzeLidarData::detectPerpendicularWall(HoughLine line, FieldProperties f
     double distanceBetweenPerpendicularWalls = line.calculateDistanceBetweenLines(firstPerpendicularWall.value());
     if (isWidth(distanceBetweenPerpendicularWalls, fP)) {
       if (firstWallIsLengh.value()) {
-        // log incohérent
+        log_a(InfoLevel, "AnalyzeLidarData::detectPerpendicularWall",
+              "distanceBetweenPerpendicularWalls (" + String(distanceBetweenPerpendicularWalls) + ") inconsistent with first wall");
         return false;
       }
     } else if (isLength(distanceBetweenPerpendicularWalls, fP)) {
       if (!firstWallIsLengh.value()) {
-        // log incohérent
+        log_a(InfoLevel, "AnalyzeLidarData::detectPerpendicularWall",
+              "distanceBetweenPerpendicularWalls (" + String(distanceBetweenPerpendicularWalls) + ") inconsistent with first wall");
         return false;
       }
     } else {
-      // log incohérent
+      log_a(InfoLevel, "AnalyzeLidarData::detectPerpendicularWall",
+            "distanceBetweenPerpendicularWalls (" + String(distanceBetweenPerpendicularWalls) + ") inconsistent with first wall");
       return false;
     }
   }
@@ -453,14 +471,16 @@ bool AnalyzeLidarData::detectPerpendicularWall(HoughLine line, FieldProperties f
   // testons la distance de la ligne pour voir si elle correspont à la largeur ou la longueur du terrain
   ResultOrError<float> distance = distanceCalculatedWithGroups(line);
   if (distance.hasError()) {
-    // log strange
+    log_a(ErrorLevel, "AnalyzeLidarData::detectPerpendicularWall",
+          "distanceCalculatedWithGroups failed, strange, aborting");
     return false;
   } else {
     if (distance.value() > lineLengthMin) {
       if (firstWallIsLengh.value() && isWidth(distance.value(), fP)) {
       } else if ((!firstWallIsLengh.value()) && isLength(distance.value(), fP)) {
       } else {
-        // log incohérent
+        log_a(ErrorLevel, "AnalyzeLidarData::detectPerpendicularWall",
+              "length/width (" + String(distance.value()) + ") inconsistent with first wall");
         return false;
       }
       line.setLength(distance.value());

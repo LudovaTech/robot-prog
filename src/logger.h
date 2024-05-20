@@ -9,15 +9,15 @@
 
 #include "utilities.h"
 
-const unsigned int NoteLevel = 10;
-const unsigned int DebugLevel = 20;
-const unsigned int InfoLevel = 30;
-const unsigned int ErrorLevel = 40;
-const unsigned int CriticalLevel = 50;
+extern const unsigned int NoteLevel;
+extern const unsigned int DebugLevel;
+extern const unsigned int InfoLevel;
+extern const unsigned int ErrorLevel;
+extern const unsigned int CriticalLevel;
 
 String logGetName(unsigned int level);
 
-void setupLog(int logLevel);
+void setupLog(int logLevel, bool onSerial);
 
 void log_a(unsigned int level, String fromFun, String message);
 

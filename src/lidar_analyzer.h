@@ -4,6 +4,7 @@
 #include <algorithm>
 
 #include "lidar.h"
+#include "logger.h"
 #include "states.h"
 #include "utilities.h"
 
