@@ -88,7 +88,7 @@ void Motors::fullStop() const {
   backLeft().stop();
 }
 
-void Motors::goTo(Vector2 vector, int celerity, float orientation) const {
+void Motors::goTo(Vector2 vector, int celerity, float rotation) const {
   // If the distance to the destination is less than x, stop the motors
   if (vector.norm() < 0) {  // TODO faire de 3 un parametre global
     fullStop();
@@ -100,23 +100,33 @@ void Motors::goTo(Vector2 vector, int celerity, float orientation) const {
     float MBLcelerity = cos(vector.angle() - backLeft().angleAxisKicker());
 
     // The ratio to be used to calculate the speeds to be sent to the motors is calculated, taking into account the desired speed.
-    float maximum = (max(abs(MFRcelerity), max(abs(MFLcelerity), max(abs(MBRcelerity), abs(MBLcelerity)))));
-    float rapport = (celerity / 255.0) / maximum;
-    float rotation = orientation * celerity * 0.01;
+    float maximum = max(abs(MFRcelerity), abs(MFLcelerity), abs(MBRcelerity), abs(MBLcelerity));
+    float rapport = celerity / maximum;
 
     // SerialDebug.println("rapport : " + String(rapport));
     //SerialDebug.println(MFRcelerity);
 
     // Speeds are recalculated taking into account the desired speed and
     // Sends speeds to motors
-    float speedFR = MFRcelerity * rapport * 255;
-    float speedFL = MFLcelerity * rapport * 255;
-    float speedBR = MBRcelerity * rapport * 255;
-    float speedBL = MBLcelerity * rapport * 255;
+    float speedFR = MFRcelerity * rapport;
+    float speedFL = MFLcelerity * rapport;
+    float speedBR = MBRcelerity * rapport;
+    float speedBL = MBLcelerity * rapport;
 
-    frontRight().move(speedFR - rotation);
-    frontLeft().move(speedFL - rotation);
-    backRight().move(speedBR - rotation);
-    backLeft().move(speedBL - rotation);
+    float minimumSpeed = min(speedFR, speedFL, speedBR, speedBL);
+
+    if (minimumSpeed - rotation < - 255) {
+      float rapport = (-255 + rotation) / minimumSpeed;
+      frontRight().move(speedFR * rapport - rotation);
+      frontLeft().move(speedFL * rapport - rotation);
+      backRight().move(speedBR * rapport - rotation);
+      backLeft().move(speedBL * rapport - rotation);
+
+    } else {
+      frontRight().move(speedFR - rotation);
+      frontLeft().move(speedFL - rotation);
+      backRight().move(speedBR - rotation);
+      backLeft().move(speedBL - rotation);
+    }
   }
 }

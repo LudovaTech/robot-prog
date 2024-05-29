@@ -76,7 +76,8 @@ RobotState getCamInfos() {
                 String(my_goal_x) + ", y=" + String(my_goal_y) + ", ennemy goal x=" + String(enemy_goal_x) + ", y=" + String(enemy_goal_y));
             
             return RobotState(Vector2(ball_x, ball_y), Vector2(0, 0), Vector2(0, 0),
-                              Vector2(my_goal_x, my_goal_y), Vector2(enemy_goal_x, enemy_goal_y));
+                              Vector2(my_goal_x, my_goal_y), Vector2(enemy_goal_x, enemy_goal_y),
+                              Vector2(0, 0), 0);
 
         } else {
             SerialDebug.println("Erreur lors de l'extraction des données de la caméra: " + String(lastCompleteSequence.c_str()));
@@ -86,7 +87,7 @@ RobotState getCamInfos() {
         SerialDebug.println("Aucune séquence complète trouvée, reçu: " + String((char*)buffer));
     }    
   }
-  return RobotState(Vector2(0, 0), Vector2(0, 0), Vector2(0, 0), Vector2(0, 0), Vector2(0, 0));
+  return RobotState(Vector2(0, 0), Vector2(0, 0), Vector2(0, 0), Vector2(0, 0), Vector2(0, 0), Vector2(0, 0), 0);
 }
 
 int compteur;
@@ -105,6 +106,9 @@ void aloop() {
     compteur = 0;
   }
 }
+
+FutureAction lastAction = FutureAction(Vector2(0,0), 0, 0, false);
+FutureAction currentAction = FutureAction(Vector2(0,0), 0, 0, false);
 
 void loop() {
   unsigned long start_millis = millis();
@@ -131,14 +135,6 @@ void loop() {
   // GETTING CAM DATA
   RobotState camInfos = getCamInfos();
 
-
-  RobotState currentState = RobotState(
-    camInfos.ballPos(),
-    Vector2(lidarInfos.getCoordinates().x()/10, lidarInfos.getCoordinates().y()/10),
-    Vector2(0, 0),
-    camInfos.myGoalPos(),
-    camInfos.enemyGoalPos());
-    
   double orientation = lidarInfos.getOrientation();
   if(lidarInfos.getOrientationRadians() == -9999) {
     orientation = 0;
@@ -158,29 +154,28 @@ void loop() {
     }
   }
 
+  RobotState currentState = RobotState(
+    camInfos.ballPos(),
+    Vector2(lidarInfos.getCoordinates().x()/10, lidarInfos.getCoordinates().y()/10),
+    Vector2(0, 0),
+    camInfos.myGoalPos(),
+    camInfos.enemyGoalPos(),
+    Vector2(lidarInfos.getNearestWall().x()/10, lidarInfos.getNearestWall().y()/10),
+    Radians(Degree(orientation)));
+
+
   // DOING ACTION
   // TODO: must work without lidar data or without cam data
-  FutureAction action = chooseStrategy(fieldProperties, currentState, orientation, lidarInfos.getNearestWall());
-  if (action.changeMove()) {
-    motors.goTo(action.target(), action.celerity(), orientation);
-    SerialDebug.println("Direction : " + action.target().toString() + " Vitesse : " + String(action.celerity()) + " Orientation : " + String(orientation));
-  }
-  if (action.activeKicker()) {
+  FutureAction lastAction = currentAction;
+  FutureAction currentAction = chooseStrategy(fieldProperties, currentState, lastAction);
+
+  motors.goTo(currentAction.target(), currentAction.celerity(), currentAction.rotation());
+  SerialDebug.println("Direction : " + currentAction.target().toString() + " Vitesse : " + String(currentAction.celerity()) + " Rotation : " + String(currentAction.rotation()));
+
+  if (currentAction.activeKicker()) {
     // TODO active kicker
   }
   
   unsigned long elapsed = millis() - start_millis;
   SerialDebug.println("Temps loop : " + String(elapsed) + "ms");
 }
-
-// GETTING CAM DATA
-/*while (true) {
-  if (SerialCam.available()) {
-    char newChar = SerialCam.read();
-    if (currentState.updateFromString(readingData, newChar)) {
-      break;
-    }
-  } else {
-    break;
-  }
-}*/

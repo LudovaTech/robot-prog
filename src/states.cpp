@@ -57,15 +57,19 @@ RobotState::RobotState(
     Vector2 myPos,
     Vector2 partnerPos,
     Vector2 myGoalPos,
-    Vector2 enemyGoalPos)
+    Vector2 enemyGoalPos,
+    Vector2 nearestWall,
+    double orientation)
     : _ballPos(ballPos),
       _myPos(myPos),
       _partnerPos(partnerPos),
       _myGoalPos(myGoalPos),
-      _enemyGoalPos(enemyGoalPos) {}
+      _enemyGoalPos(enemyGoalPos),
+      _nearestWall(nearestWall),
+      _orientation(orientation) {}
 
 bool RobotState::updateFromString(ReadingData readingData, char newChar) {
-  if (newChar == 'b' || newChar == 'm' || newChar == 'p' || newChar == 'g' || newChar == 'G') {
+  if (newChar == 'b' || newChar == 'm' || newChar == 'p' || newChar == 'g' || newChar == 'G' || newChar == 'w') {
     if (readingData.xReadingState() != "" && readingData.yReadingState() != "") {
       MutableVector2 newMutableVector2 = MutableVector2(Vector2(
           readingData.xReadingState().toFloat(),
@@ -88,12 +92,15 @@ bool RobotState::updateFromString(ReadingData readingData, char newChar) {
         case 'G':
           _enemyGoalPos = newMutableVector2;
           break;
+        case 'w':
+          _nearestWall = newMutableVector2;
+          break;
         default:
           SerialDebug.println("ERROR CATCHED RobotState: unfinished data : '" + readingData.xReadingState() + " , " + readingData.yReadingState() + "'");
       }
       readingData.reinitWith(newChar);
       return true;
-    } else if (!(readingData.typeState() == 'b' || readingData.typeState() == 'm' || readingData.typeState() == 'p' || readingData.typeState() == 'g' || readingData.typeState() == 'G')) {
+    } else if (!(readingData.typeState() == 'b' || readingData.typeState() == 'm' || readingData.typeState() == 'p' || readingData.typeState() == 'g' || readingData.typeState() == 'G' || readingData.typeState() == 'w')) {
       SerialDebug.println("ERROR CATCHED RobotState: no typeState tracked");
     } else if (isDigit(newChar) || newChar == '.' || newChar == '-') {
       readingData.addToActiveReadingState(newChar);
@@ -122,6 +129,10 @@ String RobotState::toString() const {
   result += _myGoalPos.toString();
   result += " enemyGoalPos: ";
   result += _enemyGoalPos.toString();
+  result += " nearestWall: ";
+  result += _nearestWall.toString();
+  result += " orientation: ";
+  result += _orientation;
   result += ")";
   return result;
 }

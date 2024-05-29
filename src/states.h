@@ -65,7 +65,9 @@ class RobotState {
       Vector2 myPos,
       Vector2 partnerPos,
       Vector2 myGoalPos,
-      Vector2 enemyGoalPos);
+      Vector2 enemyGoalPos,
+      Vector2 nearestWall,
+      double orientation);
 
   bool updateFromString(ReadingData readingData, char newChar);
 
@@ -74,11 +76,14 @@ class RobotState {
   inline Vector2 partnerPos() const { return _partnerPos.toVector2(); }
   inline Vector2 myGoalPos() const { return _myGoalPos.toVector2(); }
   inline Vector2 enemyGoalPos() const { return _enemyGoalPos.toVector2(); }
+  inline Vector2 nearestWall() const { return _nearestWall.toVector2(); }
+  inline double orientation() const { return _orientation; }
 
   String toString() const;
 
  private:
-  MutableVector2 _ballPos, _myPos, _partnerPos, _myGoalPos, _enemyGoalPos;
+  MutableVector2 _ballPos, _myPos, _partnerPos, _myGoalPos, _enemyGoalPos, _nearestWall;
+  double _orientation;
 };
 
 #endif
