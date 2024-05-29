@@ -100,7 +100,7 @@ void Motors::goTo(Vector2 vector, int celerity, float rotation) const {
     float MBLcelerity = cos(vector.angle() - backLeft().angleAxisKicker());
 
     // The ratio to be used to calculate the speeds to be sent to the motors is calculated, taking into account the desired speed.
-    float maximum = max(abs(MFRcelerity), abs(MFLcelerity), abs(MBRcelerity), abs(MBLcelerity));
+    float maximum = max(abs(MFRcelerity), max(abs(MFLcelerity), max(abs(MBRcelerity), abs(MBLcelerity))));
     float rapport = celerity / maximum;
 
     // SerialDebug.println("rapport : " + String(rapport));
@@ -113,7 +113,7 @@ void Motors::goTo(Vector2 vector, int celerity, float rotation) const {
     float speedBR = MBRcelerity * rapport;
     float speedBL = MBLcelerity * rapport;
 
-    float minimumSpeed = min(speedFR, speedFL, speedBR, speedBL);
+    float minimumSpeed = min(speedFR, min(speedFL, min(speedBR, speedBL)));
 
     if (minimumSpeed - rotation < - 255) {
       float rapport = (-255 + rotation) / minimumSpeed;
