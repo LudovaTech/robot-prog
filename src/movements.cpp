@@ -104,7 +104,7 @@ void Motors::goTo(Vector2 vector, int celerity, float rotation) const {
     float rapport = celerity / maximum;
 
     // SerialDebug.println("rapport : " + String(rapport));
-    //SerialDebug.println(MFRcelerity);
+    // SerialDebug.println(MFRcelerity);
 
     // Speeds are recalculated taking into account the desired speed and
     // Sends speeds to motors
@@ -115,7 +115,7 @@ void Motors::goTo(Vector2 vector, int celerity, float rotation) const {
 
     float minimumSpeed = min(speedFR, min(speedFL, min(speedBR, speedBL)));
 
-    if (minimumSpeed - rotation < - 255) {
+    if (minimumSpeed - rotation < -255) {
       float rapport = (-255 + rotation) / minimumSpeed;
       frontRight().move(speedFR * rapport - rotation);
       frontLeft().move(speedFL * rapport - rotation);

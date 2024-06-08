@@ -2,23 +2,24 @@
 #define LIDAR_ANALYZER_H
 
 #include <Arduino.h>
-#include "utilities.h"
+
 #include "strategy.h"
+#include "utilities.h"
 
 class LidarInfos {
-  public:
-    LidarInfos(const Vector2& coordinates, double orientation, std::vector<Vector2> walls)
-        : coordinates(coordinates), orientation(orientation), walls(walls) {}
+ public:
+  LidarInfos(const Vector2& coordinates, double orientation, std::vector<Vector2> walls)
+      : coordinates(coordinates), orientation(orientation), walls(walls) {}
 
-  /* Retourne les coordonnées du robot dans le référentiel du terrain. Centre du terrain: x=0, y=0. 
-     Axe y positif dans la direction du regard du robot 
+  /* Retourne les coordonnées du robot dans le référentiel du terrain. Centre du terrain: x=0, y=0.
+     Axe y positif dans la direction du regard du robot
   */
   Vector2 getCoordinates() {
     return coordinates;
   }
 
   /* Retourne l'orientation du robot (en degrés) : 0° s'il regarde droit vers le goal, < 0 s'il regarde vers la gauche, > 0 s'il regarde vers la droite
-     max 90° (ensuite tout le repère s'inverse) 
+     max 90° (ensuite tout le repère s'inverse)
   */
   double getOrientation() {
     return orientation * (180.0 / M_PI);
@@ -51,10 +52,10 @@ class LidarInfos {
     return walls[indice];
   }
 
-  private: 
-    Vector2 coordinates;
-    double orientation;
-    std::vector<Vector2> walls;
+ private:
+  Vector2 coordinates;
+  double orientation;
+  std::vector<Vector2> walls;
 };
 
 LidarInfos getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool show_log = false, const char* input = nullptr);

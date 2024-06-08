@@ -8,10 +8,10 @@
 
 class FutureAction {
  private:
-   Optional<MutableVector2> _target;
-   int _celerity;
-   Radians _rotation;
-   bool _activeKicker;
+  Optional<MutableVector2> _target;
+  int _celerity;
+  Radians _rotation;
+  bool _activeKicker;
 
  public:
   FutureAction(

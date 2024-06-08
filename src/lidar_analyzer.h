@@ -26,10 +26,11 @@ class RobotPosition {
   /* Retourne les coordonnées du robot dans le référentiel du terrain. Centre du terrain: x=0, y=0.
    Axe y positif dans la direction du regard du robot
   */
-  inline Vector2 coordinates() const { return coordinates; }
+inline Vector2 coordinates() const { return coordinates; }
 
-  /* retourne les murs (le point le plus proche de chaque mur) */
-  inline std::vector<MutableVector2> getWalls() { return walls; }
-};
+/* retourne les murs (le point le plus proche de chaque mur) */
+inline std::vector<MutableVector2> getWalls() { return walls; }
+}
+;
 
-#endif */
+#endif * /
