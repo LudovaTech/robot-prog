@@ -66,8 +66,8 @@ TEST(ReadingData, writinginXY) {
   ASSERT_EQ(rD.yReadingState(), "cd");
 }
 
-TEST(RobotState, accessData) {
-  RobotState cS = RobotState(
+TEST(CamInfos, accessData) {
+  CamInfos cS = CamInfos(
       Vector2(1, 1),
       Vector2(2, 2),
       Vector2(3, 3),
@@ -80,8 +80,8 @@ TEST(RobotState, accessData) {
   ASSERT_EQ(cS.enemyGoalPos(), Vector2(5, 5));
 }
 
-TEST(RobotState, toString) {
-  RobotState cS = RobotState(
+TEST(CamInfos, toString) {
+  CamInfos cS = CamInfos(
       Vector2(1, 1.5),
       Vector2(2, 2.5),
       Vector2(3, 3.5),

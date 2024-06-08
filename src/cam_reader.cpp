@@ -52,7 +52,7 @@ String ReadingData::toString() const {
   return s;
 }
 
-RobotState::RobotState(
+CamInfos::CamInfos(
     Vector2 ballPos,
     Vector2 myPos,
     Vector2 partnerPos,
@@ -68,7 +68,7 @@ RobotState::RobotState(
       _nearestWall(nearestWall),
       _orientation(orientation) {}
 
-bool RobotState::updateFromString(ReadingData readingData, char newChar) {
+bool CamInfos::updateFromString(ReadingData readingData, char newChar) {
   if (newChar == 'b' || newChar == 'm' || newChar == 'p' || newChar == 'g' || newChar == 'G' || newChar == 'w') {
     if (readingData.xReadingState() != "" && readingData.yReadingState() != "") {
       MutableVector2 newMutableVector2 = MutableVector2(Vector2(
@@ -96,30 +96,30 @@ bool RobotState::updateFromString(ReadingData readingData, char newChar) {
           _nearestWall = newMutableVector2;
           break;
         default:
-          SerialDebug.println("ERROR CATCHED RobotState: unfinished data : '" + readingData.xReadingState() + " , " + readingData.yReadingState() + "'");
+          SerialDebug.println("ERROR CATCHED CamInfos: unfinished data : '" + readingData.xReadingState() + " , " + readingData.yReadingState() + "'");
       }
       readingData.reinitWith(newChar);
       return true;
     } else if (!(readingData.typeState() == 'b' || readingData.typeState() == 'm' || readingData.typeState() == 'p' || readingData.typeState() == 'g' || readingData.typeState() == 'G' || readingData.typeState() == 'w')) {
-      SerialDebug.println("ERROR CATCHED RobotState: no typeState tracked");
+      SerialDebug.println("ERROR CATCHED CamInfos: no typeState tracked");
     } else if (isDigit(newChar) || newChar == '.' || newChar == '-') {
       readingData.addToActiveReadingState(newChar);
     } else if (newChar == ',') {
       if (readingData.writingInXState()) {
         readingData.nowWriteInYState();
       } else {
-        SerialDebug.println("ERROR CATCHED RobotState : several characters ','");
+        SerialDebug.println("ERROR CATCHED CamInfos : several characters ','");
         readingData.reinitWith('x');
       }
     } else {
-      SerialDebug.println("ERROR CATCHED RobotState : unknown char (skipped) '" + String(int(newChar)) + "'");
+      SerialDebug.println("ERROR CATCHED CamInfos : unknown char (skipped) '" + String(int(newChar)) + "'");
     }
   }
   return false;
 }
 
-String RobotState::toString() const {
-  String result = "RobotState (ballPos: ";
+String CamInfos::toString() const {
+  String result = "CamInfos (ballPos: ";
   result += _ballPos.toString();
   result += " myPos: ";
   result += _myPos.toString();

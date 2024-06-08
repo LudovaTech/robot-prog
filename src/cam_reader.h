@@ -58,9 +58,9 @@ class ReadingData {
   void reinitWith(char newChar);
 };
 
-class RobotState {
+class CamInfos {
  public:
-  RobotState(
+  CamInfos(
       Vector2 ballPos,
       Vector2 myPos,
       Vector2 partnerPos,

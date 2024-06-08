@@ -56,7 +56,7 @@ std::string extractLastCompleteSequence(const char* buffer) {
   return "";
 }
 
-RobotState getCamInfos() {
+CamInfos getCamInfos() {
   size_t bytesAvailable = SerialCam.available();
   // SerialDebug.println("nb of bytes available: " + String(bytesAvailable));
 
@@ -75,7 +75,7 @@ RobotState getCamInfos() {
         SerialDebug.println("Position balle: x=" + String(ball_x) + ", y=" + String(ball_y) + ", my goal x=" +
                             String(my_goal_x) + ", y=" + String(my_goal_y) + ", ennemy goal x=" + String(enemy_goal_x) + ", y=" + String(enemy_goal_y));
 
-        return RobotState(Vector2(ball_x, ball_y), Vector2(0, 0), Vector2(0, 0),
+        return CamInfos(Vector2(ball_x, ball_y), Vector2(0, 0), Vector2(0, 0),
                           Vector2(my_goal_x, my_goal_y), Vector2(enemy_goal_x, enemy_goal_y),
                           Vector2(0, 0), 0);
 
@@ -87,7 +87,7 @@ RobotState getCamInfos() {
       SerialDebug.println("Aucune séquence complète trouvée, reçu: " + String((char*)buffer));
     }
   }
-  return RobotState(Vector2(0, 0), Vector2(0, 0), Vector2(0, 0), Vector2(0, 0), Vector2(0, 0), Vector2(0, 0), 0);
+  return CamInfos(Vector2(0, 0), Vector2(0, 0), Vector2(0, 0), Vector2(0, 0), Vector2(0, 0), Vector2(0, 0), 0);
 }
 
 int compteur;
@@ -131,7 +131,7 @@ void loop() {
   SerialDebug.println("Coordonnées robot: x=" + String(lidarInfos.getCoordinates().x() / 10.0) + " cm, y=" + String(lidarInfos.getCoordinates().y() / 10.0) + " cm, orientation: " + String(lidarInfos.getOrientation()) + "°, Nearest Wall distance=" + String(lidarInfos.getNearestWall().distance({0, 0}) / 10.0) + " cm");
 
   // GETTING CAM DATA
-  RobotState camInfos = getCamInfos();
+  CamInfos camInfos = getCamInfos();
 
   double orientation = lidarInfos.getOrientation();
   if (lidarInfos.getOrientationRadians() == -9999) {
@@ -152,7 +152,7 @@ void loop() {
     }
   }
 
-  RobotState currentState = RobotState(
+  CamInfos currentState = CamInfos(
       camInfos.ballPos(),
       Vector2(lidarInfos.getCoordinates().x() / 10, lidarInfos.getCoordinates().y() / 10),
       Vector2(0, 0),

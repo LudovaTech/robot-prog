@@ -25,7 +25,7 @@ const int myGoalMinDistance = 82;
 const int speedmotors = 120;
 const int shootSpeed = 180;
 
-FutureAction chooseStrategy(FieldProperties fP, RobotState cS, FutureAction lA) {
+FutureAction chooseStrategy(FieldProperties fP, CamInfos cS, FutureAction lA) {
   if (robotIsLost(fP, cS)) {
     if (leavingField(fP, cS)) {
       return refrainFromLeavingStrategy(fP, cS);
@@ -75,15 +75,15 @@ FutureAction chooseStrategy(FieldProperties fP, RobotState cS, FutureAction lA) 
   }
 }
 
-bool lidarIssue(FieldProperties fP, RobotState cS) {
+bool lidarIssue(FieldProperties fP, CamInfos cS) {
   return cS.nearestWall() == Vector2(-9999, -9999);
 }
 
-bool robotIsLost(FieldProperties fP, RobotState cS) {
+bool robotIsLost(FieldProperties fP, CamInfos cS) {
   return cS.myPos() == Vector2(-999.9, -999.9);
 }
 
-bool leavingField(FieldProperties fP, RobotState cS) {
+bool leavingField(FieldProperties fP, CamInfos cS) {
   if (!robotIsLost(fP, cS)) {
     SerialDebug.println("Left wall : " + String(cS.myPos().x() < -fP.fieldWidth() / 2 + 3 * fP.robotRadius()) + " Right wall : " + String((fP.fieldWidth() / 2) - 3 * fP.robotRadius() < cS.myPos().x()) + " Back wall : " + String(cS.myPos().y() < -fP.fieldLength() / 2 + 3 * fP.robotRadius()) + " Front wall : " + String(fP.fieldLength() / 2 - 3 * fP.robotRadius() < cS.myPos().y()) + " Enemy goal : " + String(cS.enemyGoalPos().norm() < goalMinDistance && cS.enemyGoalPos().norm() > 1) + " My goal : " + String(cS.myGoalPos().norm() < myGoalMinDistance && cS.myGoalPos().norm() > 1) + " Nearest wall : " + String(cS.nearestWall().norm() < criticalWallDistance));
 
@@ -113,45 +113,45 @@ bool leavingField(FieldProperties fP, RobotState cS) {
   }
 }
 
-bool ballIsDetected(FieldProperties fP, RobotState cS) {
+bool ballIsDetected(FieldProperties fP, CamInfos cS) {
   return cS.ballPos() != Vector2(0, 0);
 }
 
-bool goalIsDetected(FieldProperties fP, RobotState cS) {
+bool goalIsDetected(FieldProperties fP, CamInfos cS) {
   return cS.enemyGoalPos() != Vector2(0, 0);
 }
 
-bool targetInFrontOfRobotFromFront(FieldProperties fP, RobotState cS, Vector2 tL) {
+bool targetInFrontOfRobotFromFront(FieldProperties fP, CamInfos cS, Vector2 tL) {
   float longRobot = (fP.robotRadius() * 1);  // Aussi modifié sur autre ordi
   return tL.y() > longRobot;
 }
 
-bool targetInFrontOfRobotFromMiddle(FieldProperties fP, RobotState cS, Vector2 tL) {
+bool targetInFrontOfRobotFromMiddle(FieldProperties fP, CamInfos cS, Vector2 tL) {
   return tL.y() > 0;
 }
 
-bool targetCenterOfRobot(FieldProperties fP, RobotState cS, Vector2 tL) {
+bool targetCenterOfRobot(FieldProperties fP, CamInfos cS, Vector2 tL) {
   return abs(tL.x()) <= 25;
 }
 
-bool targetJustInFrontOfRobot(FieldProperties fP, RobotState cS, Vector2 tL) {
+bool targetJustInFrontOfRobot(FieldProperties fP, CamInfos cS, Vector2 tL) {
   return targetInFrontOfRobotFromMiddle(fP, cS, tL) && targetCenterOfRobot(fP, cS, tL);
 }
 
-bool targetJustBehindOfRobot(FieldProperties fP, RobotState cS, Vector2 tL) {
+bool targetJustBehindOfRobot(FieldProperties fP, CamInfos cS, Vector2 tL) {
   return (!targetInFrontOfRobotFromMiddle(fP, cS, tL)) && targetCenterOfRobot(fP, cS, tL);
 }
 
-bool ballIsCaught(FieldProperties fP, RobotState cS) {
+bool ballIsCaught(FieldProperties fP, CamInfos cS) {
   SerialDebug.println("ballIsCaught : " + String(targetJustInFrontOfRobot(fP, cS, cS.ballPos()) && cS.ballPos().y() <= 40));
   return targetJustInFrontOfRobot(fP, cS, cS.ballPos()) && cS.ballPos().y() <= 40;
 }
 
-float correctOrientation(RobotState cS) {
+float correctOrientation(CamInfos cS) {
   return sin(cS.orientation()) * 25;
 }
 
-FutureAction refrainFromLeavingStrategy(FieldProperties fP, RobotState cS) {
+FutureAction refrainFromLeavingStrategy(FieldProperties fP, CamInfos cS) {
   SerialDebug.println("refrainFromLeavingStrategy");
 
   float xDirection = 0;
@@ -220,7 +220,7 @@ FutureAction refrainFromLeavingStrategy(FieldProperties fP, RobotState cS) {
       false);  //@Gandalfph add orientation and celerity
 }
 
-FutureAction goToBallStrategy(FieldProperties fP, RobotState cS) {
+FutureAction goToBallStrategy(FieldProperties fP, CamInfos cS) {
   SerialDebug.println("goToBallStrategy");
 
   return FutureAction(
@@ -232,7 +232,7 @@ FutureAction goToBallStrategy(FieldProperties fP, RobotState cS) {
       false);  //@Gandalfph add orientation and celerity
 }
 
-FutureAction goToBallAvoidingBallStrategyWithCam(FieldProperties fP, RobotState cS) {
+FutureAction goToBallAvoidingBallStrategyWithCam(FieldProperties fP, CamInfos cS) {
   SerialDebug.println("goToBallAvoidingBallStrategyWithCam");
   if (targetJustBehindOfRobot(fP, cS, cS.ballPos())) {
     return FutureAction(
@@ -256,7 +256,7 @@ FutureAction goToBallAvoidingBallStrategyWithCam(FieldProperties fP, RobotState 
   }
 }
 
-FutureAction goToBallAvoidingBallStrategyWithLidar(FieldProperties fP, RobotState cS) {
+FutureAction goToBallAvoidingBallStrategyWithLidar(FieldProperties fP, CamInfos cS) {
   SerialDebug.println("goToBallAvoidingBallStrategyWithLidar");
   if (targetJustBehindOfRobot(fP, cS, cS.ballPos())) {
     if (cS.ballPos().x() < 0) {
@@ -314,7 +314,7 @@ FutureAction goToBallAvoidingBallStrategyWithLidar(FieldProperties fP, RobotStat
   }
 }
 
-FutureAction accelerateToGoalStrategyWithCam(FieldProperties fP, RobotState cS) {
+FutureAction accelerateToGoalStrategyWithCam(FieldProperties fP, CamInfos cS) {
   SerialDebug.println("accelerateToGoalStrategyWithCam");
 
   return FutureAction(
@@ -326,7 +326,7 @@ FutureAction accelerateToGoalStrategyWithCam(FieldProperties fP, RobotState cS) 
       false);  //@Gandalfph add orientation and celerity
 }
 
-FutureAction accelerateToGoalStrategyWithLidar(FieldProperties fP, RobotState cS) {
+FutureAction accelerateToGoalStrategyWithLidar(FieldProperties fP, CamInfos cS) {
   SerialDebug.println("accelerateToGoalStrategyWithLidar");
 
   return FutureAction(
@@ -338,7 +338,7 @@ FutureAction accelerateToGoalStrategyWithLidar(FieldProperties fP, RobotState cS
       false);  //@Gandalfph add orientation and celerity
 }
 
-FutureAction slalowingBackwardsStrategy(FieldProperties fP, RobotState cS, FutureAction lA) {
+FutureAction slalowingBackwardsStrategy(FieldProperties fP, CamInfos cS, FutureAction lA) {
   SerialDebug.println("slalowingBackwardsStrategy");
   if (cS.myPos().y() < -50) {
     if (cS.myPos().x() < -5) {
@@ -391,7 +391,7 @@ FutureAction slalowingBackwardsStrategy(FieldProperties fP, RobotState cS, Futur
   }
 }
 
-FutureAction shootStrategy(FieldProperties fP, RobotState cS) {
+FutureAction shootStrategy(FieldProperties fP, CamInfos cS) {
   SerialDebug.println("shootStrategy");
 
   return FutureAction(

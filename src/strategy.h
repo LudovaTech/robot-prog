@@ -28,26 +28,26 @@ class FutureAction {
   inline static FutureAction stopRobot();
 };
 
-FutureAction chooseStrategy(FieldProperties fP, RobotState cS, FutureAction lA);
+FutureAction chooseStrategy(FieldProperties fP, CamInfos cS, FutureAction lA);
 
-bool robotIsLost(FieldProperties fP, RobotState cS);
-bool leavingField(FieldProperties fP, RobotState cS);
-bool targetInFrontOfRobotFromFront(FieldProperties fP, RobotState cS, Vector2 tL);
-bool targetInFrontOfRobotFromMiddle(FieldProperties fP, RobotState cS, Vector2 tL);
-bool targetCenterOfRobot(FieldProperties fP, RobotState cS, Vector2 tL);
-bool targetJustInFrontOfRobot(FieldProperties fP, RobotState cS, Vector2 tL);
-bool targetJustBehindOfRobot(FieldProperties fP, RobotState cS, Vector2 tL);
-bool goalIsDetected(FieldProperties fP, RobotState cS);
-bool ballIsDetected(FieldProperties fP, RobotState cS);
-bool ballIsCaught(FieldProperties fP, RobotState cS);
+bool robotIsLost(FieldProperties fP, CamInfos cS);
+bool leavingField(FieldProperties fP, CamInfos cS);
+bool targetInFrontOfRobotFromFront(FieldProperties fP, CamInfos cS, Vector2 tL);
+bool targetInFrontOfRobotFromMiddle(FieldProperties fP, CamInfos cS, Vector2 tL);
+bool targetCenterOfRobot(FieldProperties fP, CamInfos cS, Vector2 tL);
+bool targetJustInFrontOfRobot(FieldProperties fP, CamInfos cS, Vector2 tL);
+bool targetJustBehindOfRobot(FieldProperties fP, CamInfos cS, Vector2 tL);
+bool goalIsDetected(FieldProperties fP, CamInfos cS);
+bool ballIsDetected(FieldProperties fP, CamInfos cS);
+bool ballIsCaught(FieldProperties fP, CamInfos cS);
 
-FutureAction refrainFromLeavingStrategy(FieldProperties fP, RobotState cS);
-FutureAction goToBallStrategy(FieldProperties fP, RobotState cS);
-FutureAction goToBallAvoidingBallStrategyWithCam(FieldProperties fP, RobotState cS);
-FutureAction goToBallAvoidingBallStrategyWithLidar(FieldProperties fP, RobotState cS);
-FutureAction accelerateToGoalStrategyWithCam(FieldProperties fP, RobotState cS);
-FutureAction accelerateToGoalStrategyWithLidar(FieldProperties fP, RobotState cS);
-FutureAction slalowingBackwardsStrategy(FieldProperties fP, RobotState cS, FutureAction lA);
-FutureAction shootStrategy(FieldProperties fP, RobotState cS);
+FutureAction refrainFromLeavingStrategy(FieldProperties fP, CamInfos cS);
+FutureAction goToBallStrategy(FieldProperties fP, CamInfos cS);
+FutureAction goToBallAvoidingBallStrategyWithCam(FieldProperties fP, CamInfos cS);
+FutureAction goToBallAvoidingBallStrategyWithLidar(FieldProperties fP, CamInfos cS);
+FutureAction accelerateToGoalStrategyWithCam(FieldProperties fP, CamInfos cS);
+FutureAction accelerateToGoalStrategyWithLidar(FieldProperties fP, CamInfos cS);
+FutureAction slalowingBackwardsStrategy(FieldProperties fP, CamInfos cS, FutureAction lA);
+FutureAction shootStrategy(FieldProperties fP, CamInfos cS);
 
 #endif
