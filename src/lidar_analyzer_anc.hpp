@@ -3,8 +3,8 @@
 
 #include <Arduino.h>
 
-#include "strategy.h"
-#include "utilities.h"
+#include "strategy.hpp"
+#include "utilities.hpp"
 
 class LidarInfos {
  public:

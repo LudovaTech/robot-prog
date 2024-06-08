@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 
-#include "utilities.h"
+#include "utilities.hpp"
 
 class ReadingData {
  private:

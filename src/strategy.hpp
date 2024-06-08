@@ -3,8 +3,8 @@
 
 #include <Arduino.h>
 
-#include "cam_reader.h"
-#include "utilities.h"
+#include "cam_reader.hpp"
+#include "utilities.hpp"
 
 class FutureAction {
  private:

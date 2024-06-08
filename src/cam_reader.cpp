@@ -1,4 +1,4 @@
-#include "cam_reader.h"
+#include "cam_reader.hpp"
 
 ReadingData::ReadingData() {}
 

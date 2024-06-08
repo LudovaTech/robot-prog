@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "../src/strategy.h"
+#include "../src/strategy.hpp"
 
 TEST(FutureAction, accessToDataWithTarget) {
   FutureAction fA = FutureAction(Vector2(50, 13), 125, 1, true);

@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <gtest/gtest.h>
 
-#include "../src/movements.h"
+#include "../src/movements.hpp"
 
 /*
 TEST(Motors, verifyPins) {

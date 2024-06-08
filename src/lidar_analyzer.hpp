@@ -1,7 +1,7 @@
 /* #ifndef LIDAR_ANALYZER2_H
 #define LIDAR_ANALYZER2_H
 
-#include "utilities.h"
+#include "utilities.hpp"
 
 class HoughLine {
  private:

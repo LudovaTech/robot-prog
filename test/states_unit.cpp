@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "../src/states.h"
+#include "../src/parameters.hpp"
 
 TEST(FieldProperties, accessData) {
   FieldProperties fP = FieldProperties(

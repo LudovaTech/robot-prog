@@ -1,11 +1,11 @@
 #include <string>
 
-#include "lidar_reader.h"
-#include "lidar_analyzer_anc.h"
-#include "movements.h"
-#include "cam_reader.h"
-#include "strategy.h"
-#include "utilities.h"
+#include "lidar_reader.hpp"
+#include "lidar_analyzer_anc.hpp"
+#include "movements.hpp"
+#include "cam_reader.hpp"
+#include "strategy.hpp"
+#include "utilities.hpp"
 
 const FieldProperties fieldProperties = FieldProperties(
     243,               // fieldLength

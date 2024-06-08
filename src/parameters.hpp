@@ -1,7 +1,7 @@
 #ifndef PARAMETERS_H
 #define PARAMETERS_H
 
-#include "utilities.h"
+#include "utilities.hpp"
 
 class FieldProperties {
  public:
