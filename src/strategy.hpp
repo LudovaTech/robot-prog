@@ -30,9 +30,11 @@ class FutureAction {
   inline static FutureAction stopRobot();
 };
 
-FutureAction chooseStrategy(FieldProperties fP, Optional<CamInfos> cI, Optional<LidarDetailedInfos> lI, Optional<LidarBasicInfos> lBI);
+FutureAction chooseStrategy(FieldProperties fP, Optional<CamInfos> optionalCI, Optional<LidarDetailedInfos> optionalLDI, Optional<LidarBasicInfos> optionalLBI);
 
-bool robotIsLost(Optional<CamInfos> optionalCI);
+bool camHasIssue(Optional<CamInfos> optionalCI);
+bool lidarDetailedHasIssue(Optional<LidarDetailedInfos> optionalLDI);
+bool lidarBasicHasIssue(Optional<LidarBasicInfos> optionalLBI);
 bool leavingField(FieldProperties fP, Optional<CamInfos> cI);
 bool targetInFrontOfRobotFromFront(FieldProperties fP, CamInfos cS, Vector2 tL);
 bool targetInFrontOfRobotFromMiddle(FieldProperties fP, CamInfos cS, Vector2 tL);

@@ -25,8 +25,8 @@ const int myGoalMinDistance = 82;
 const int speedmotors = 120;
 const int shootSpeed = 180;
 
-FutureAction chooseStrategy(FieldProperties fP, Optional<CamInfos> optionalCI, Optional<LidarDetailedInfos> optionalLI, Optional<LidarBasicInfos> optionalLBI) {
-  if (robotIsLost(optionalCI)) {
+FutureAction chooseStrategy(FieldProperties fP, Optional<CamInfos> optionalCI, Optional<LidarDetailedInfos> optionalLDI, Optional<LidarBasicInfos> optionalLBI) {
+  if (camHasIssue(optionalCI)) {
     if (leavingField(fP, cI)) {
       return refrainFromLeavingStrategy(fP, cS);
     } else if (!ballIsDetected(fP, cS)) {
@@ -74,16 +74,20 @@ FutureAction chooseStrategy(FieldProperties fP, Optional<CamInfos> optionalCI, O
   }
 }
 
-bool lidarIssue(Optional<LidarDetailedInfos> optionalLI) {
-  return !optionalLI.hasValue();
+bool lidarDetailedHasIssue(Optional<LidarDetailedInfos> optionalLDI) {
+  return !optionalLDI.hasValue();
 }
 
-bool robotIsLost(Optional<CamInfos> optionalCI) {
+bool lidarBasicHasIssue(Optional<LidarBasicInfos> optionalLBI) {
+  return !optionalLBI.hasValue();
+}
+
+bool camHasIssue(Optional<CamInfos> optionalCI) {
   return !optionalCI.hasValue();
 }
 
 bool leavingField(FieldProperties fP, Optional<CamInfos> optionalCI) {
-  if (!robotIsLost(optionalCI)) {
+  if (!camHasIssue(optionalCI)) {
     CamInfos cI = optionalCI.value();
     SerialDebug.println(
         "Left wall : " + String(cI.myPos().x() < -fP.fieldWidth() / 2 + 3 * fP.robotRadius()) +
@@ -109,7 +113,7 @@ bool leavingField(FieldProperties fP, Optional<CamInfos> optionalCI) {
            (fP.fieldLength() / 2 - distanceDevitementY < cI.myPos().y()) ||
            (cI.nearestWall().norm() < criticalWallDistance);
 
-  } else if (!lidarIssue(fP, cS)) {
+  } else if (!lidarDetailedHasIssue(fP, cS)) {
     return (cS.enemyGoalPos().norm() < goalMinDistance && cS.enemyGoalPos().norm() > 1) ||
            (cS.myGoalPos().norm() < myGoalMinDistance && cS.myGoalPos().norm() > 1) ||
            (cS.nearestWall().norm() < criticalWallDistance);
@@ -164,7 +168,7 @@ FutureAction refrainFromLeavingStrategy(FieldProperties fP, CamInfos cS) {
   float xDirection = 0;
   float yDirection = 0;
 
-  if (!robotIsLost(fP, cS)) {
+  if (!camHasIssue(fP, cS)) {
     int distanceDevitementY;
     if (abs(cS.myPos().x()) < 40) {
       distanceDevitementY = 50;
@@ -193,7 +197,7 @@ FutureAction refrainFromLeavingStrategy(FieldProperties fP, CamInfos cS) {
       yDirection = -cS.nearestWall().y();
     }
 
-  } else if (!lidarIssue(fP, cS)) {
+  } else if (!lidarDetailedHasIssue(fP, cS)) {
     if (cS.enemyGoalPos().norm() < goalMinDistance && cS.enemyGoalPos().norm() > 1) {
       xDirection = -cS.enemyGoalPos().x();
       yDirection = -cS.enemyGoalPos().y();
