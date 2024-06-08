@@ -1,23 +1,5 @@
 #include "cam_reader.h"
 
-FieldProperties::FieldProperties(
-    float fieldLength,
-    float fieldWidth,
-    float spaceBeforeLineSide,
-    float goalWidth,
-    Vector2 myGoalPos,
-    Vector2 enemyGoalPos,
-    float robotRadius,
-    float ballRadius)
-    : _fieldLength(fieldLength),
-      _fieldWidth(fieldWidth),
-      _spaceBeforeLineSide(spaceBeforeLineSide),
-      _goalWidth(goalWidth),
-      _myGoalPos(myGoalPos),
-      _enemyGoalPos(enemyGoalPos),
-      _robotRadius(robotRadius),
-      _ballRadius(ballRadius) {}
-
 ReadingData::ReadingData() {}
 
 void ReadingData::nowWriteInYState() {
