@@ -4,6 +4,7 @@
 #include <Arduino.h>
 
 #include "cam_reader.hpp"
+#include "lidar_analyzer_anc.hpp"
 #include "parameters.hpp"
 #include "utilities.hpp"
 
@@ -29,10 +30,10 @@ class FutureAction {
   inline static FutureAction stopRobot();
 };
 
-FutureAction chooseStrategy(FieldProperties fP, CamInfos cS, FutureAction lA);
+FutureAction chooseStrategy(FieldProperties fP, Optional<CamInfos> cI, Optional<LidarInfos> lI, Optional<LidarBasicInfos> lBI);
 
-bool robotIsLost(FieldProperties fP, CamInfos cS);
-bool leavingField(FieldProperties fP, CamInfos cS);
+bool robotIsLost(Optional<CamInfos> optionalCI);
+bool leavingField(FieldProperties fP, Optional<CamInfos> cI);
 bool targetInFrontOfRobotFromFront(FieldProperties fP, CamInfos cS, Vector2 tL);
 bool targetInFrontOfRobotFromMiddle(FieldProperties fP, CamInfos cS, Vector2 tL);
 bool targetCenterOfRobot(FieldProperties fP, CamInfos cS, Vector2 tL);

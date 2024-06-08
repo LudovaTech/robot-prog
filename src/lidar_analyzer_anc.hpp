@@ -6,6 +6,8 @@
 #include "strategy.hpp"
 #include "utilities.hpp"
 
+class LidarBasicInfos {};
+
 class LidarInfos {
  public:
   LidarInfos(const Vector2& coordinates, double orientation, std::vector<Vector2> walls)
