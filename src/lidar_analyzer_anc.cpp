@@ -197,7 +197,7 @@ double calculateAngleBetweenLines(double a1, double b1, double c1, double a2, do
  * show_log: true pour afficher le log qui permet d'afficher ensuite les points et les murs dans le programme python
  * input: utilisée pour les tests, contient les données du Lidar
  */
-LidarInfos getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool show_log = false, const char* input = nullptr) {
+LidarDetailedInfos getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool show_log = false, const char* input = nullptr) {
   double orientation = -9999;
   std::vector<Vector2> points_walls;
   const int nb_tours_lidar = 55;
@@ -303,7 +303,7 @@ LidarInfos getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool sho
   std::vector<HoughLine> walls;
   if (lines.empty()) {
     SerialDebug.println("lines empty!");
-    return LidarInfos(Vector2(-9999, -9999), orientation, points_walls);
+    return LidarDetailedInfos(Vector2(-9999, -9999), orientation, points_walls);
   }
 
   const HoughLine* parallelWall = nullptr;
@@ -590,7 +590,7 @@ LidarInfos getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool sho
   }
 
   if (corners.size() != 4) {  // on n'a pas les 4 coins, on arrête là
-    LidarInfos infos = LidarInfos(Vector2(-9999, -9999), orientation, points_walls);
+    LidarDetailedInfos infos = LidarDetailedInfos(Vector2(-9999, -9999), orientation, points_walls);
     if (show_log) {
       full_log += "** Infos: nearest wall: " + String(infos.getNearestWall().distance({0, 0}) / 10.0) + " cm\r\n";
       full_log += "******** END ********";
@@ -662,7 +662,7 @@ LidarInfos getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool sho
       -centroid.y * sin(orientation) - centroid.x * cos(orientation),
       -centroid.y * cos(orientation) + centroid.x * sin(orientation)};
 
-  LidarInfos infos_ = LidarInfos(Vector2(coordinates.x, coordinates.y), orientation, points_walls);
+  LidarDetailedInfos infos_ = LidarDetailedInfos(Vector2(coordinates.x, coordinates.y), orientation, points_walls);
 
   if (show_log) {
     full_log += "** Infos: x=" + String(infos_.getCoordinates().x() / 10.0) + " cm, y=" + String(infos_.getCoordinates().y() / 10.0) + " cm, orientation: " + String(infos_.getOrientation()) + " deg, nearest wall: " + String(infos_.getNearestWall().distance({0, 0}) / 10.0) + " cm\r\n";
@@ -695,7 +695,7 @@ double successPercentageTotal = 0;
 double successPercentageValues = 0;
 
 void checkCoordinates(FieldProperties fP, String text, double x, double y, const char* input) {
-  LidarInfos infos = getLidarInfos(fP, false, false, input);
+  LidarDetailedInfos infos = getLidarInfos(fP, false, false, input);
   double tolerance = 8;  // cm
   Vector2 robotCoordinates = infos.getCoordinates();
 

@@ -8,9 +8,9 @@
 
 class LidarBasicInfos {};
 
-class LidarInfos {
+class LidarDetailedInfos {
  public:
-  LidarInfos(const Vector2& coordinates, double orientation, std::vector<Vector2> walls)
+  LidarDetailedInfos(const Vector2& coordinates, double orientation, std::vector<Vector2> walls)
       : coordinates(coordinates), orientation(orientation), walls(walls) {}
 
   /* Retourne les coordonnées du robot dans le référentiel du terrain. Centre du terrain: x=0, y=0.
@@ -60,7 +60,7 @@ class LidarInfos {
   std::vector<Vector2> walls;
 };
 
-LidarInfos getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool show_log = false, const char* input = nullptr);
+LidarDetailedInfos getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool show_log = false, const char* input = nullptr);
 void testsLidar(FieldProperties fP);
 
 #endif

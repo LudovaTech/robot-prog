@@ -127,7 +127,7 @@ void loop() {
   // return;
 
   // GETTING LIDAR DATA
-  LidarInfos lidarInfos = getLidarInfos(fieldProperties, true, false);
+  LidarDetailedInfos lidarInfos = getLidarInfos(fieldProperties, true, false);
   SerialDebug.println("Coordonnées robot: x=" + String(lidarInfos.getCoordinates().x() / 10.0) + " cm, y=" + String(lidarInfos.getCoordinates().y() / 10.0) + " cm, orientation: " + String(lidarInfos.getOrientation()) + "°, Nearest Wall distance=" + String(lidarInfos.getNearestWall().distance({0, 0}) / 10.0) + " cm");
 
   // GETTING CAM DATA

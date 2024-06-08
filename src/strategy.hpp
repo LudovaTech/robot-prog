@@ -30,7 +30,7 @@ class FutureAction {
   inline static FutureAction stopRobot();
 };
 
-FutureAction chooseStrategy(FieldProperties fP, Optional<CamInfos> cI, Optional<LidarInfos> lI, Optional<LidarBasicInfos> lBI);
+FutureAction chooseStrategy(FieldProperties fP, Optional<CamInfos> cI, Optional<LidarDetailedInfos> lI, Optional<LidarBasicInfos> lBI);
 
 bool robotIsLost(Optional<CamInfos> optionalCI);
 bool leavingField(FieldProperties fP, Optional<CamInfos> cI);

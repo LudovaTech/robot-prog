@@ -25,7 +25,7 @@ const int myGoalMinDistance = 82;
 const int speedmotors = 120;
 const int shootSpeed = 180;
 
-FutureAction chooseStrategy(FieldProperties fP, Optional<CamInfos> optionalCI, Optional<LidarInfos> optionalLI, Optional<LidarBasicInfos> optionalLBI) {
+FutureAction chooseStrategy(FieldProperties fP, Optional<CamInfos> optionalCI, Optional<LidarDetailedInfos> optionalLI, Optional<LidarBasicInfos> optionalLBI) {
   if (robotIsLost(optionalCI)) {
     if (leavingField(fP, cI)) {
       return refrainFromLeavingStrategy(fP, cS);
@@ -74,7 +74,7 @@ FutureAction chooseStrategy(FieldProperties fP, Optional<CamInfos> optionalCI, O
   }
 }
 
-bool lidarIssue(Optional<LidarInfos> optionalLI) {
+bool lidarIssue(Optional<LidarDetailedInfos> optionalLI) {
   return !optionalLI.hasValue();
 }
 
