@@ -1,6 +1,6 @@
 #include "lidar_analyzer_anc.h"
 
-#include "lidar.h"
+#include "lidar_reader.h"
 #include "strategy.h"
 
 const int LidarDistanceMin = 100;  // on ne prend pas les points < 10cm quand on lit les données du Lidar

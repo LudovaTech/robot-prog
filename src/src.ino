@@ -1,9 +1,9 @@
 #include <string>
 
-#include "lidar.h"
+#include "lidar_reader.h"
 #include "lidar_analyzer_anc.h"
 #include "movements.h"
-#include "states.h"
+#include "cam_reader.h"
 #include "strategy.h"
 #include "utilities.h"
 

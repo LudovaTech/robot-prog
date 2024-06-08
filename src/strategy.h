@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 
-#include "states.h"
+#include "cam_reader.h"
 #include "utilities.h"
 
 class FutureAction {
