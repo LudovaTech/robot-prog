@@ -1,5 +1,7 @@
 #include "strategy.h"
 
+//////// FutureAction
+
 FutureAction::FutureAction(
     Vector2 target,
     int celerity,
@@ -10,13 +12,18 @@ FutureAction::FutureAction(
       _rotation(rotation),
       _activeKicker(activeKicker) {}
 
-////////
+FutureAction FutureAction::stopRobot() {
+  return FutureAction(Vector2(0, 0), 0, 0, false);
+}
+
+//////// Functions
+
+//TODO: remove parameters
 const int criticalWallDistance = 25;
 const int goalMinDistance = 90;  // 85 pour SN10 et 95 pour SN9
 const int myGoalMinDistance = 82;
 const int speedmotors = 120;
 const int shootSpeed = 180;
-const FutureAction stopRobot = FutureAction(Vector2(0, 0), 0, 0, false);
 
 FutureAction chooseStrategy(FieldProperties fP, RobotState cS, FutureAction lA) {
   if (robotIsLost(fP, cS)) {
@@ -24,12 +31,12 @@ FutureAction chooseStrategy(FieldProperties fP, RobotState cS, FutureAction lA) 
       return refrainFromLeavingStrategy(fP, cS);
     } else if (!ballIsDetected(fP, cS)) {
       SerialDebug.println("stopRobotStrategy");
-      return stopRobot;
+      return FutureAction::stopRobot();
 
     } else if (ballIsCaught(fP, cS)) {
       if (!goalIsDetected(fP, cS)) {
         SerialDebug.println("stopRobotStrategy");
-        return stopRobot;
+        return FutureAction::stopRobot();
       } else if (targetJustInFrontOfRobot(fP, cS, cS.enemyGoalPos())) {
         return shootStrategy(fP, cS);
       } else {

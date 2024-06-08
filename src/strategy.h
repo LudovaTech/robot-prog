@@ -24,6 +24,8 @@ class FutureAction {
   inline int celerity() const { return _celerity; }
   inline Radians rotation() const { return _rotation; }
   inline bool activeKicker() const { return _activeKicker; }
+
+  inline static FutureAction stopRobot();
 };
 
 FutureAction chooseStrategy(FieldProperties fP, RobotState cS, FutureAction lA);
