@@ -4,6 +4,7 @@
 #include <Arduino.h>
 
 #include "cam_reader.hpp"
+#include "parameters.hpp"
 #include "utilities.hpp"
 
 class FutureAction {
