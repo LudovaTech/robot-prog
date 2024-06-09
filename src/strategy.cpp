@@ -86,7 +86,7 @@ bool camHasIssue(Optional<CamInfos> optionalCI) {
   return !optionalCI.hasValue();
 }
 
-bool leavingField(FieldProperties fP, Optional<CamInfos> optionalCI) {
+bool leavingField(FieldProperties fP, Optional<CamInfos> optionalCI, Optional<LidarDetailedInfos> optionalLDI) {
   if (!camHasIssue(optionalCI)) {
     CamInfos cI = optionalCI.value();
     SerialDebug.println(
@@ -99,7 +99,7 @@ bool leavingField(FieldProperties fP, Optional<CamInfos> optionalCI) {
         " Nearest wall : " + String(cI.nearestWall().norm() < criticalWallDistance));
 
     int distanceDevitementY;
-    if (abs(cI.value().myPos().x()) < 40) {
+    if (abs(cI.myPos().x()) < 40) {
       distanceDevitementY = 50;
     } else {
       distanceDevitementY = criticalWallDistance;
@@ -113,7 +113,7 @@ bool leavingField(FieldProperties fP, Optional<CamInfos> optionalCI) {
            (fP.fieldLength() / 2 - distanceDevitementY < cI.myPos().y()) ||
            (cI.nearestWall().norm() < criticalWallDistance);
 
-  } else if (!lidarDetailedHasIssue(fP, cS)) {
+  } else if (!lidarDetailedHasIssue(optionalLDI)) {
     return (cS.enemyGoalPos().norm() < goalMinDistance && cS.enemyGoalPos().norm() > 1) ||
            (cS.myGoalPos().norm() < myGoalMinDistance && cS.myGoalPos().norm() > 1) ||
            (cS.nearestWall().norm() < criticalWallDistance);
