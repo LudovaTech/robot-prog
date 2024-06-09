@@ -36,15 +36,17 @@ String ReadingData::toString() const {
 
 CamInfos::CamInfos(
     Vector2 ballPos,
+    Vector2 partnerPos,
     Vector2 myGoalPos,
     Vector2 enemyGoalPos)
     : _ballPos(ballPos),
+      _partnerPos(partnerPos),
       _myGoalPos(myGoalPos),
       _enemyGoalPos(enemyGoalPos) {}
 
 //TODO change with new CamInfos
 bool CamInfos::updateFromString(ReadingData readingData, char newChar) {
-  if (newChar == 'b' || newChar == 'g' || newChar == 'G') {
+  if (newChar == 'b' || newChar == 'p' || newChar == 'g' || newChar == 'G') {
     if (readingData.xReadingState() != "" && readingData.yReadingState() != "") {
       MutableVector2 newMutableVector2 = MutableVector2(Vector2(
           readingData.xReadingState().toFloat(),
@@ -54,6 +56,9 @@ bool CamInfos::updateFromString(ReadingData readingData, char newChar) {
       switch (readingData.typeState()) {
         case 'b':
           _ballPos = newMutableVector2;
+          break;
+        case 'p':
+          _partnerPos = newMutableVector2;
           break;
         case 'g':
           _myGoalPos = newMutableVector2;
@@ -66,7 +71,7 @@ bool CamInfos::updateFromString(ReadingData readingData, char newChar) {
       }
       readingData.reinitWith(newChar);
       return true;
-    } else if (!(readingData.typeState() == 'b' || readingData.typeState() == 'g' || readingData.typeState() == 'G')) {
+    } else if (!(readingData.typeState() == 'b' || readingData.typeState() == 'p' || readingData.typeState() == 'g' || readingData.typeState() == 'G')) {
       SerialDebug.println("ERROR CATCHED CamInfos: no typeState tracked");
     } else if (isDigit(newChar) || newChar == '.' || newChar == '-') {
       readingData.addToActiveReadingState(newChar);
@@ -87,6 +92,8 @@ bool CamInfos::updateFromString(ReadingData readingData, char newChar) {
 String CamInfos::toString() const {
   String result = "CamInfos (ballPos: ";
   result += _ballPos.toString();
+  result += " partnerPos: ";
+  result += _partnerPos.toString();
   result += " myGoalPos: ";
   result += _myGoalPos.toString();
   result += " enemyGoalPos: ";
