@@ -35,7 +35,15 @@ FutureAction chooseStrategy(FieldProperties fP, Optional<CamInfos> optionalCI, O
 bool camHasIssue(Optional<CamInfos> optionalCI);
 bool lidarDetailedHasIssue(Optional<LidarDetailedInfos> optionalLDI);
 bool lidarBasicHasIssue(Optional<LidarBasicInfos> optionalLBI);
-bool leavingField(FieldProperties fP, Optional<CamInfos> cI);
+
+bool enterInGoalWithLidarDetailed(FieldProperties fP, LidarDetailedInfos lDI);
+bool enterInGoalWithLidarBasic(FieldProperties fP, LidarBasicInfos lBI);
+bool enterInGoalWithCam(FieldProperties fP, CamInfos cI);
+
+bool leavingFieldWithLidarDetailed(FieldProperties fP, LidarDetailedInfos lDI);
+bool leavingFieldWithLidarBasic(FieldProperties fP, LidarBasicInfos lBI);
+bool leavingFieldWithCam(FieldProperties fP, CamInfos cI);
+
 bool targetInFrontOfRobotFromFront(FieldProperties fP, CamInfos cS, Vector2 tL);
 bool targetInFrontOfRobotFromMiddle(FieldProperties fP, CamInfos cS, Vector2 tL);
 bool targetCenterOfRobot(FieldProperties fP, CamInfos cS, Vector2 tL);

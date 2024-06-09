@@ -86,43 +86,43 @@ bool camHasIssue(Optional<CamInfos> optionalCI) {
   return !optionalCI.hasValue();
 }
 
-bool leavingField(FieldProperties fP, Optional<CamInfos> optionalCI, Optional<LidarDetailedInfos> optionalLDI) {
-  if (!camHasIssue(optionalCI)) {
-    CamInfos cI = optionalCI.value();
-    SerialDebug.println(
-        "Left wall : " + String(cI.myPos().x() < -fP.fieldWidth() / 2 + 3 * fP.robotRadius()) +
-        " Right wall : " + String((fP.fieldWidth() / 2) - 3 * fP.robotRadius() < cI.myPos().x()) +
-        " Back wall : " + String(cI.myPos().y() < -fP.fieldLength() / 2 + 3 * fP.robotRadius()) +
-        " Front wall : " + String(fP.fieldLength() / 2 - 3 * fP.robotRadius() < cI.myPos().y()) +
-        " Enemy goal : " + String(cI.enemyGoalPos().norm() < goalMinDistance && cI.enemyGoalPos().norm() > 1) +
-        " My goal : " + String(cI.myGoalPos().norm() < myGoalMinDistance && cI.myGoalPos().norm() > 1) +
-        " Nearest wall : " + String(cI.nearestWall().norm() < criticalWallDistance));
-
-    int distanceDevitementY;
-    if (abs(cI.myPos().x()) < 40) {
-      distanceDevitementY = 50;
-    } else {
-      distanceDevitementY = criticalWallDistance;
-    }
-
-    SerialDebug.println(distanceDevitementY);
-
-    return (cI.myPos().x() < -fP.fieldWidth() / 2 + criticalWallDistance) ||
-           (fP.fieldWidth() / 2 - criticalWallDistance < cI.myPos().x()) ||
-           (cI.myPos().y() < -fP.fieldLength() / 2 + distanceDevitementY - 5) ||
-           (fP.fieldLength() / 2 - distanceDevitementY < cI.myPos().y()) ||
-           (cI.nearestWall().norm() < criticalWallDistance);
-
-  } else if (!lidarDetailedHasIssue(optionalLDI)) {
-    return (cS.enemyGoalPos().norm() < goalMinDistance && cS.enemyGoalPos().norm() > 1) ||
-           (cS.myGoalPos().norm() < myGoalMinDistance && cS.myGoalPos().norm() > 1) ||
-           (cS.nearestWall().norm() < criticalWallDistance);
-
-  } else {
-    return (cS.enemyGoalPos().norm() < goalMinDistance && cS.enemyGoalPos().norm() > 1) ||
-           (cS.myGoalPos().norm() < myGoalMinDistance && cS.myGoalPos().norm() > 1);
-  }
+bool enterInGoalWithLidarDetailed(FieldProperties fP, LidarDetailedInfos lDI) {
+  //TODO with calculated positions
 }
+
+bool enterInGoalWithLidarBasic(FieldProperties fP, LidarBasicInfos lBI) {
+  
+}
+
+bool enterInGoalWithCam(FieldProperties fP, CamInfos cI) {
+  return (cI.enemyGoalPos().norm() < goalMinDistance && cI.enemyGoalPos().norm() > 1) ||
+         (cI.myGoalPos().norm() < myGoalMinDistance && cI.myGoalPos().norm() > 1);
+}
+
+bool leavingFieldWithLidarDetailed(FieldProperties fP, LidarDetailedInfos lDI) {
+  int distanceDevitementY;
+  if (abs(lDI.coordinates().x()) < 40) {
+    distanceDevitementY = 50;
+  } else {
+    distanceDevitementY = criticalWallDistance;
+  }
+
+  SerialDebug.println(distanceDevitementY);
+
+  return (lDI.coordinates().x() < -fP.fieldWidth() / 2 + criticalWallDistance) ||
+         (fP.fieldWidth() / 2 - criticalWallDistance < lDI.coordinates().x()) ||
+         (lDI.coordinates().y() < -fP.fieldLength() / 2 + distanceDevitementY - 5) ||
+         (fP.fieldLength() / 2 - distanceDevitementY < lDI.coordinates().y());
+}
+
+bool leavingFieldWithCam(FieldProperties fP, CamInfos cI) {
+  
+}
+
+bool leavingFieldWithLidarBasic(FieldProperties fP, LidarBasicInfos lBI) {
+  return lBI.nearestWall().norm() < criticalWallDistance;
+}
+
 
 bool ballIsDetected(FieldProperties fP, CamInfos cS) {
   return cS.ballPos() != Vector2(0, 0);
