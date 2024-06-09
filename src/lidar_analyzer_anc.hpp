@@ -6,7 +6,11 @@
 #include "strategy.hpp"
 #include "utilities.hpp"
 
-class LidarBasicInfos {};
+class LidarBasicInfos {
+ public:
+  // TODO for strategy
+  inline Vector2 nearestWall() { return Vector2(0, 0); }
+};
 
 class LidarDetailedInfos {
  public:
@@ -20,7 +24,7 @@ class LidarDetailedInfos {
     return _coordinates;
   }
 
-  //TODO alias for strategy
+  // TODO alias for strategy
   inline Vector2 coordinates() { return _coordinates; }
 
   /* Retourne l'orientation du robot (en degrés) : 0° s'il regarde droit vers le goal, < 0 s'il regarde vers la gauche, > 0 s'il regarde vers la droite
