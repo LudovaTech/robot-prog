@@ -113,14 +113,6 @@ class Optional {
 
   inline bool hasValue() const { return _hasValue; }
   inline T value() const { return _value; }
-
-  String toString() {
-    if (hasValue()) {
-      return "Optional<" + String(T) + ">(full)";
-    } else {
-      return "Optional<" + String(T) + ">(void)";
-    }
-  }
 };
 
 #endif
