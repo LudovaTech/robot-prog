@@ -35,14 +35,14 @@ String ReadingData::toString() const {
 }
 
 CamInfos::CamInfos(
-    Vector2 ballPos,
-    Vector2 myGoalPos,
-    Vector2 enemyGoalPos)
+    Optional<Vector2> ballPos,
+    Optional<Vector2> myGoalPos,
+    Optional<Vector2> enemyGoalPos)
     : _ballPos(ballPos),
       _myGoalPos(myGoalPos),
       _enemyGoalPos(enemyGoalPos) {}
 
-//TODO change with new CamInfos
+// TODO change with new CamInfos
 bool CamInfos::updateFromString(ReadingData readingData, char newChar) {
   if (newChar == 'b' || newChar == 'g' || newChar == 'G') {
     if (readingData.xReadingState() != "" && readingData.yReadingState() != "") {
@@ -86,11 +86,23 @@ bool CamInfos::updateFromString(ReadingData readingData, char newChar) {
 
 String CamInfos::toString() const {
   String result = "CamInfos (ballPos: ";
-  result += _ballPos.toString();
+  if (_ballPos.hasValue()) {
+    result += _ballPos.value().toString();
+  } else {
+    result += "None";
+  }
   result += " myGoalPos: ";
-  result += _myGoalPos.toString();
+  if (_myGoalPos.hasValue()) {
+    result += _myGoalPos.value().toString();
+  } else {
+    result += "None";
+  }
   result += " enemyGoalPos: ";
-  result += _enemyGoalPos.toString();
+  if (_enemyGoalPos.hasValue()) {
+    result += _enemyGoalPos.value().toString();
+  } else {
+    result += "None";
+  }
   result += ")";
   return result;
 }
