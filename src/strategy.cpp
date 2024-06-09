@@ -141,25 +141,18 @@ bool ballAtLevel(FieldProperties fP, CamInfos cI) {
   return cI.ballPos().y() > 0;
 }
 
-bool targetCenterOfRobot(FieldProperties fP, CamInfos cS, Vector2 tL) {
-  return abs(tL.x()) <= 25;
+bool ballInCenter(FieldProperties fP, CamInfos cI) {
+  return abs(cI.ballPos().x()) <= 25; //TODO create parameter
 }
 
-bool targetJustInFrontOfRobot(FieldProperties fP, CamInfos cS, Vector2 tL) {
-  return targetInFrontOfRobotFromMiddle(fP, cS, tL) && targetCenterOfRobot(fP, cS, tL);
+bool ballIsCaught(FieldProperties fP, CamInfos cI) {
+  bool r = ballAtLevel(fP, cI) && ballInCenter(fP, cI) && cI.ballPos().y() <= 40; //TODO create parameter
+  SerialDebug.println("ballIsCaught : " + String(r));
+  return r;
 }
 
-bool targetJustBehindOfRobot(FieldProperties fP, CamInfos cS, Vector2 tL) {
-  return (!targetInFrontOfRobotFromMiddle(fP, cS, tL)) && targetCenterOfRobot(fP, cS, tL);
-}
-
-bool ballIsCaught(FieldProperties fP, CamInfos cS) {
-  SerialDebug.println("ballIsCaught : " + String(targetJustInFrontOfRobot(fP, cS, cS.ballPos()) && cS.ballPos().y() <= 40));
-  return targetJustInFrontOfRobot(fP, cS, cS.ballPos()) && cS.ballPos().y() <= 40;
-}
-
-float correctOrientation(CamInfos cS) {
-  return sin(cS.orientation()) * 25;
+float correctOrientation(LidarDetailedInfos lDI) {
+  return sin(lDI.orientation()) * 25;
 }
 
 FutureAction refrainFromLeavingStrategy(FieldProperties fP, CamInfos cS) {

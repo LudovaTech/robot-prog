@@ -46,9 +46,7 @@ bool leavingField_C(FieldProperties fP, CamInfos cI);
 
 bool ballAhead(FieldProperties fP, CamInfos cI);
 bool ballAtLevel(FieldProperties fP, CamInfos cI);
-bool targetCenterOfRobot(FieldProperties fP, CamInfos cS, Vector2 tL);
-bool targetJustInFrontOfRobot(FieldProperties fP, CamInfos cS, Vector2 tL);
-bool targetJustBehindOfRobot(FieldProperties fP, CamInfos cS, Vector2 tL);
+bool ballInCenter(FieldProperties fP, CamInfos cI);
 bool goalIsDetected(FieldProperties fP, CamInfos cS);
 bool ballIsDetected(FieldProperties fP, CamInfos cS);
 bool ballIsCaught(FieldProperties fP, CamInfos cS);
