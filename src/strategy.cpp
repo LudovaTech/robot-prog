@@ -132,13 +132,13 @@ bool goalIsDetected(FieldProperties fP, CamInfos cS) {
   return cS.enemyGoalPos() != Vector2(0, 0);
 }
 
-bool targetInFrontOfRobotFromFront(FieldProperties fP, CamInfos cS, Vector2 tL) {
-  float longRobot = (fP.robotRadius() * 1);  // Aussi modifié sur autre ordi
-  return tL.y() > longRobot;
+bool ballAheadWithCam(FieldProperties fP, CamInfos cI) {
+  float longRobot = (fP.robotRadius() * 1);
+  return cI.ballPos().y() > longRobot;
 }
 
-bool targetInFrontOfRobotFromMiddle(FieldProperties fP, CamInfos cS, Vector2 tL) {
-  return tL.y() > 0;
+bool ballAtLevelWithCam(FieldProperties fP, CamInfos cI) {
+  return cI.ballPos().y() > 0;
 }
 
 bool targetCenterOfRobot(FieldProperties fP, CamInfos cS, Vector2 tL) {
