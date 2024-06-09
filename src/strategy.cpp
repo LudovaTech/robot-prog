@@ -86,20 +86,20 @@ bool camHasIssue(Optional<CamInfos> optionalCI) {
   return !optionalCI.hasValue();
 }
 
-bool enterInGoalWithLidarDetailed(FieldProperties fP, LidarDetailedInfos lDI) {
+bool enterInGoal_D(FieldProperties fP, LidarDetailedInfos lDI) {
   //TODO with calculated positions
 }
 
-bool enterInGoalWithLidarBasic(FieldProperties fP, LidarBasicInfos lBI) {
+bool enterInGoal_B(FieldProperties fP, LidarBasicInfos lBI) {
   
 }
 
-bool enterInGoalWithCam(FieldProperties fP, CamInfos cI) {
+bool enterInGoal_C(FieldProperties fP, CamInfos cI) {
   return (cI.enemyGoalPos().norm() < goalMinDistance && cI.enemyGoalPos().norm() > 1) ||
          (cI.myGoalPos().norm() < myGoalMinDistance && cI.myGoalPos().norm() > 1);
 }
 
-bool leavingFieldWithLidarDetailed(FieldProperties fP, LidarDetailedInfos lDI) {
+bool leavingField_D(FieldProperties fP, LidarDetailedInfos lDI) {
   int distanceDevitementY;
   if (abs(lDI.coordinates().x()) < 40) {
     distanceDevitementY = 50;
@@ -115,11 +115,11 @@ bool leavingFieldWithLidarDetailed(FieldProperties fP, LidarDetailedInfos lDI) {
          (fP.fieldLength() / 2 - distanceDevitementY < lDI.coordinates().y());
 }
 
-bool leavingFieldWithCam(FieldProperties fP, CamInfos cI) {
+bool leavingField_C(FieldProperties fP, CamInfos cI) {
   
 }
 
-bool leavingFieldWithLidarBasic(FieldProperties fP, LidarBasicInfos lBI) {
+bool leavingField_B(FieldProperties fP, LidarBasicInfos lBI) {
   return lBI.nearestWall().norm() < criticalWallDistance;
 }
 
@@ -132,12 +132,12 @@ bool goalIsDetected(FieldProperties fP, CamInfos cS) {
   return cS.enemyGoalPos() != Vector2(0, 0);
 }
 
-bool ballAheadWithCam(FieldProperties fP, CamInfos cI) {
+bool ballAhead(FieldProperties fP, CamInfos cI) {
   float longRobot = (fP.robotRadius() * 1);
   return cI.ballPos().y() > longRobot;
 }
 
-bool ballAtLevelWithCam(FieldProperties fP, CamInfos cI) {
+bool ballAtLevel(FieldProperties fP, CamInfos cI) {
   return cI.ballPos().y() > 0;
 }
 

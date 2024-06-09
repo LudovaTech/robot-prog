@@ -36,16 +36,16 @@ bool camHasIssue(Optional<CamInfos> optionalCI);
 bool lidarDetailedHasIssue(Optional<LidarDetailedInfos> optionalLDI);
 bool lidarBasicHasIssue(Optional<LidarBasicInfos> optionalLBI);
 
-bool enterInGoalWithLidarDetailed(FieldProperties fP, LidarDetailedInfos lDI);
-bool enterInGoalWithLidarBasic(FieldProperties fP, LidarBasicInfos lBI);
-bool enterInGoalWithCam(FieldProperties fP, CamInfos cI);
+bool enterInGoal_D(FieldProperties fP, LidarDetailedInfos lDI);
+bool enterInGoal_B(FieldProperties fP, LidarBasicInfos lBI);
+bool enterInGoal_C(FieldProperties fP, CamInfos cI);
 
-bool leavingFieldWithLidarDetailed(FieldProperties fP, LidarDetailedInfos lDI);
-bool leavingFieldWithLidarBasic(FieldProperties fP, LidarBasicInfos lBI);
-bool leavingFieldWithCam(FieldProperties fP, CamInfos cI);
+bool leavingField_D(FieldProperties fP, LidarDetailedInfos lDI);
+bool leavingField_B(FieldProperties fP, LidarBasicInfos lBI);
+bool leavingField_C(FieldProperties fP, CamInfos cI);
 
-bool targetInFrontOfRobotFromFront(FieldProperties fP, CamInfos cS, Vector2 tL);
-bool targetInFrontOfRobotFromMiddle(FieldProperties fP, CamInfos cS, Vector2 tL);
+bool ballAhead(FieldProperties fP, CamInfos cI);
+bool ballAtLevel(FieldProperties fP, CamInfos cI);
 bool targetCenterOfRobot(FieldProperties fP, CamInfos cS, Vector2 tL);
 bool targetJustInFrontOfRobot(FieldProperties fP, CamInfos cS, Vector2 tL);
 bool targetJustBehindOfRobot(FieldProperties fP, CamInfos cS, Vector2 tL);
