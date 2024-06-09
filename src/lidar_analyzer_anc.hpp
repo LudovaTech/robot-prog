@@ -11,14 +11,17 @@ class LidarBasicInfos {};
 class LidarDetailedInfos {
  public:
   LidarDetailedInfos(const Vector2& coordinates, double orientation, std::vector<Vector2> walls)
-      : coordinates(coordinates), orientation(orientation), walls(walls) {}
+      : _coordinates(coordinates), orientation(orientation), walls(walls) {}
 
   /* Retourne les coordonnées du robot dans le référentiel du terrain. Centre du terrain: x=0, y=0.
      Axe y positif dans la direction du regard du robot
   */
   Vector2 getCoordinates() {
-    return coordinates;
+    return _coordinates;
   }
+
+  //TODO alias for strategy
+  inline Vector2 coordinates() { return _coordinates; }
 
   /* Retourne l'orientation du robot (en degrés) : 0° s'il regarde droit vers le goal, < 0 s'il regarde vers la gauche, > 0 s'il regarde vers la droite
      max 90° (ensuite tout le repère s'inverse)
@@ -55,7 +58,7 @@ class LidarDetailedInfos {
   }
 
  private:
-  Vector2 coordinates;
+  Vector2 _coordinates;
   double orientation;
   std::vector<Vector2> walls;
 };
