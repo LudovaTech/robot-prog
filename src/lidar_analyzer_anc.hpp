@@ -6,7 +6,7 @@
 #include "strategy.hpp"
 #include "utilities.hpp"
 
-class LidarBasicInfos: Vector2 {
+class LidarBasicInfos: public Vector2 {
   using Vector2::Vector2;
 };
 

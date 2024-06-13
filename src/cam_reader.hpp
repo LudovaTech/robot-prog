@@ -5,15 +5,15 @@
 
 #include "utilities.hpp"
 
-class BallPos: Vector2 {
+class BallPos: public Vector2 {
   using Vector2::Vector2;
 };
 
-class MyGoalPos: Vector2 {
+class MyGoalPos: public Vector2 {
   using Vector2::Vector2;
 };
 
-class EnnemyGoalPos: Vector2 {
+class EnnemyGoalPos: public Vector2 {
   using Vector2::Vector2;
 };
 
