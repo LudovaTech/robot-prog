@@ -22,6 +22,11 @@ class FutureAction {
       Radians rotation,
       bool activeKicker);
 
+  FutureAction(
+      int celerity,
+      Radians rotation,
+      bool activeKicker);
+
   inline Vector2 target() const { return _target.value().toVector2(); }
   inline int celerity() const { return _celerity; }
   inline Radians rotation() const { return _rotation; }
@@ -50,12 +55,13 @@ bool ballInCenter(FieldProperties fP, BallPos bP);
 bool ballIsCaught(FieldProperties fP, BallPos bP);
 
 FutureAction refrainFromLeavingStrategy(FieldProperties fP, CamInfos cS);
-FutureAction goToBallStrategy(FieldProperties fP, CamInfos cS);
-FutureAction goToBallAvoidingBallStrategyWithCam(FieldProperties fP, CamInfos cS);
-FutureAction goToBallAvoidingBallStrategyWithLidar(FieldProperties fP, CamInfos cS);
-FutureAction accelerateToGoalStrategyWithCam(FieldProperties fP, CamInfos cS);
-FutureAction accelerateToGoalStrategyWithLidar(FieldProperties fP, CamInfos cS);
-FutureAction slalowingBackwardsStrategy(FieldProperties fP, CamInfos cS, FutureAction lA);
-FutureAction shootStrategy(FieldProperties fP, CamInfos cS);
+FutureAction goToBallStrategy(FieldProperties fP, BallPos bP);
+FutureAction goToBallAvoidingBallStrategy_C(FieldProperties fP, BallPos bP);
+FutureAction goToBallAvoidingBallStrategy_CD(FieldProperties fP, LidarDetailedInfos lDI, BallPos bP);
+FutureAction accelerateToGoalStrategy_C(FieldProperties fP, EnnemyGoalPos eGP);
+FutureAction accelerateToGoalStrategy_D(FieldProperties fP, LidarDetailedInfos lDI);
+FutureAction shootStrategy_C(FieldProperties fP, EnnemyGoalPos eGP);
+FutureAction shootStrategy_D(FieldProperties fP, LidarDetailedInfos lDI);
+FutureAction slalowingBackwardsStrategy(FieldProperties fP, LidarDetailedInfos lDI);
 
 #endif

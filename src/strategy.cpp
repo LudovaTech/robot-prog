@@ -12,6 +12,15 @@ FutureAction::FutureAction(
       _rotation(rotation),
       _activeKicker(activeKicker) {}
 
+FutureAction::FutureAction(
+    int celerity,
+    Radians rotation,
+    bool activeKicker)
+    : _target(Optional<MutableVector2>()),
+      _celerity(celerity),
+      _rotation(rotation),
+      _activeKicker(activeKicker) {}
+
 FutureAction FutureAction::stopRobot() {
   return FutureAction(Vector2(0, 0), 0, 0, false);
 }
@@ -201,34 +210,34 @@ FutureAction refrainFromLeavingStrategy(FieldProperties fP, CamInfos cS) {
       false);  //@Gandalfph add orientation and celerity
 }
 
-FutureAction goToBallStrategy(FieldProperties fP, CamInfos cS) {
+FutureAction goToBallStrategy(FieldProperties fP, BallPos bP) {
   SerialDebug.println("goToBallStrategy");
 
   return FutureAction(
       Vector2(
-          cS.ballPos().x(),
-          cS.ballPos().y() - fP.robotRadius() * 4),
+          bP.x(),
+          bP.y() - fP.robotRadius() * 4),  // TODO make parameter
       speedmotors,
       0,
       false);  //@Gandalfph add orientation and celerity
 }
 
-FutureAction goToBallAvoidingBallStrategyWithCam(FieldProperties fP, CamInfos cS) {
-  SerialDebug.println("goToBallAvoidingBallStrategyWithCam");
-  if (targetJustBehindOfRobot(fP, cS, cS.ballPos())) {
+FutureAction goToBallAvoidingBallStrategy_C(FieldProperties fP, BallPos bP) {
+  SerialDebug.println("goToBallAvoidingBallStrategy_C");
+  if (!ballAtLevel(fP, bP) && ballInCenter(fP, bP)) {
     return FutureAction(
         Vector2(10, -10),
         speedmotors,
         0,
         false);  //@Gandalfph add orientation and celerity
 
-  } else if (cS.ballPos().x() < 0) {
+  } else if (bP.x() < 0) {
     return FutureAction(
         Vector2(2, -10),
         speedmotors,
         0,
         false);  //@Gandalfph add orientation and celerity
-  } else if (cS.ballPos().x() > 0) {
+  } else if (bP.x() > 0) {
     return FutureAction(
         Vector2(-2, -10),
         speedmotors,
@@ -237,11 +246,11 @@ FutureAction goToBallAvoidingBallStrategyWithCam(FieldProperties fP, CamInfos cS
   }
 }
 
-FutureAction goToBallAvoidingBallStrategyWithLidar(FieldProperties fP, CamInfos cS) {
-  SerialDebug.println("goToBallAvoidingBallStrategyWithLidar");
-  if (targetJustBehindOfRobot(fP, cS, cS.ballPos())) {
-    if (cS.ballPos().x() < 0) {
-      if (cS.myPos().x() > (fP.fieldWidth() / 2) - 6 * fP.robotRadius()) {
+FutureAction goToBallAvoidingBallStrategy_CD(FieldProperties fP, LidarDetailedInfos lDI, BallPos bP) {
+  SerialDebug.println("goToBallAvoidingBallStrategy_CD");
+  if (!ballAtLevel(fP, bP) && ballInCenter(fP, bP)) {
+    if (bP.x() < 0) {
+      if (lDI.coordinates().x() > (fP.fieldWidth() / 2) - 6 * fP.robotRadius()) {
         return FutureAction(
             Vector2(-10, -10),
             speedmotors,
@@ -256,7 +265,7 @@ FutureAction goToBallAvoidingBallStrategyWithLidar(FieldProperties fP, CamInfos 
       }
 
     } else {
-      if (-(fP.fieldWidth() / 2) + 6 * fP.robotRadius() > cS.myPos().x()) {
+      if (-(fP.fieldWidth() / 2) + 6 * fP.robotRadius() > lDI.coordinates().x()) {
         return FutureAction(
             Vector2(10, -10),
             speedmotors,
@@ -272,14 +281,14 @@ FutureAction goToBallAvoidingBallStrategyWithLidar(FieldProperties fP, CamInfos 
       }
     }
 
-  } else if (cS.ballPos().x() < 0 && cS.ballPos().x() > -40) {
+  } else if (bP.x() < 0 && bP.x() > -40) {
     return FutureAction(
         Vector2(5, -10),
         speedmotors,
         0,
         false);  //@Gandalfph add orientation and celerity
 
-  } else if (cS.ballPos().x() > 0 && cS.ballPos().x() < 40) {
+  } else if (bP.x() > 0 && bP.x() < 40) {
     return FutureAction(
         Vector2(-5, -10),
         speedmotors,
@@ -295,40 +304,58 @@ FutureAction goToBallAvoidingBallStrategyWithLidar(FieldProperties fP, CamInfos 
   }
 }
 
-FutureAction accelerateToGoalStrategyWithCam(FieldProperties fP, CamInfos cS) {
-  SerialDebug.println("accelerateToGoalStrategyWithCam");
+FutureAction accelerateToGoalStrategy_C(FieldProperties fP, EnnemyGoalPos eGP) {
+  SerialDebug.println("accelerateToGoalStrategy_C");
 
   return FutureAction(
-      Vector2(
-          cS.enemyGoalPos().x(),
-          cS.enemyGoalPos().y()),
+      eGP,
       speedmotors,
       0,
       false);  //@Gandalfph add orientation and celerity
 }
 
-FutureAction accelerateToGoalStrategyWithLidar(FieldProperties fP, CamInfos cS) {
-  SerialDebug.println("accelerateToGoalStrategyWithLidar");
+FutureAction accelerateToGoalStrategy_D(FieldProperties fP, LidarDetailedInfos lDI) {
+  SerialDebug.println("accelerateToGoalStrategy_D");
 
   return FutureAction(
       Vector2(
-          fP.enemyGoalPos().x(),
-          10),
+          fP.enemyGoalPos().x() - lDI.coordinates().x(),
+          fP.enemyGoalPos().y() - lDI.coordinates().y()),
       speedmotors,
       0,
       false);  //@Gandalfph add orientation and celerity
 }
 
-FutureAction slalowingBackwardsStrategy(FieldProperties fP, CamInfos cS, FutureAction lA) {
+FutureAction shootStrategy_C(FieldProperties fP, EnnemyGoalPos eGP) {
+  SerialDebug.println("shootStrategy_C");
+
+  return FutureAction(
+      accelerateToGoalStrategy_C(fP, eGP).target(),
+      shootSpeed,
+      0,
+      true);  //@Gandalfph add orientation and celerity
+}
+
+FutureAction shootStrategy_D(FieldProperties fP, LidarDetailedInfos lDI) {
+  SerialDebug.println("shootStrategy_D");
+
+  return FutureAction(
+      accelerateToGoalStrategy_D(fP, lDI).target(),
+      shootSpeed,
+      0,
+      true);  //@Gandalfph add orientation and celerity
+}
+
+FutureAction slalowingBackwardsStrategy(FieldProperties fP, LidarDetailedInfos lDI) {
   SerialDebug.println("slalowingBackwardsStrategy");
-  if (cS.myPos().y() < -50) {
-    if (cS.myPos().x() < -5) {
+  if (lDI.coordinates().y() < -50) {
+    if (lDI.coordinates().x() < -5) {
       return FutureAction(
           Vector2(10, 0),
           speedmotors,
           0,
           false);  //@Gandalfph add orientation and celerity
-    } else if (5 < cS.myPos().x()) {
+    } else if (5 < lDI.coordinates().x()) {
       return FutureAction(
           Vector2(-10, 0),
           speedmotors,
@@ -342,7 +369,7 @@ FutureAction slalowingBackwardsStrategy(FieldProperties fP, CamInfos cS, FutureA
           false);  //@Gandalfph add orientation and celerity
     }
 
-  } else if (50 < cS.myPos().y()) {
+  } else if (50 < lDI.coordinates().y()) {
     return FutureAction(
         Vector2(-20, -10),
         speedmotors,
@@ -350,13 +377,13 @@ FutureAction slalowingBackwardsStrategy(FieldProperties fP, CamInfos cS, FutureA
         false);  //@Gandalfph add orientation and celerity
 
   } else {
-    if (cS.myPos().x() < -fP.fieldWidth() / 6) {
+    if (lDI.coordinates().x() < -fP.fieldWidth() / 6) {
       return FutureAction(
           Vector2(20, -10),
           speedmotors,
           0,
           false);  //@Gandalfph add orientation and celerity
-    } else if (fP.fieldWidth() / 6 < cS.myPos().x()) {
+    } else if (fP.fieldWidth() / 6 < lDI.coordinates().x()) {
       return FutureAction(
           Vector2(-20, -10),
           speedmotors,
@@ -364,20 +391,9 @@ FutureAction slalowingBackwardsStrategy(FieldProperties fP, CamInfos cS, FutureA
           false);  //@Gandalfph add orientation and celerity
     } else {
       return FutureAction(
-          lA.target(),
           speedmotors,
           0,
           false);  //@Gandalfph add orientation and celerity
     }
   }
-}
-
-FutureAction shootStrategy(FieldProperties fP, CamInfos cS) {
-  SerialDebug.println("shootStrategy");
-
-  return FutureAction(
-      Vector2(0, 20),
-      shootSpeed,
-      0,
-      true);  //@Gandalfph add orientation and celerity
 }

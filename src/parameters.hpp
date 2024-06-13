@@ -29,6 +29,9 @@ class FieldProperties {
   inline float robotRadius() const { return _robotRadius; }
   inline float ballRadius() const { return _ballRadius; }
 
+  inline Vector2 enemyGoalPos() const { return Vector2(0, _distanceYGoalFromCenter);}
+  inline Vector2 myGoalPos() const { return Vector2(0, -_distanceYGoalFromCenter);}
+
  private:
   const float _fieldLength;
   const float _fieldWidth;
