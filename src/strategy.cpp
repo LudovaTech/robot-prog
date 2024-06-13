@@ -25,7 +25,13 @@ const int myGoalMinDistance = 82;
 const int speedmotors = 120;
 const int shootSpeed = 180;
 
-FutureAction chooseStrategy(FieldProperties fP, Optional<CamInfos> optionalCI, Optional<LidarDetailedInfos> optionalLDI, Optional<LidarBasicInfos> optionalLBI) {
+FutureAction chooseStrategy(
+    FieldProperties fP,
+    Optional<LidarDetailedInfos> oLDI,
+    Optional<LidarBasicInfos> oLBI,
+    Optional<BallPos> oBP,
+    Optional<MyGoalPos> oMGP,
+    Optional<EnnemyGoalPos> oEGP) {
   if (camHasIssue(optionalCI)) {
     if (leavingField(fP, cI)) {
       return refrainFromLeavingStrategy(fP, cS);
@@ -74,33 +80,13 @@ FutureAction chooseStrategy(FieldProperties fP, Optional<CamInfos> optionalCI, O
   }
 }
 
-bool test(FieldProperties fP) {
-  leavingField_B(fP, LidarBasicInfos())
-}
-
-bool lidarDetailedHasIssue(Optional<LidarDetailedInfos> optionalLDI) {
-  return !optionalLDI.hasValue();
-}
-
-bool lidarBasicHasIssue(Optional<LidarBasicInfos> optionalLBI) {
-  return !optionalLBI.hasValue();
-}
-
-bool camHasIssue(Optional<CamInfos> optionalCI) {
-  return !optionalCI.hasValue();
-}
-
 bool enterInGoal_D(FieldProperties fP, LidarDetailedInfos lDI) {
-  //TODO with calculated positions
+  // TODO with calculated positions
 }
 
-bool enterInGoal_B(FieldProperties fP, LidarBasicInfos lBI) {
-  
-}
-
-bool enterInGoal_C(FieldProperties fP, CamInfos cI) {
-  return (cI.enemyGoalPos().norm() < goalMinDistance && cI.enemyGoalPos().norm() > 1) ||
-         (cI.myGoalPos().norm() < myGoalMinDistance && cI.myGoalPos().norm() > 1);
+bool enterInGoal_C(FieldProperties fP, MyGoalPos mGP, EnnemyGoalPos eGP) {
+  return (eGP.norm() < goalMinDistance && eGP.norm() > 1) ||
+         (mGP.norm() < myGoalMinDistance && mGP.norm() > 1);
 }
 
 bool leavingField_D(FieldProperties fP, LidarDetailedInfos lDI) {
@@ -119,38 +105,25 @@ bool leavingField_D(FieldProperties fP, LidarDetailedInfos lDI) {
          (fP.fieldLength() / 2 - distanceDevitementY < lDI.coordinates().y());
 }
 
-bool leavingField_C(FieldProperties fP, CamInfos cI) {
-  
-}
-
 bool leavingField_B(FieldProperties fP, LidarBasicInfos lBI) {
-  return lBI.nearestWall().norm() < criticalWallDistance;
+  return lBI.norm() < criticalWallDistance;
 }
 
-
-bool ballIsDetected(FieldProperties fP, CamInfos cS) {
-  return cS.ballPos() != Vector2(0, 0);
-}
-
-bool goalIsDetected(FieldProperties fP, CamInfos cS) {
-  return cS.enemyGoalPos() != Vector2(0, 0);
-}
-
-bool ballAhead(FieldProperties fP, CamInfos cI) {
+bool ballAhead(FieldProperties fP, BallPos bP) {
   float longRobot = (fP.robotRadius() * 1);
-  return cI.ballPos().y() > longRobot;
+  return bP.y() > longRobot;
 }
 
-bool ballAtLevel(FieldProperties fP, CamInfos cI) {
-  return cI.ballPos().y() > 0;
+bool ballAtLevel(FieldProperties fP, BallPos bP) {
+  return bP.y() > 0;
 }
 
-bool ballInCenter(FieldProperties fP, CamInfos cI) {
-  return abs(cI.ballPos().x()) <= 25; //TODO create parameter
+bool ballInCenter(FieldProperties fP, BallPos bP) {
+  return abs(bP.x()) <= 25;  // TODO create parameter
 }
 
-bool ballIsCaught(FieldProperties fP, CamInfos cI) {
-  bool r = ballAtLevel(fP, cI) && ballInCenter(fP, cI) && cI.ballPos().y() <= 40; //TODO create parameter
+bool ballIsCaught(FieldProperties fP, BallPos bP) {
+  bool r = ballAtLevel(fP, bP) && ballInCenter(fP, bP) && bP.y() <= 40;  // TODO create parameter
   SerialDebug.println("ballIsCaught : " + String(r));
   return r;
 }

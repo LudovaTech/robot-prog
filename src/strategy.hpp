@@ -30,26 +30,24 @@ class FutureAction {
   inline static FutureAction stopRobot();
 };
 
-FutureAction chooseStrategy(FieldProperties fP, Optional<CamInfos> optionalCI, Optional<LidarDetailedInfos> optionalLDI, Optional<LidarBasicInfos> optionalLBI);
-
-bool camHasIssue(Optional<CamInfos> optionalCI);
-bool lidarDetailedHasIssue(Optional<LidarDetailedInfos> optionalLDI);
-bool lidarBasicHasIssue(Optional<LidarBasicInfos> optionalLBI);
+FutureAction chooseStrategy(
+    FieldProperties fP,
+    Optional<LidarDetailedInfos> oLDI,
+    Optional<LidarBasicInfos> oLBI,
+    Optional<BallPos> oBP,
+    Optional<MyGoalPos> oMGP,
+    Optional<EnnemyGoalPos> oEGP);
 
 bool enterInGoal_D(FieldProperties fP, LidarDetailedInfos lDI);
-bool enterInGoal_B(FieldProperties fP, LidarBasicInfos lBI);
-bool enterInGoal_C(FieldProperties fP, CamInfos cI);
+bool enterInGoal_C(FieldProperties fP, MyGoalPos mGP, EnnemyGoalPos eGP);
 
 bool leavingField_D(FieldProperties fP, LidarDetailedInfos lDI);
 bool leavingField_B(FieldProperties fP, LidarBasicInfos lBI);
-bool leavingField_C(FieldProperties fP, CamInfos cI);
 
-bool ballAhead(FieldProperties fP, CamInfos cI);
-bool ballAtLevel(FieldProperties fP, CamInfos cI);
-bool ballInCenter(FieldProperties fP, CamInfos cI);
-bool goalIsDetected(FieldProperties fP, CamInfos cS);
-bool ballIsDetected(FieldProperties fP, CamInfos cS);
-bool ballIsCaught(FieldProperties fP, CamInfos cS);
+bool ballAhead(FieldProperties fP, BallPos bP);
+bool ballAtLevel(FieldProperties fP, BallPos bP);
+bool ballInCenter(FieldProperties fP, BallPos bP);
+bool ballIsCaught(FieldProperties fP, BallPos bP);
 
 FutureAction refrainFromLeavingStrategy(FieldProperties fP, CamInfos cS);
 FutureAction goToBallStrategy(FieldProperties fP, CamInfos cS);
