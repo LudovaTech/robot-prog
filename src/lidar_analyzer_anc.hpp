@@ -6,10 +6,8 @@
 #include "strategy.hpp"
 #include "utilities.hpp"
 
-class LidarBasicInfos {
- public:
-  // TODO for strategy
-  inline Vector2 nearestWall() { return Vector2(0, 0); }
+class LidarBasicInfos: Vector2 {
+  using Vector2::Vector2;
 };
 
 class LidarDetailedInfos {

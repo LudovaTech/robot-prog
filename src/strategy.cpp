@@ -74,6 +74,10 @@ FutureAction chooseStrategy(FieldProperties fP, Optional<CamInfos> optionalCI, O
   }
 }
 
+bool test(FieldProperties fP) {
+  leavingField_B(fP, LidarBasicInfos())
+}
+
 bool lidarDetailedHasIssue(Optional<LidarDetailedInfos> optionalLDI) {
   return !optionalLDI.hasValue();
 }
