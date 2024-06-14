@@ -141,7 +141,7 @@ float correctOrientation(LidarDetailedInfos lDI) {
   return sin(lDI.orientation()) * 25;
 }
 
-FutureAction refrainLeavingFieldStrategy_D(FieldProperties fP, LidarDetailedInfos lDI) {
+FutureAction refrainLeavingField_D(FieldProperties fP, LidarDetailedInfos lDI) {
   float xDirection = 0;
   float yDirection = 0;
 
@@ -169,7 +169,7 @@ FutureAction refrainLeavingFieldStrategy_D(FieldProperties fP, LidarDetailedInfo
       false);
 }
 
-FutureAction refrainLeavingFieldStrategy_B(FieldProperties fP, LidarBasicInfos lBI) {
+FutureAction refrainLeavingField_B(FieldProperties fP, LidarBasicInfos lBI) {
   return FutureAction(
       Vector2(
           -lBI.x(),
@@ -179,7 +179,7 @@ FutureAction refrainLeavingFieldStrategy_B(FieldProperties fP, LidarBasicInfos l
       false);
 }
 
-FutureAction refrainEnterInGoalStrategy_C(FieldProperties fP, MyGoalPos mGP, EnnemyGoalPos eGP) {
+FutureAction refrainEnterInGoal_C(FieldProperties fP, MyGoalPos mGP, EnnemyGoalPos eGP) {
   float xDirection = 0;
   float yDirection = 0;
   if (eGP.norm() < goalMinDistance && eGP.norm() > 1) {
@@ -198,9 +198,7 @@ FutureAction refrainEnterInGoalStrategy_C(FieldProperties fP, MyGoalPos mGP, Enn
       false);  //@Gandalfph add orientation and celerity
 }
 
-FutureAction goToBallStrategy(FieldProperties fP, BallPos bP) {
-  SerialDebug.println("goToBallStrategy");
-
+FutureAction goToBall_C(FieldProperties fP, BallPos bP) {
   return FutureAction(
       Vector2(
           bP.x(),
@@ -210,8 +208,7 @@ FutureAction goToBallStrategy(FieldProperties fP, BallPos bP) {
       false);  //@Gandalfph add orientation and celerity
 }
 
-FutureAction goToBallAvoidingBallStrategy_C(FieldProperties fP, BallPos bP) {
-  SerialDebug.println("goToBallAvoidingBallStrategy_C");
+FutureAction goToBallAvoidingBall_C(FieldProperties fP, BallPos bP) {
   if (!ballAtLevel(fP, bP) && ballInCenter(fP, bP)) {
     return FutureAction(
         Vector2(10, -10),
@@ -234,8 +231,7 @@ FutureAction goToBallAvoidingBallStrategy_C(FieldProperties fP, BallPos bP) {
   }
 }
 
-FutureAction goToBallAvoidingBallStrategy_CD(FieldProperties fP, LidarDetailedInfos lDI, BallPos bP) {
-  SerialDebug.println("goToBallAvoidingBallStrategy_CD");
+FutureAction goToBallAvoidingBall_CD(FieldProperties fP, LidarDetailedInfos lDI, BallPos bP) {
   if (!ballAtLevel(fP, bP) && ballInCenter(fP, bP)) {
     if (bP.x() < 0) {
       if (lDI.coordinates().x() > (fP.fieldWidth() / 2) - 6 * fP.robotRadius()) {
@@ -292,9 +288,7 @@ FutureAction goToBallAvoidingBallStrategy_CD(FieldProperties fP, LidarDetailedIn
   }
 }
 
-FutureAction accelerateToGoalStrategy_C(FieldProperties fP, EnnemyGoalPos eGP) {
-  SerialDebug.println("accelerateToGoalStrategy_C");
-
+FutureAction accelerateToGoal_C(FieldProperties fP, EnnemyGoalPos eGP) {
   return FutureAction(
       eGP,
       speedmotors,
@@ -302,9 +296,7 @@ FutureAction accelerateToGoalStrategy_C(FieldProperties fP, EnnemyGoalPos eGP) {
       false);  //@Gandalfph add orientation and celerity
 }
 
-FutureAction accelerateToGoalStrategy_D(FieldProperties fP, LidarDetailedInfos lDI) {
-  SerialDebug.println("accelerateToGoalStrategy_D");
-
+FutureAction accelerateToGoal_D(FieldProperties fP, LidarDetailedInfos lDI) {
   return FutureAction(
       Vector2(
           fP.enemyGoalPos().x() - lDI.coordinates().x(),
@@ -314,28 +306,23 @@ FutureAction accelerateToGoalStrategy_D(FieldProperties fP, LidarDetailedInfos l
       false);  //@Gandalfph add orientation and celerity
 }
 
-FutureAction shootStrategy_C(FieldProperties fP, EnnemyGoalPos eGP) {
-  SerialDebug.println("shootStrategy_C");
-
+FutureAction shoot_C(FieldProperties fP, EnnemyGoalPos eGP) {
   return FutureAction(
-      accelerateToGoalStrategy_C(fP, eGP).target(),
+      accelerateToGoal_C(fP, eGP).target(),
       shootSpeed,
       0,
       true);  //@Gandalfph add orientation and celerity
 }
 
-FutureAction shootStrategy_D(FieldProperties fP, LidarDetailedInfos lDI) {
-  SerialDebug.println("shootStrategy_D");
-
+FutureAction shoot_D(FieldProperties fP, LidarDetailedInfos lDI) {
   return FutureAction(
-      accelerateToGoalStrategy_D(fP, lDI).target(),
+      accelerateToGoal_D(fP, lDI).target(),
       shootSpeed,
       0,
       true);  //@Gandalfph add orientation and celerity
 }
 
-FutureAction slalowingBackwardsStrategy(FieldProperties fP, LidarDetailedInfos lDI) {
-  SerialDebug.println("slalowingBackwardsStrategy");
+FutureAction slalowingBackwards_D(FieldProperties fP, LidarDetailedInfos lDI) {
   if (lDI.coordinates().y() < -50) {
     if (lDI.coordinates().x() < -5) {
       return FutureAction(
