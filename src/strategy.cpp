@@ -89,10 +89,6 @@ FutureAction chooseStrategy(
   }
 }
 
-bool enterInGoal_D(FieldProperties fP, LidarDetailedInfos lDI) {
-  // TODO with calculated positions
-}
-
 bool enterInGoal_C(FieldProperties fP, MyGoalPos mGP, EnnemyGoalPos eGP) {
   return (eGP.norm() < goalMinDistance && eGP.norm() > 1) ||
          (mGP.norm() < myGoalMinDistance && mGP.norm() > 1);
@@ -135,10 +131,6 @@ bool ballIsCaught(FieldProperties fP, BallPos bP) {
   bool r = ballAtLevel(fP, bP) && ballInCenter(fP, bP) && bP.y() <= 40;  // TODO create parameter
   SerialDebug.println("ballIsCaught : " + String(r));
   return r;
-}
-
-float correctOrientation(LidarDetailedInfos lDI) {
-  return sin(lDI.orientation()) * 25;
 }
 
 FutureAction refrainLeavingField_D(FieldProperties fP, LidarDetailedInfos lDI) {
