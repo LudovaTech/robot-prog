@@ -53,7 +53,7 @@ std::string extractLastCompleteSequence(const char* buffer) {
 struct CamInfosData {
   BallPos ballPos;
   MyGoalPos myGoalPos;
-  EnnemyGoalPos ennemyGoalPos;
+  EnemyGoalPos ennemyGoalPos;
 };
 
 CamInfosData getCamInfos() {
@@ -77,7 +77,7 @@ CamInfosData getCamInfos() {
         return CamInfosData{
           BallPos(ball_x, ball_y),
           MyGoalPos(my_goal_x, my_goal_y),
-          EnnemyGoalPos(enemy_goal_x, enemy_goal_y)
+          EnemyGoalPos(enemy_goal_x, enemy_goal_y)
           };
       } else {
         SerialDebug.println("Erreur lors de l'extraction des données de la caméra: " + String(lastCompleteSequence.c_str()));

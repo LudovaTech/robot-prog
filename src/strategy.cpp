@@ -40,7 +40,7 @@ FutureAction chooseStrategy(
     Optional<LidarBasicInfos> oLBI,
     Optional<BallPos> oBP,
     Optional<MyGoalPos> oMGP,
-    Optional<EnnemyGoalPos> oEGP) {
+    Optional<EnemyGoalPos> oEGP) {
   // First we look to see if there's a risk of leaving the field
   if (oLDI.hasValue()) {
     if (leavingField_D(fP, oLDI.value())) {
@@ -110,7 +110,7 @@ bool enterInMyGoal_C(FieldProperties fP, MyGoalPos mGP) {
   return mGP.norm() < myGoalMinDistance && mGP.norm() > 1;
 }
 
-bool enterInEnnemyGoal_C(FieldProperties fP, EnnemyGoalPos eGP) {
+bool enterInEnnemyGoal_C(FieldProperties fP, EnemyGoalPos eGP) {
   return (eGP.norm() < goalMinDistance && eGP.norm() > 1);
 }
 
@@ -190,7 +190,7 @@ FutureAction refrainEnterInMyGoal_C(FieldProperties fP, MyGoalPos mGP) {
       false);  //@Gandalfph add orientation and celerity
 }
 
-FutureAction refrainEnterInEnnemyGoal_C(FieldProperties fP, EnnemyGoalPos eGP) {
+FutureAction refrainEnterInEnnemyGoal_C(FieldProperties fP, EnemyGoalPos eGP) {
   return FutureAction(
       Vector2(
           -eGP.x(),
@@ -290,7 +290,7 @@ FutureAction goToBallAvoidingBall_CD(FieldProperties fP, BallPos bP, LidarDetail
   }
 }
 
-FutureAction accelerateToGoal_C(FieldProperties fP, EnnemyGoalPos eGP) {
+FutureAction accelerateToGoal_C(FieldProperties fP, EnemyGoalPos eGP) {
   return FutureAction(
       eGP,
       speedmotors,
@@ -308,7 +308,7 @@ FutureAction accelerateToGoal_D(FieldProperties fP, LidarDetailedInfos lDI) {
       false);  //@Gandalfph add orientation and celerity
 }
 
-FutureAction shoot_C(FieldProperties fP, EnnemyGoalPos eGP) {
+FutureAction shoot_C(FieldProperties fP, EnemyGoalPos eGP) {
   return FutureAction(
       accelerateToGoal_C(fP, eGP).target(),
       shootSpeed,

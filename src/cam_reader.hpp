@@ -13,7 +13,7 @@ class MyGoalPos: public Vector2 {
   using Vector2::Vector2;
 };
 
-class EnnemyGoalPos: public Vector2 {
+class EnemyGoalPos: public Vector2 {
   using Vector2::Vector2;
 };
 
