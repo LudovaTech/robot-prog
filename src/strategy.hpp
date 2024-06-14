@@ -28,6 +28,7 @@ class FutureAction {
       bool activeKicker);
 
   inline Vector2 target() const { return _target.value().toVector2(); }
+  inline bool changeTarget() const { return _target.hasValue(); }
   inline int celerity() const { return _celerity; }
   inline Radians rotation() const { return _rotation; }
   inline bool activeKicker() const { return _activeKicker; }

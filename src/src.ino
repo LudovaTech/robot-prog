@@ -8,13 +8,13 @@
 #include "utilities.hpp"
 
 const FieldProperties fieldProperties = FieldProperties(
-    243,               // fieldLength
-    182,               // fieldWidth
-    12,                // spaceBeforeLineSide
-    60,                // goalWidth
-    115,               // distanceYGoalFromCenter
-    9,                 // robotRadius
-    2                  // ballRadius
+    243,  // fieldLength
+    182,  // fieldWidth
+    12,   // spaceBeforeLineSide
+    60,   // goalWidth
+    115,  // distanceYGoalFromCenter
+    9,    // robotRadius
+    2     // ballRadius
 );
 
 const Motors motors = Motors(
@@ -48,12 +48,11 @@ std::string extractLastCompleteSequence(const char* buffer) {
   return "";
 }
 
-
-//TODO: temporaire
+// TODO: temporaire
 struct CamInfosGlue {
-  BallPos ballPos;
-  MyGoalPos myGoalPos;
-  EnemyGoalPos ennemyGoalPos;
+  Optional<BallPos> ballPos;
+  Optional<MyGoalPos> myGoalPos;
+  Optional<EnemyGoalPos> enemyGoalPos;
 };
 
 CamInfosGlue getCamInfos() {
@@ -75,10 +74,9 @@ CamInfosGlue getCamInfos() {
         SerialDebug.println("Position balle: x=" + String(ball_x) + ", y=" + String(ball_y) + ", my goal x=" +
                             String(my_goal_x) + ", y=" + String(my_goal_y) + ", ennemy goal x=" + String(enemy_goal_x) + ", y=" + String(enemy_goal_y));
         return CamInfosGlue{
-          BallPos(ball_x, ball_y),
-          MyGoalPos(my_goal_x, my_goal_y),
-          EnemyGoalPos(enemy_goal_x, enemy_goal_y)
-          };
+            BallPos(ball_x, ball_y),
+            MyGoalPos(my_goal_x, my_goal_y),
+            EnemyGoalPos(enemy_goal_x, enemy_goal_y)};
       } else {
         SerialDebug.println("Erreur lors de l'extraction des données de la caméra: " + String(lastCompleteSequence.c_str()));
       }
@@ -87,9 +85,13 @@ CamInfosGlue getCamInfos() {
       SerialDebug.println("Aucune séquence complète trouvée, reçu: " + String((char*)buffer));
     }
   }
+  return CamInfosGlue();
 }
 
 bool ledCounter = true;
+
+//TODO: temporary
+MutableVector2 previousTarget;
 
 void loop() {
   unsigned long start_millis = millis();
@@ -105,46 +107,64 @@ void loop() {
   }
 
   // GETTING LIDAR DATA
-  LidarAncInfos lidarInfos = getLidarInfos(fieldProperties, true, false);
-  SerialDebug.println("Coordonnées robot: x=" + String(lidarInfos.getCoordinates().x() / 10.0) + " cm, y=" + String(lidarInfos.getCoordinates().y() / 10.0) + " cm, orientation: " + String(lidarInfos.getOrientation()) + "°, Nearest Wall distance=" + String(lidarInfos.getNearestWall().distance({0, 0}) / 10.0) + " cm");
+  LidarInfosGlue lidarInfos = getLidarInfos(fieldProperties, true, false);
+  String full_log;
+  if (lidarInfos.oLDI.hasValue()) {
+    full_log += "Coordonnées robot: x=" + String(lidarInfos.oLDI.value().coordinates().x() / 10.0) + " cm, y=" + String(lidarInfos.oLDI.value().coordinates().y() / 10.0) + " cm, orientation: " + String(lidarInfos.oLDI.value().orientation() + " rad, ");
+  } else {
+    full_log += "Coordonnées robot: x= not found, y= not found, orientation: not found, ";
+  }
+  if (lidarInfos.oLBI.hasValue()) {
+    full_log += "Nearest Wall distance=" + String(lidarInfos.oLBI.value().distance(Vector2(0, 0)) / 10.0) + " cm";
+  } else {
+    full_log += "Nearest Wall distance= not found";
+  }
+  SerialDebug.println(full_log);
 
   // GETTING CAM DATA
   CamInfosGlue camInfos = getCamInfos();
 
-  double orientation = lidarInfos.getOrientation();
-  if (lidarInfos.getOrientationRadians() == -9999) {
-    orientation = 0;
+  // calculating the orientation of the robot
+
+  double orientation = 0;
+  if (lidarInfos.oLDI.hasValue()) {
+    orientation = lidarInfos.oLDI.value().orientation();
   }
 
-  if (camInfos.enemyGoalPos().y() < 50 && camInfos.enemyGoalPos().y() != 0) {
-    if (camInfos.enemyGoalPos().x() > 0) {
-      orientation = -180;
-    } else {
-      orientation = 180;
-    }
-  } else if (camInfos.myGoalPos().y() > 50 && camInfos.myGoalPos().y() != 0) {
-    if (camInfos.myGoalPos().x() > 0) {
-      orientation = 180;
-    } else {
-      orientation = -180;
+  if (camInfos.enemyGoalPos.hasValue()) {
+    if (camInfos.enemyGoalPos.value().y() < 50 && camInfos.enemyGoalPos.value().y() != 0) {
+      if (camInfos.enemyGoalPos.value().x() > 0) {
+        orientation = -180;
+      } else {
+        orientation = 180;
+      }
     }
   }
-
-  CamInfos currentState = CamInfos(
-      camInfos.ballPos(),
-      Vector2(lidarInfos.getCoordinates().x() / 10, lidarInfos.getCoordinates().y() / 10),
-      Vector2(0, 0),
-      camInfos.myGoalPos(),
-      camInfos.enemyGoalPos(),
-      Vector2(lidarInfos.getNearestWall().x() / 10, lidarInfos.getNearestWall().y() / 10),
-      Radians(Degree(orientation)));
+  if (camInfos.myGoalPos.hasValue()) {
+    if (camInfos.myGoalPos.value().y() > 50 && camInfos.myGoalPos.value().y() != 0) {
+      if (camInfos.myGoalPos.value().x() > 0) {
+        orientation = 180;
+      } else {
+        orientation = -180;
+      }
+    }
+  }
 
   // DOING ACTION
-  // TODO: must work without lidar data or without cam data
-  FutureAction lastAction = currentAction;
-  FutureAction currentAction = chooseStrategy(fieldProperties, currentState, lastAction);
+  FutureAction currentAction = chooseStrategy(
+      fieldProperties,
+      lidarInfos.oLDI,
+      lidarInfos.oLBI,
+      camInfos.ballPos,
+      camInfos.myGoalPos,
+      camInfos.enemyGoalPos);
 
-  motors.goTo(currentAction.target(), currentAction.celerity(), currentAction.rotation());
+  if (currentAction.changeTarget()) {
+    motors.goTo(currentAction.target(), currentAction.celerity(), orientation);
+    previousTarget = currentAction.target();
+  } else {
+    motors.goTo(previousTarget.toVector2(), currentAction.celerity(), orientation);
+  }
   SerialDebug.println("Direction : " + currentAction.target().toString() + " Vitesse : " + String(currentAction.celerity()) + " Rotation : " + String(currentAction.rotation()));
 
   if (currentAction.activeKicker()) {
