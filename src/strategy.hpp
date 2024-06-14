@@ -43,7 +43,8 @@ FutureAction chooseStrategy(
     Optional<MyGoalPos> oMGP,
     Optional<EnnemyGoalPos> oEGP);
 
-bool enterInGoal_C(FieldProperties fP, MyGoalPos mGP, EnnemyGoalPos eGP);
+bool enterInMyGoal_C(FieldProperties fP, MyGoalPos mGP);
+bool enterInEnnemyGoal_C(FieldProperties fP, EnnemyGoalPos eGP);
 
 bool leavingField_D(FieldProperties fP, LidarDetailedInfos lDI);
 bool leavingField_B(FieldProperties fP, LidarBasicInfos lBI);
@@ -55,12 +56,14 @@ bool ballIsCaught(FieldProperties fP, BallPos bP);
 
 FutureAction refrainLeavingField_D(FieldProperties fP, LidarDetailedInfos lDI);
 FutureAction refrainLeavingField_B(FieldProperties fP, LidarBasicInfos lBI);
-FutureAction refrainEnterInGoal_C(FieldProperties fP, MyGoalPos mGP, EnnemyGoalPos eGP);
+
+FutureAction refrainEnterInMyGoal_C(FieldProperties fP, MyGoalPos mGP);
+FutureAction refrainEnterInEnnemyGoal_C(FieldProperties fP, EnnemyGoalPos eGP);
 
 FutureAction goToBall_C(FieldProperties fP, BallPos bP);
 
 FutureAction goToBallAvoidingBall_C(FieldProperties fP, BallPos bP);
-FutureAction goToBallAvoidingBall_CD(FieldProperties fP, LidarDetailedInfos lDI, BallPos bP);
+FutureAction goToBallAvoidingBall_CD(FieldProperties fP, BallPos bP, LidarDetailedInfos lDI);
 
 FutureAction accelerateToGoal_C(FieldProperties fP, EnnemyGoalPos eGP);
 FutureAction accelerateToGoal_D(FieldProperties fP, LidarDetailedInfos lDI);

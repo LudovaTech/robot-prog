@@ -41,57 +41,77 @@ FutureAction chooseStrategy(
     Optional<BallPos> oBP,
     Optional<MyGoalPos> oMGP,
     Optional<EnnemyGoalPos> oEGP) {
-  if (camHasIssue(optionalCI)) {
-    if (leavingField(fP, cI)) {
-      return refrainFromLeavingStrategy(fP, cS);
-    } else if (!ballIsDetected(fP, cS)) {
-      SerialDebug.println("stopRobotStrategy");
-      return FutureAction::stopRobot();
-
-    } else if (ballIsCaught(fP, cS)) {
-      if (!goalIsDetected(fP, cS)) {
-        SerialDebug.println("stopRobotStrategy");
-        return FutureAction::stopRobot();
-      } else if (targetJustInFrontOfRobot(fP, cS, cS.enemyGoalPos())) {
-        return shootStrategy(fP, cS);
-      } else {
-        return accelerateToGoalStrategyWithCam(fP, cS);
-      }
-    } else {
-      if (targetInFrontOfRobotFromFront(fP, cS, cS.ballPos())) {
-        return goToBallStrategy(fP, cS);
-      } else {
-        return goToBallAvoidingBallStrategyWithCam(fP, cS);
-      }
+  // First we look to see if there's a risk of leaving the field
+  if (oLDI.hasValue()) {
+    if (leavingField_D(fP, oLDI.value())) {
+      return refrainLeavingField_D(fP, oLDI.value());
     }
-
+  } else if (oLBI.hasValue()) {
+    if (leavingField_B(fP, oLBI.value())) {
+      return refrainLeavingField_B(fP, oLBI.value());
+    }
   } else {
-    if (leavingField(fP, cS)) {
-      return refrainFromLeavingStrategy(fP, cS);
+    return FutureAction::stopRobot();
+  }
+  if (oMGP.hasValue()) {
+    if (enterInMyGoal_C(fP, oMGP.value())) {
+      return refrainEnterInMyGoal_C(fP, oMGP.value());
+    }
+  }
+  if (oEGP.hasValue()) {
+    if (enterInEnnemyGoal_C(fP, oEGP.value())) {
+      return refrainEnterInEnnemyGoal_C(fP, oEGP.value());
+    }
+  }
 
-    } else if (!ballIsDetected(fP, cS)) {
-      return slalowingBackwardsStrategy(fP, cS, lA);
-
-    } else if (ballIsCaught(fP, cS)) {
-      if (targetJustInFrontOfRobot(fP, cS, cS.myPos().distanceRef(fP.enemyGoalPos()))) {
-        return shootStrategy(fP, cS);
-      } else {
-        return accelerateToGoalStrategyWithLidar(fP, cS);
-      }
-
+  // Then we choose the appropriate Strategy
+  if (!oBP.hasValue()) {
+    // We don't know where is the ball
+    if (oLDI.hasValue()) {
+      return slalowingBackwards_D(fP, oLDI.value());
     } else {
-      if (targetInFrontOfRobotFromFront(fP, cS, cS.ballPos())) {
-        return goToBallStrategy(fP, cS);
+      return FutureAction::stopRobot();
+    }
+  } else {
+    BallPos bP = oBP.value();
+    if (ballIsCaught(fP, bP)) {
+      // The ball is caught 
+      if (oEGP.hasValue()) {
+        if (ballInCenter(fP, bP)) {
+          return shoot_C(fP, oEGP.value());
+        } else {
+          return accelerateToGoal_C(fP, oEGP.value());
+        }
+      } else if (oLDI.hasValue()) {
+        if (ballInCenter(fP, bP)) {
+          return shoot_D(fP, oLDI.value());
+        } else {
+          return accelerateToGoal_D(fP, oLDI.value());
+        }
       } else {
-        return goToBallAvoidingBallStrategyWithLidar(fP, cS);
+        return FutureAction::stopRobot();
+      }
+    } else {
+      // The ball is not caught
+      if (ballAhead(fP, bP)) {
+        return goToBall_C(fP, bP);
+      } else {
+        if (oLDI.hasValue()) {
+          return goToBallAvoidingBall_CD(fP, bP, oLDI.value());
+        } else {
+          return goToBallAvoidingBall_C(fP, bP);
+        }
       }
     }
   }
 }
 
-bool enterInGoal_C(FieldProperties fP, MyGoalPos mGP, EnnemyGoalPos eGP) {
-  return (eGP.norm() < goalMinDistance && eGP.norm() > 1) ||
-         (mGP.norm() < myGoalMinDistance && mGP.norm() > 1);
+bool enterInMyGoal_C(FieldProperties fP, MyGoalPos mGP) {
+  return mGP.norm() < myGoalMinDistance && mGP.norm() > 1;
+}
+
+bool enterInEnnemyGoal_C(FieldProperties fP, EnnemyGoalPos eGP) {
+  return (eGP.norm() < goalMinDistance && eGP.norm() > 1);
 }
 
 bool leavingField_D(FieldProperties fP, LidarDetailedInfos lDI) {
@@ -171,20 +191,21 @@ FutureAction refrainLeavingField_B(FieldProperties fP, LidarBasicInfos lBI) {
       false);
 }
 
-FutureAction refrainEnterInGoal_C(FieldProperties fP, MyGoalPos mGP, EnnemyGoalPos eGP) {
-  float xDirection = 0;
-  float yDirection = 0;
-  if (eGP.norm() < goalMinDistance && eGP.norm() > 1) {
-    xDirection = -eGP.x();
-    yDirection = -eGP.y();
-  } else if (mGP.norm() < myGoalMinDistance && mGP.norm() > 1) {
-    xDirection = -mGP.x();
-    yDirection = -mGP.y();
-  }
+FutureAction refrainEnterInMyGoal_C(FieldProperties fP, MyGoalPos mGP) {
   return FutureAction(
       Vector2(
-          xDirection,
-          yDirection),
+          -mGP.x(),
+          -mGP.y()),
+      speedmotors,
+      0,
+      false);  //@Gandalfph add orientation and celerity
+}
+
+FutureAction refrainEnterInEnnemyGoal_C(FieldProperties fP, EnnemyGoalPos eGP) {
+  return FutureAction(
+      Vector2(
+          -eGP.x(),
+          -eGP.y()),
       speedmotors,
       0,
       false);  //@Gandalfph add orientation and celerity
@@ -223,7 +244,7 @@ FutureAction goToBallAvoidingBall_C(FieldProperties fP, BallPos bP) {
   }
 }
 
-FutureAction goToBallAvoidingBall_CD(FieldProperties fP, LidarDetailedInfos lDI, BallPos bP) {
+FutureAction goToBallAvoidingBall_CD(FieldProperties fP, BallPos bP, LidarDetailedInfos lDI) {
   if (!ballAtLevel(fP, bP) && ballInCenter(fP, bP)) {
     if (bP.x() < 0) {
       if (lDI.coordinates().x() > (fP.fieldWidth() / 2) - 6 * fP.robotRadius()) {
