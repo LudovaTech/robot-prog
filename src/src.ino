@@ -85,17 +85,19 @@ CamInfos getCamInfos() {
 FutureAction lastAction = FutureAction(Vector2(0, 0), 0, 0, false);
 FutureAction currentAction = FutureAction(Vector2(0, 0), 0, 0, false);
 
+bool ledCounter = true;
+
 void loop() {
   unsigned long start_millis = millis();
   SerialDebug.println("***");
 
   // Faire clignoter la LED pour s'assurer que le code tourne correctement
-  if (compteur % 2 == 0) {
+  if (ledCounter) {
     digitalWrite(13, HIGH);
-    compteur = 1;
+    ledCounter = false;
   } else {
     digitalWrite(13, LOW);
-    compteur = 0;
+    ledCounter = true;
   }
 
   // testsLidar(fieldProperties); // tests du LIDAR
