@@ -54,7 +54,9 @@ bool ballAtLevel(FieldProperties fP, BallPos bP);
 bool ballInCenter(FieldProperties fP, BallPos bP);
 bool ballIsCaught(FieldProperties fP, BallPos bP);
 
-FutureAction refrainFromLeavingStrategy(FieldProperties fP, CamInfos cS);
+FutureAction refrainLeavingFieldStrategy_D(FieldProperties fP, LidarDetailedInfos lDI);
+FutureAction refrainLeavingFieldStrategy_B(FieldProperties fP, LidarBasicInfos lBI);
+FutureAction refrainEnterInGoalStrategy_C(FieldProperties fP, MyGoalPos mGP, EnnemyGoalPos eGP);
 FutureAction goToBallStrategy(FieldProperties fP, BallPos bP);
 FutureAction goToBallAvoidingBallStrategy_C(FieldProperties fP, BallPos bP);
 FutureAction goToBallAvoidingBallStrategy_CD(FieldProperties fP, LidarDetailedInfos lDI, BallPos bP);

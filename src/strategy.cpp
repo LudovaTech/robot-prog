@@ -141,66 +141,54 @@ float correctOrientation(LidarDetailedInfos lDI) {
   return sin(lDI.orientation()) * 25;
 }
 
-FutureAction refrainFromLeavingStrategy(FieldProperties fP, CamInfos cS) {
-  SerialDebug.println("refrainFromLeavingStrategy");
-
+FutureAction refrainLeavingFieldStrategy_D(FieldProperties fP, LidarDetailedInfos lDI) {
   float xDirection = 0;
   float yDirection = 0;
 
-  if (!camHasIssue(fP, cS)) {
-    int distanceDevitementY;
-    if (abs(cS.myPos().x()) < 40) {
-      distanceDevitementY = 50;
-    } else {
-      distanceDevitementY = criticalWallDistance;
-    }
-
-    if (cS.myPos().x() < -fP.fieldWidth() / 2 + criticalWallDistance) {
-      xDirection = cos(cS.orientation());
-      yDirection = sin(cS.orientation());
-    } else if (fP.fieldWidth() / 2 - criticalWallDistance < cS.myPos().x()) {
-      xDirection = -cos(cS.orientation());
-      yDirection = -sin(cS.orientation());
-    }
-
-    if (cS.myPos().y() < -fP.fieldLength() / 2 + distanceDevitementY - 5) {
-      xDirection = sin(cS.orientation());
-      yDirection = cos(cS.orientation());
-    } else if (fP.fieldLength() / 2 - distanceDevitementY < cS.myPos().y()) {
-      xDirection = -sin(cS.orientation());
-      yDirection = -cos(cS.orientation());
-    }
-
-    if (cS.nearestWall().norm() < criticalWallDistance) {
-      xDirection = -cS.nearestWall().x();
-      yDirection = -cS.nearestWall().y();
-    }
-
-  } else if (!lidarDetailedHasIssue(fP, cS)) {
-    if (cS.enemyGoalPos().norm() < goalMinDistance && cS.enemyGoalPos().norm() > 1) {
-      xDirection = -cS.enemyGoalPos().x();
-      yDirection = -cS.enemyGoalPos().y();
-    } else if (cS.myGoalPos().norm() < myGoalMinDistance && cS.myGoalPos().norm() > 1) {
-      xDirection = -cS.myGoalPos().x();
-      yDirection = -cS.myGoalPos().y();
-    }
-
-    if (cS.nearestWall().norm() < criticalWallDistance) {
-      xDirection = -cS.nearestWall().x();
-      yDirection = -cS.nearestWall().y();
-    }
-
-  } else {
-    if (cS.enemyGoalPos().norm() < goalMinDistance && cS.enemyGoalPos().norm() > 1) {
-      xDirection = -cS.enemyGoalPos().x();
-      yDirection = -cS.enemyGoalPos().y();
-    } else if (cS.myGoalPos().norm() < myGoalMinDistance && cS.myGoalPos().norm() > 1) {
-      xDirection = -cS.myGoalPos().x();
-      yDirection = -cS.myGoalPos().y();
-    }
+  if (lDI.coordinates().x() < -fP.fieldWidth() / 2 + criticalWallDistance) {
+    xDirection = cos(lDI.orientation());
+    yDirection = sin(lDI.orientation());
+  } else if (fP.fieldWidth() / 2 - criticalWallDistance < lDI.coordinates().x()) {
+    xDirection = -cos(lDI.orientation());
+    yDirection = -sin(lDI.orientation());
   }
 
-  SerialDebug.println(String(xDirection) + " " + String(yDirection));
+  if (lDI.coordinates().y() < -fP.fieldLength() / 2 + criticalWallDistance - 5) {
+    xDirection = sin(lDI.orientation());
+    yDirection = cos(lDI.orientation());
+  } else if (fP.fieldLength() / 2 - criticalWallDistance < lDI.coordinates().y()) {
+    xDirection = -sin(lDI.orientation());
+    yDirection = -cos(lDI.orientation());
+  }
+  return FutureAction(
+      Vector2(
+          xDirection,
+          yDirection),
+      speedmotors,
+      0,
+      false);
+}
+
+FutureAction refrainLeavingFieldStrategy_B(FieldProperties fP, LidarBasicInfos lBI) {
+  return FutureAction(
+      Vector2(
+          -lBI.x(),
+          -lBI.y()),
+      speedmotors,
+      0,
+      false);
+}
+
+FutureAction refrainEnterInGoalStrategy_C(FieldProperties fP, MyGoalPos mGP, EnnemyGoalPos eGP) {
+  float xDirection = 0;
+  float yDirection = 0;
+  if (eGP.norm() < goalMinDistance && eGP.norm() > 1) {
+    xDirection = -eGP.x();
+    yDirection = -eGP.y();
+  } else if (mGP.norm() < myGoalMinDistance && mGP.norm() > 1) {
+    xDirection = -mGP.x();
+    yDirection = -mGP.y();
+  }
   return FutureAction(
       Vector2(
           xDirection,
