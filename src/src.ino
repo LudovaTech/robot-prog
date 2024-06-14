@@ -1,9 +1,9 @@
 #include <string>
 
-#include "lidar_reader.hpp"
-#include "lidar_analyzer_anc.hpp"
-#include "movements.hpp"
 #include "cam_reader.hpp"
+#include "lidar_analyzer_anc.hpp"
+#include "lidar_reader.hpp"
+#include "movements.hpp"
 #include "strategy.hpp"
 #include "utilities.hpp"
 
@@ -20,13 +20,6 @@ const FieldProperties fieldProperties = FieldProperties(
 );
 
 const Motors motors = Motors(
-
-    // Arduino UNO
-    // MotorMov(11, 12, 0, Degree(-40)),
-    // MotorMov(5, 4, 0, Degree(40)),
-    // MotorMov(6, 7, 0, Degree(-140)),
-    // MotorMov(9, 8, 0, Degree(140))
-
     // Teensy
     MotorMov(15, 14, 0, Degree(-40)),
     MotorMov(36, 33, 0, Degree(40)),
@@ -77,8 +70,8 @@ CamInfos getCamInfos() {
                             String(my_goal_x) + ", y=" + String(my_goal_y) + ", ennemy goal x=" + String(enemy_goal_x) + ", y=" + String(enemy_goal_y));
 
         return CamInfos(Vector2(ball_x, ball_y), Vector2(0, 0), Vector2(0, 0),
-                          Vector2(my_goal_x, my_goal_y), Vector2(enemy_goal_x, enemy_goal_y),
-                          Vector2(0, 0), 0);
+                        Vector2(my_goal_x, my_goal_y), Vector2(enemy_goal_x, enemy_goal_y),
+                        Vector2(0, 0), 0);
 
       } else {
         SerialDebug.println("Erreur lors de l'extraction des données de la caméra: " + String(lastCompleteSequence.c_str()));
