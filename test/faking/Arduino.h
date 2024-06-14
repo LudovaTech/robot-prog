@@ -67,6 +67,7 @@ class SerialClass {
   void debugPrintln(const String& str);
   bool find(String str);
   byte readBytes(byte* buffer, int length);
+  void setTimeout(int time);
 };
 
 extern SerialClass Serial;

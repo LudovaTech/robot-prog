@@ -116,6 +116,10 @@ byte SerialClass::readBytes(byte* buffer, int length) {
   throw std::exception();
 }
 
+void SerialClass::setTimeout(int time) {
+  // unsupported yet, ignore
+}
+
 PinsClass::PinsClass(int numPins) : pinsMode(numPins, PinState::pUNDEF), pinsValue(numPins, 0) {}
 
 bool PinsClass::inRange(int pin) {
