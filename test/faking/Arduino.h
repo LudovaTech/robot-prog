@@ -46,6 +46,7 @@ class String : public std::string {
   String(long unsigned int);
 
   float toFloat();
+  String substring(size_t from, size_t to);
 };
 
 class SerialClass {

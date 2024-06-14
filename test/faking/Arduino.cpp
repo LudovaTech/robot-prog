@@ -44,6 +44,19 @@ float String::toFloat() {
   return std::stof(*this);
 }
 
+String String::substring(size_t from, size_t to = std::string::npos) {
+  if (from >= size()) {
+    return "";
+  }
+  if (to == std::string::npos || to > size()) {
+    to = size();
+  }
+  if (to <= from) {
+    return "";
+  }
+  return substr(from, to - from);
+}
+
 SerialClass::SerialClass() {}
 
 void SerialClass::begin(int baud) {}
