@@ -6,13 +6,29 @@
 #include "strategy.hpp"
 #include "utilities.hpp"
 
-class LidarBasicInfos: public Vector2 {
+class LidarBasicInfos : public Vector2 {
   using Vector2::Vector2;
 };
 
 class LidarDetailedInfos {
+ private:
+  Vector2 _coordinates;
+  Radians _orientation;
+
  public:
-  LidarDetailedInfos(const Vector2& coordinates, double orientation, std::vector<Vector2> walls)
+  LidarDetailedInfos(Vector2 coordinates, Radians orientation)
+    : _coordinates(coordinates), _orientation(orientation) {}
+
+  // TODO alias for strategy
+  inline Vector2 coordinates() { return _coordinates; }
+
+  // TODO alias for strategy
+  inline Radians orientation() { return _orientation; }
+};
+
+class LidarAncInfos {
+ public:
+  LidarAncInfos(const Vector2& coordinates, double orientation, std::vector<Vector2> walls)
       : _coordinates(coordinates), _orientation(orientation), walls(walls) {}
 
   /* Retourne les coordonnées du robot dans le référentiel du terrain. Centre du terrain: x=0, y=0.
@@ -21,12 +37,6 @@ class LidarDetailedInfos {
   Vector2 getCoordinates() {
     return _coordinates;
   }
-
-  // TODO alias for strategy
-  inline Vector2 coordinates() { return _coordinates; }
-
-  // TODO alias for strategy
-  inline Radians orientation() { return _orientation; }
 
   /* Retourne l'orientation du robot (en degrés) : 0° s'il regarde droit vers le goal, < 0 s'il regarde vers la gauche, > 0 s'il regarde vers la droite
      max 90° (ensuite tout le repère s'inverse)
@@ -68,7 +78,15 @@ class LidarDetailedInfos {
   std::vector<Vector2> walls;
 };
 
-LidarDetailedInfos getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool show_log = false, const char* input = nullptr);
+// TODO: temporaire
+struct LidarInfosGlue {
+  Optional<LidarDetailedInfos> oLDI;
+  Optional<LidarBasicInfos> oLBI;
+};
+
+LidarInfosGlue getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool show_log = false, const char* input = nullptr);
 void testsLidar(FieldProperties fP);
+
+Optional<LidarBasicInfos> getNearestWall(std::vector<Vector2> walls);
 
 #endif

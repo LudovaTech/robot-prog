@@ -30,6 +30,26 @@ struct Point {
   double x, y;
 };
 
+Optional<LidarBasicInfos> getNearestWall(std::vector<Vector2> walls) {
+  if (walls.empty()) {
+    return Optional<LidarBasicInfos>();
+  }
+
+  float nearest = 100000;
+  size_t indice;
+  for (size_t i = 0; i < walls.size(); i++) {
+    float distance = walls[i].distance({0, 0});
+    if (distance < nearest) {
+      nearest = distance;
+      indice = i;
+    }
+  }
+  return Optional<LidarBasicInfos>(LidarBasicInfos(
+    walls[indice].x(),
+    walls[indice].y()
+  ));
+}
+
 // Calcul du centre du terrain (dans le référentiel du robot)
 Point computeCentroid(const std::vector<Point>& corners) {
   Point centroid = {0, 0};
@@ -197,7 +217,7 @@ double calculateAngleBetweenLines(double a1, double b1, double c1, double a2, do
  * show_log: true pour afficher le log qui permet d'afficher ensuite les points et les murs dans le programme python
  * input: utilisée pour les tests, contient les données du Lidar
  */
-LidarDetailedInfos getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool show_log = false, const char* input = nullptr) {
+LidarInfosGlue getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool show_log = false, const char* input = nullptr) {
   double orientation = -9999;
   std::vector<Vector2> points_walls;
   const int nb_tours_lidar = 55;
@@ -303,7 +323,9 @@ LidarDetailedInfos getLidarInfos(FieldProperties fP, bool readFromLidar = true, 
   std::vector<HoughLine> walls;
   if (lines.empty()) {
     SerialDebug.println("lines empty!");
-    return LidarDetailedInfos(Vector2(-9999, -9999), orientation, points_walls);
+    return LidarInfosGlue{
+        Optional<LidarDetailedInfos>(),
+        Optional<LidarBasicInfos>()};
   }
 
   const HoughLine* parallelWall = nullptr;
@@ -590,13 +612,20 @@ LidarDetailedInfos getLidarInfos(FieldProperties fP, bool readFromLidar = true, 
   }
 
   if (corners.size() != 4) {  // on n'a pas les 4 coins, on arrête là
-    LidarDetailedInfos infos = LidarDetailedInfos(Vector2(-9999, -9999), orientation, points_walls);
+    LidarInfosGlue nInfos{
+        Optional<LidarDetailedInfos>(),
+        getNearestWall(points_walls)
+    };
     if (show_log) {
-      full_log += "** Infos: nearest wall: " + String(infos.getNearestWall().distance({0, 0}) / 10.0) + " cm\r\n";
+      if (nInfos.oLBI.hasValue()) {
+        full_log += "** Infos: nearest wall: " + String(nInfos.oLBI.value().distance({0, 0}) / 10.0) + " cm\r\n";
+      } else {
+        full_log += "** Infos: nearest wall: not found";
+      }
       full_log += "******** END ********";
       SerialDebug.println(full_log);
     }
-    return infos;
+    return nInfos;
   }
 
   Point centroid = computeCentroid(corners);  // centre du terrain dans le référentiel du robot
@@ -662,10 +691,26 @@ LidarDetailedInfos getLidarInfos(FieldProperties fP, bool readFromLidar = true, 
       -centroid.y * sin(orientation) - centroid.x * cos(orientation),
       -centroid.y * cos(orientation) + centroid.x * sin(orientation)};
 
-  LidarDetailedInfos infos_ = LidarDetailedInfos(Vector2(coordinates.x, coordinates.y), orientation, points_walls);
+  LidarInfosGlue nInfos{
+    Optional<LidarDetailedInfos>(LidarDetailedInfos(
+      Vector2(coordinates.x, coordinates.y),
+      Radians(orientation)
+    )),
+    getNearestWall(points_walls)
+  };
 
   if (show_log) {
-    full_log += "** Infos: x=" + String(infos_.getCoordinates().x() / 10.0) + " cm, y=" + String(infos_.getCoordinates().y() / 10.0) + " cm, orientation: " + String(infos_.getOrientation()) + " deg, nearest wall: " + String(infos_.getNearestWall().distance({0, 0}) / 10.0) + " cm\r\n";
+    if (nInfos.oLDI.hasValue()) {
+      full_log += "** Infos: x=" + String(nInfos.oLDI.value().coordinates().x() / 10.0) + " cm, y=" + String(nInfos.oLDI.value().coordinates().y() / 10.0) + " cm, ""orientation: " + String(nInfos.oLDI.value().orientation()) + " rad, ";
+    } else {
+      full_log += "** Infos: x= not found, y= not found, orientation: not found, ";
+    }
+    if (nInfos.oLBI.hasValue()) {
+      full_log += "nearest wall: " + String(nInfos.oLBI.value().distance({0, 0}) / 10.0) + " cm\r\n";
+    } else {
+      full_log += "nearest wall: not found";
+    }
+    
     full_log += "******** END ********";
     SerialDebug.println(full_log);
   }
@@ -686,7 +731,7 @@ LidarDetailedInfos getLidarInfos(FieldProperties fP, bool readFromLidar = true, 
   // elapsed = millis() - start_millis;
   // SerialDebug.println("Temps traitement des données : " + String(elapsed) + "ms");
 
-  return infos_;
+  return nInfos;
 }
 
 /***** TESTS ******/
@@ -695,9 +740,14 @@ double successPercentageTotal = 0;
 double successPercentageValues = 0;
 
 void checkCoordinates(FieldProperties fP, String text, double x, double y, const char* input) {
-  LidarDetailedInfos infos = getLidarInfos(fP, false, false, input);
+  LidarInfosGlue infos = getLidarInfos(fP, false, false, input);
+  if (!infos.oLDI.hasValue()) {
+    SerialDebug.println("FAILURE - not found");
+    return;
+  }
+
   double tolerance = 8;  // cm
-  Vector2 robotCoordinates = infos.getCoordinates();
+  Vector2 robotCoordinates = infos.oLDI.value().coordinates();
 
   if (robotCoordinates.x() / 10.0 > x - tolerance && robotCoordinates.x() / 10.0 < x + tolerance && robotCoordinates.y() / 10.0 > y - tolerance && robotCoordinates.y() / 10.0 < y + tolerance) {
     double distanceTest = distance({robotCoordinates.x() / 10.0, robotCoordinates.y() / 10.0}, {x, y});

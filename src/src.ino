@@ -50,13 +50,13 @@ std::string extractLastCompleteSequence(const char* buffer) {
 
 
 //TODO: temporaire
-struct CamInfosData {
+struct CamInfosGlue {
   BallPos ballPos;
   MyGoalPos myGoalPos;
   EnemyGoalPos ennemyGoalPos;
 };
 
-CamInfosData getCamInfos() {
+CamInfosGlue getCamInfos() {
   size_t bytesAvailable = SerialCam.available();
   // SerialDebug.println("nb of bytes available: " + String(bytesAvailable));
 
@@ -74,7 +74,7 @@ CamInfosData getCamInfos() {
                  &enemy_goal_x, &enemy_goal_y) == 6) {
         SerialDebug.println("Position balle: x=" + String(ball_x) + ", y=" + String(ball_y) + ", my goal x=" +
                             String(my_goal_x) + ", y=" + String(my_goal_y) + ", ennemy goal x=" + String(enemy_goal_x) + ", y=" + String(enemy_goal_y));
-        return CamInfosData{
+        return CamInfosGlue{
           BallPos(ball_x, ball_y),
           MyGoalPos(my_goal_x, my_goal_y),
           EnemyGoalPos(enemy_goal_x, enemy_goal_y)
@@ -89,16 +89,13 @@ CamInfosData getCamInfos() {
   }
 }
 
-FutureAction lastAction = FutureAction(Vector2(0, 0), 0, 0, false);
-FutureAction currentAction = FutureAction(Vector2(0, 0), 0, 0, false);
-
 bool ledCounter = true;
 
 void loop() {
   unsigned long start_millis = millis();
   SerialDebug.println("***");
 
-  // Faire clignoter la LED pour s'assurer que le code tourne correctement
+  // Flash the LED to make sure the code is running correctly
   if (ledCounter) {
     digitalWrite(13, HIGH);
     ledCounter = false;
@@ -107,15 +104,12 @@ void loop() {
     ledCounter = true;
   }
 
-  // testsLidar(fieldProperties); // tests du LIDAR
-  // return;
-
   // GETTING LIDAR DATA
-  LidarDetailedInfos lidarInfos = getLidarInfos(fieldProperties, true, false);
+  LidarAncInfos lidarInfos = getLidarInfos(fieldProperties, true, false);
   SerialDebug.println("Coordonnées robot: x=" + String(lidarInfos.getCoordinates().x() / 10.0) + " cm, y=" + String(lidarInfos.getCoordinates().y() / 10.0) + " cm, orientation: " + String(lidarInfos.getOrientation()) + "°, Nearest Wall distance=" + String(lidarInfos.getNearestWall().distance({0, 0}) / 10.0) + " cm");
 
   // GETTING CAM DATA
-  CamInfosData camInfos = getCamInfos();
+  CamInfosGlue camInfos = getCamInfos();
 
   double orientation = lidarInfos.getOrientation();
   if (lidarInfos.getOrientationRadians() == -9999) {
