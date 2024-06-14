@@ -115,19 +115,10 @@ bool enterInEnnemyGoal_C(FieldProperties fP, EnnemyGoalPos eGP) {
 }
 
 bool leavingField_D(FieldProperties fP, LidarDetailedInfos lDI) {
-  int distanceDevitementY;
-  if (abs(lDI.coordinates().x()) < 40) {
-    distanceDevitementY = 50;
-  } else {
-    distanceDevitementY = criticalWallDistance;
-  }
-
-  SerialDebug.println(distanceDevitementY);
-
   return (lDI.coordinates().x() < -fP.fieldWidth() / 2 + criticalWallDistance) ||
          (fP.fieldWidth() / 2 - criticalWallDistance < lDI.coordinates().x()) ||
-         (lDI.coordinates().y() < -fP.fieldLength() / 2 + distanceDevitementY - 5) ||
-         (fP.fieldLength() / 2 - distanceDevitementY < lDI.coordinates().y());
+         (lDI.coordinates().y() < -fP.fieldLength() / 2 + criticalWallDistance - 5) ||
+         (fP.fieldLength() / 2 - criticalWallDistance < lDI.coordinates().y());
 }
 
 bool leavingField_B(FieldProperties fP, LidarBasicInfos lBI) {
@@ -148,9 +139,7 @@ bool ballInCenter(FieldProperties fP, BallPos bP) {
 }
 
 bool ballIsCaught(FieldProperties fP, BallPos bP) {
-  bool r = ballAtLevel(fP, bP) && ballInCenter(fP, bP) && bP.y() <= 40;  // TODO create parameter
-  SerialDebug.println("ballIsCaught : " + String(r));
-  return r;
+  return ballAtLevel(fP, bP) && ballInCenter(fP, bP) && bP.y() <= 40;  // TODO create parameter
 }
 
 FutureAction refrainLeavingField_D(FieldProperties fP, LidarDetailedInfos lDI) {
