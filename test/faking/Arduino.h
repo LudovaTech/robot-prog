@@ -10,6 +10,7 @@
 #include <stdexcept>
 #include <string>
 #include <chrono>
+#include <thread>
 
 #define PI 3.1415926535897932384626433832795
 #define DEG_TO_RAD 0.017453292519943295769236907684886
@@ -28,6 +29,8 @@ const std::chrono::time_point<std::chrono::steady_clock> _start_time = std::chro
 unsigned long millis();
 
 double sq(double x);
+
+void delay(int time);
 
 std::string _removeZeros(std::string str);
 class String : public std::string {

@@ -13,8 +13,6 @@ const FieldProperties fieldProperties = FieldProperties(
     12,                // spaceBeforeLineSide
     60,                // goalWidth
     115,               // distanceYGoalFromCenter
-    Vector2(0, -115),  // myGoalPos
-    Vector2(0, 115),   // enemyGoalPos
     9,                 // robotRadius
     2                  // ballRadius
 );

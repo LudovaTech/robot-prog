@@ -14,6 +14,10 @@ double sq(double x) {
   return x * x;
 }
 
+void delay(int time) {
+  std::this_thread::sleep_for(std::chrono::milliseconds(time));
+}
+
 std::string _removeZeros(std::string str) {
   size_t dotPos = str.find_last_of('.');
   if (dotPos != std::string::npos) {
