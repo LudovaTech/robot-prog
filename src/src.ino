@@ -24,6 +24,13 @@ const Motors motors = Motors(
     MotorMov(22, 19, 0, Degree(-140)),
     MotorMov(11, 12, 0, Degree(140)));
 
+// TODO: temporaire
+struct CamInfosGlue {
+  Optional<BallPos> ballPos;
+  Optional<MyGoalPos> myGoalPos;
+  Optional<EnemyGoalPos> enemyGoalPos;
+};
+
 void setup() {
   SerialDebug.begin(115200);
   SerialCam.begin(115200);
@@ -47,13 +54,6 @@ std::string extractLastCompleteSequence(const char* buffer) {
   }
   return "";
 }
-
-// TODO: temporaire
-struct CamInfosGlue {
-  Optional<BallPos> ballPos;
-  Optional<MyGoalPos> myGoalPos;
-  Optional<EnemyGoalPos> enemyGoalPos;
-};
 
 CamInfosGlue getCamInfos() {
   size_t bytesAvailable = SerialCam.available();
