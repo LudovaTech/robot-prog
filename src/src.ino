@@ -85,10 +85,15 @@ CamInfosGlue getCamInfos() {
         if (enemy_goal_x != 0 && enemy_goal_y != 0) {
           eGP = EnemyGoalPos(enemy_goal_x, enemy_goal_y);
         }
-        return CamInfosGlue{
+        CamInfosGlue cIG{
             bP,
             mGP,
             eGP};
+
+        SerialDebug.println("ballPos has value : " + String(cIG.ballPos.hasValue()));
+        SerialDebug.println("myGoalPos has value : " + String(cIG.myGoalPos.hasValue()));
+        SerialDebug.println("enemyGoalPos has value : " + String(cIG.enemyGoalPos.hasValue()));
+        return cIG;
       } else {
         SerialDebug.println("Erreur lors de l'extraction des données de la caméra: " + String(lastCompleteSequence.c_str()));
       }
@@ -135,9 +140,6 @@ void loop() {
 
   // GETTING CAM DATA
   CamInfosGlue camInfos = getCamInfos();
-  SerialDebug.println("ballPos has value : " + String(camInfos.ballPos.hasValue()));
-  SerialDebug.println("myGoalPos has value : " + String(camInfos.myGoalPos.hasValue()));
-  SerialDebug.println("enemyGoalPos has value : " + String(camInfos.enemyGoalPos.hasValue()));
   // calculating the orientation of the robot
 
   double orientation = 0;
