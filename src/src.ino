@@ -74,15 +74,15 @@ CamInfosGlue getCamInfos() {
         SerialDebug.println("Position balle: x=" + String(ball_x) + ", y=" + String(ball_y) + ", my goal x=" +
                             String(my_goal_x) + ", y=" + String(my_goal_y) + ", ennemy goal x=" + String(enemy_goal_x) + ", y=" + String(enemy_goal_y));
         Optional<BallPos> bP;
-        if (ball_x != -9999 && ball_y != -9999) {
+        if (ball_x != 0 && ball_y != 0) {
           Optional<BallPos> bP = BallPos(ball_x, ball_y);
         }
         Optional<MyGoalPos> mGP;
-        if (my_goal_x != -9999 && my_goal_y != -9999) {
+        if (my_goal_x != 0 && my_goal_y != 0) {
           Optional<MyGoalPos> mGP = MyGoalPos(my_goal_x, my_goal_y);
         }
         Optional<EnemyGoalPos> eGP;
-        if (enemy_goal_x != -9999 && enemy_goal_y != -9999) {
+        if (enemy_goal_x != 0 && enemy_goal_y != 0) {
           Optional<EnemyGoalPos> eGP = EnemyGoalPos(enemy_goal_x, enemy_goal_y);
         }
         return CamInfosGlue{
