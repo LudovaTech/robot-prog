@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 
-#include "strategy.hpp"
+#include "parameters.hpp"
 #include "utilities.hpp"
 
 class LidarBasicInfos : public Vector2 {
