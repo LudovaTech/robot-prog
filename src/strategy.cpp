@@ -75,7 +75,7 @@ FutureAction chooseStrategy(
   } else {
     BallPos bP = oBP.value();
     if (ballIsCaught(fP, bP)) {
-      // The ball is caught 
+      // The ball is caught
       if (oEGP.hasValue()) {
         if (ballInCenter(fP, bP)) {
           return shoot_C(fP, oEGP.value());
@@ -310,7 +310,7 @@ FutureAction accelerateToGoal_D(FieldProperties fP, LidarDetailedInfos lDI) {
 
 FutureAction shoot_C(FieldProperties fP, EnemyGoalPos eGP) {
   return FutureAction(
-      accelerateToGoal_C(fP, eGP).target(),
+      eGP,
       shootSpeed,
       0,
       true);  //@Gandalfph add orientation and celerity
@@ -318,7 +318,9 @@ FutureAction shoot_C(FieldProperties fP, EnemyGoalPos eGP) {
 
 FutureAction shoot_D(FieldProperties fP, LidarDetailedInfos lDI) {
   return FutureAction(
-      accelerateToGoal_D(fP, lDI).target(),
+      Vector2(
+          fP.enemyGoalPos().x() - lDI.coordinates().x(),
+          fP.enemyGoalPos().y() - lDI.coordinates().y()),
       shootSpeed,
       0,
       true);  //@Gandalfph add orientation and celerity

@@ -102,7 +102,7 @@ CamInfosGlue getCamInfos() {
 
 bool ledCounter = true;
 
-//TODO: temporary
+// TODO: temporary
 MutableVector2 previousTarget;
 
 void loop() {
@@ -177,7 +177,15 @@ void loop() {
   } else {
     motors.goTo(previousTarget.toVector2(), currentAction.celerity(), orientation);
   }
-  SerialDebug.println("Direction : " + currentAction.target().toString() + " Vitesse : " + String(currentAction.celerity()) + " Rotation : " + String(currentAction.rotation()));
+
+  String full_log2;
+  if (currentAction.changeTarget()) {
+    full_log2 += "Target : " + currentAction.target().toString();
+  } else {
+    full_log2 += "Target : Unchanged (" + previousTarget.toVector2().toString() + ") ";
+  }
+  full_log2 += "Vitesse : " + String(currentAction.celerity()) + " Rotation : " + String(currentAction.rotation());
+  SerialDebug.println(full_log2);
 
   if (currentAction.activeKicker()) {
     // TODO active kicker
