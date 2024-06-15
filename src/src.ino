@@ -110,7 +110,7 @@ void loop() {
   LidarInfosGlue lidarInfos = getLidarInfos(fieldProperties, true, false);
   String full_log;
   if (lidarInfos.oLDI.hasValue()) {
-    full_log += "Coordonnées robot: x=" + String(lidarInfos.oLDI.value().coordinates().x() / 10.0) + " cm, y=" + String(lidarInfos.oLDI.value().coordinates().y() / 10.0) + " cm, orientation: " + String(lidarInfos.oLDI.value().orientation() + " rad, ");
+    full_log += "Coordonnées robot: x=" + String(lidarInfos.oLDI.value().coordinates().x() / 10.0) + " cm, y=" + String(lidarInfos.oLDI.value().coordinates().y() / 10.0) + " cm, orientation: " + String(lidarInfos.oLDI.value().orientation()) + " rad, ";
   } else {
     full_log += "Coordonnées robot: x= not found, y= not found, orientation: not found, ";
   }
