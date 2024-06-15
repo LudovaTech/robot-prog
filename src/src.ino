@@ -135,7 +135,9 @@ void loop() {
 
   // GETTING CAM DATA
   CamInfosGlue camInfos = getCamInfos();
-
+  SerialDebug.println("ballPos has value : " + String(camInfos.ballPos.hasValue()));
+  SerialDebug.println("myGoalPos has value : " + String(camInfos.myGoalPos.hasValue()));
+  SerialDebug.println("enemyGoalPos has value : " + String(camInfos.enemyGoalPos.hasValue()));
   // calculating the orientation of the robot
 
   double orientation = 0;
