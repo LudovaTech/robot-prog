@@ -44,8 +44,8 @@ Optional<LidarBasicInfos> getNearestWall(std::vector<Vector2> walls) {
     }
   }
   return Optional<LidarBasicInfos>(LidarBasicInfos(
-    walls[indice].x(),
-    walls[indice].y()
+    walls[indice].x()/10,
+    walls[indice].y()/10
   ));
 }
 
@@ -617,7 +617,7 @@ LidarInfosGlue getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool
     };
     if (show_log) {
       if (nInfos.oLBI.hasValue()) {
-        full_log += "** Infos: nearest wall: " + String(nInfos.oLBI.value().distance({0, 0}) / 10.0) + " cm\r\n";
+        full_log += "** Infos: nearest wall: " + String(nInfos.oLBI.value().distance({0, 0})) + " cm\r\n";
       } else {
         full_log += "** Infos: nearest wall: not found";
       }
@@ -692,7 +692,7 @@ LidarInfosGlue getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool
 
   LidarInfosGlue nInfos{
     Optional<LidarDetailedInfos>(LidarDetailedInfos(
-      Vector2(coordinates.x, coordinates.y),
+      Vector2(coordinates.x/10, coordinates.y/10),
       Radians(orientation)
     )),
     getNearestWall(points_walls)
