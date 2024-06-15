@@ -122,12 +122,12 @@ void loop() {
   LidarInfosGlue lidarInfos = getLidarInfos(fieldProperties, true, false);
   String full_log;
   if (lidarInfos.oLDI.hasValue()) {
-    full_log += "Coordonnées robot: x=" + String(lidarInfos.oLDI.value().coordinates().x() / 10.0) + " cm, y=" + String(lidarInfos.oLDI.value().coordinates().y() / 10.0) + " cm, orientation: " + String(lidarInfos.oLDI.value().orientation()) + " rad, ";
+    full_log += "Coordonnées robot: x=" + String(lidarInfos.oLDI.value().coordinates().x()) + " cm, y=" + String(lidarInfos.oLDI.value().coordinates().y()) + " cm, orientation: " + String(lidarInfos.oLDI.value().orientation()) + " rad, ";
   } else {
     full_log += "Coordonnées robot: x= not found, y= not found, orientation: not found, ";
   }
   if (lidarInfos.oLBI.hasValue()) {
-    full_log += "Nearest Wall distance=" + String(lidarInfos.oLBI.value().distance(Vector2(0, 0)) / 10.0) + " cm";
+    full_log += "Nearest Wall distance=" + String(lidarInfos.oLBI.value().distance(Vector2(0, 0))) + " cm";
   } else {
     full_log += "Nearest Wall distance= not found";
   }

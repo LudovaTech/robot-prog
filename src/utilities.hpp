@@ -130,14 +130,14 @@ class Optional {
 
   T &value() {
     if (!_hasValue) {
-      Serial.println("Error: Attempted to access value when none is present.");
+      SerialDebug.println("Error: Attempted to access value when none is present.");
     }
     return *_value;
   }
 
   const T &value() const {
     if (!_hasValue) {
-      Serial.println("Error: Attempted to access value when none is present.");
+      SerialDebug.println("Error: Attempted to access value when none is present.");
     }
     return *_value;
   }
