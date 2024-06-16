@@ -31,10 +31,17 @@ struct CamInfosGlue {
   Optional<EnemyGoalPos> enemyGoalPos;
 };
 
+uint8_t bigserialbuffer[4000];
+//uint8_t bigserialbufferlidar[4000];
+
+
 void setup() {
   SerialDebug.begin(115200);
   SerialCam.begin(115200);
   SerialLidar.begin(230400);
+
+  SerialCam.addMemoryForRead(&bigserialbuffer, sizeof(bigserialbuffer));
+  //SerialLidar.addMemoryForRead(&bigserialbufferlidar, sizeof(bigserialbufferlidar));
 
   SerialCam.setTimeout(10);
   SerialLidar.setTimeout(10);
@@ -60,46 +67,49 @@ CamInfosGlue getCamInfos() {
   // SerialDebug.println("nb of bytes available: " + String(bytesAvailable));
 
   if (bytesAvailable >= 26) {
-    byte buffer[65];
-    size_t nbrBytesReceived = SerialCam.readBytes(buffer, min(bytesAvailable, sizeof(buffer) - 1));
-    buffer[nbrBytesReceived] = '\0';
-    // SerialDebug.println(" reçu: " + String((char*)buffer));
+    //byte buffer[301];
+    size_t nbrBytesReceived = SerialCam.readBytes(bigserialbuffer, min(bytesAvailable, sizeof(bigserialbuffer) - 1));
+    bigserialbuffer[nbrBytesReceived] = '\0';
+    //SerialDebug.println(" reçu: " + String((char*)bigserialbuffer));
 
-    std::string lastCompleteSequence = extractLastCompleteSequence((char*)buffer);
+    std::string lastCompleteSequence = extractLastCompleteSequence((char*)bigserialbuffer);
     if (!lastCompleteSequence.empty()) {
-      // exemple : b-096-121+000+000+000+000e
-      int ball_x, ball_y, my_goal_x, my_goal_y, enemy_goal_x, enemy_goal_y;
-      if (sscanf(lastCompleteSequence.c_str(), "b%d%d%d%d%d%de", &ball_x, &ball_y, &my_goal_x, &my_goal_y,
-                 &enemy_goal_x, &enemy_goal_y) == 6) {
-        SerialDebug.println("Position balle: x=" + String(ball_x) + ", y=" + String(ball_y) + ", my goal x=" +
-                            String(my_goal_x) + ", y=" + String(my_goal_y) + ", ennemy goal x=" + String(enemy_goal_x) + ", y=" + String(enemy_goal_y));
+      // exemple : b+048+019+006+065-045+027+000+000+090+015+065+070+066-059e
+
+      int ballX, ballY, 
+          myGoalX1, myGoalY1, myGoalX2, myGoalY2, myGoalX3, myGoalY3, 
+          enemyGoalX1, enemyGoalY1, enemyGoalX2, enemyGoalY2, enemyGoalX3, enemyGoalY3;
+
+      if (sscanf(lastCompleteSequence.c_str(), "b%d%d%d%d%d%d%d%d%d%d%d%d%d%de", 
+                &ballX, &ballY, &myGoalX1, &myGoalY1, &myGoalX2, &myGoalY2, &myGoalX3, &myGoalY3, 
+                &enemyGoalX1, &enemyGoalY1, &enemyGoalX2, &enemyGoalY2, &enemyGoalX3, &enemyGoalY3) == 14) {
+
+        SerialDebug.println("Position balle: x=" + String(ballX) + ", y=" + String(ballY) + ", my goal x=" +
+                            String(myGoalX1) + ", y=" + String(myGoalY1) + ", ennemy goal x=" + String(enemyGoalX1) + ", y=" + String(enemyGoalY1));
         Optional<BallPos> bP;
-        if (ball_x != 0 && ball_y != 0) {
-          bP = BallPos(ball_x, ball_y);
+        if (ballX != 0 && ballY != 0) {
+          bP = BallPos(ballX, ballY);
         }
         Optional<MyGoalPos> mGP;
-        if (my_goal_x != 0 && my_goal_y != 0) {
-          mGP = MyGoalPos(my_goal_x, my_goal_y);
+        if (myGoalX1 != 0 && myGoalY1 != 0) {
+          mGP = MyGoalPos(myGoalX1, myGoalY1);
         }
         Optional<EnemyGoalPos> eGP;
-        if (enemy_goal_x != 0 && enemy_goal_y != 0) {
-          eGP = EnemyGoalPos(enemy_goal_x, enemy_goal_y);
+        if (enemyGoalX1 != 0 && enemyGoalY1 != 0) {
+          eGP = EnemyGoalPos(enemyGoalX1, enemyGoalY1);
         }
         CamInfosGlue cIG{
             bP,
             mGP,
             eGP};
 
-        SerialDebug.println("ballPos has value : " + String(cIG.ballPos.hasValue()));
-        SerialDebug.println("myGoalPos has value : " + String(cIG.myGoalPos.hasValue()));
-        SerialDebug.println("enemyGoalPos has value : " + String(cIG.enemyGoalPos.hasValue()));
         return cIG;
       } else {
         SerialDebug.println("Erreur lors de l'extraction des données de la caméra: " + String(lastCompleteSequence.c_str()));
       }
 
     } else {
-      SerialDebug.println("Aucune séquence complète trouvée, reçu: " + String((char*)buffer));
+      SerialDebug.println("Aucune séquence complète trouvée, reçu: " + String((char*)bigserialbuffer));
     }
   }
   return CamInfosGlue();
@@ -166,7 +176,6 @@ void loop() {
       }
     }
   }*/
-  
   // DOING ACTION
   FutureAction currentAction = chooseStrategy(
       fieldProperties,

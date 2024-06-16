@@ -50,8 +50,8 @@ FutureAction chooseStrategy(
     if (leavingField_B(fP, oLBI.value())) {
       return refrainLeavingField_B(fP, oLBI.value());
     }
-  } else {
-    return FutureAction::stopRobot();
+  // } else {
+  //   return FutureAction::stopRobot();
   }
   if (oMGP.hasValue()) {
     if (enterInMyGoal_C(fP, oMGP.value())) {
@@ -66,7 +66,6 @@ FutureAction chooseStrategy(
 
   // Then we choose the appropriate Strategy
   if (!oBP.hasValue()) {
-    SerialDebug.println(String(oBP.hasValue()));
     // We don't know where is the ball
     if (oLDI.hasValue()) {
       return slalowingBackwards_D(fP, oLDI.value());

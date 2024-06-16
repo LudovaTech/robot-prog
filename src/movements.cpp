@@ -113,7 +113,6 @@ void Motors::goTo(Vector2 vector, int celerity, Radians orientation) const {
     float speedBR = MBRcelerity * rapport;
     float speedBL = MBLcelerity * rapport;
 
-    SerialDebug.println("Orientation dans movements : " + String(orientation));
     float minimumSpeed = min(speedFR, min(speedFL, min(speedBR, speedBL)));
     Radians rotation = orientation * celerity * 0.6;
 

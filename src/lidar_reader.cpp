@@ -201,6 +201,7 @@ std::vector<LidarPoint> CircularLidarPointsBuffer::getPoints() {
       // Now the stream is aligned
       byte buffer[45];
       size_t nbrBytesReceived = SerialLidar.readBytes(buffer, 45);
+      //SerialDebug.println(String((char*)buffer));
       if (nbrBytesReceived != 45) {
         // SerialDebug.println("error, wrong number of bytes received (" + String(nbrBytesReceived) + ")");
       } else {
