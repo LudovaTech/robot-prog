@@ -166,21 +166,14 @@ void loop() {
       }
     }
   }
-  SerialDebug.println("load bPT");
-  SerialDebug.flush();
   // DOING ACTION
-  Optional<BallPos> bPT = camInfos.ballPos;
-  SerialDebug.println("call chooseStrategy");
-  SerialDebug.flush();
   FutureAction currentAction = chooseStrategy(
       fieldProperties,
       lidarInfos.oLDI,
       lidarInfos.oLBI,
-      bPT,
+      camInfos.ballPos,
       camInfos.myGoalPos,
       camInfos.enemyGoalPos);
-  SerialDebug.println("have called chooseStrategy");
-  SerialDebug.flush();
   if (currentAction.changeTarget()) {
     motors.goTo(currentAction.target(), currentAction.celerity(), orientation);
     previousTarget = currentAction.target();

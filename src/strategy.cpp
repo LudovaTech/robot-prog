@@ -42,8 +42,6 @@ FutureAction chooseStrategy(
     Optional<MyGoalPos> oMGP,
     Optional<EnemyGoalPos> oEGP) {
   // First we look to see if there's a risk of leaving the field
-  SerialDebug.println("in chooseStrategy");
-  SerialDebug.flush();
   if (oLDI.hasValue()) {
     if (leavingField_D(fP, oLDI.value())) {
       return refrainLeavingField_D(fP, oLDI.value());
@@ -66,8 +64,6 @@ FutureAction chooseStrategy(
     }
   }
 
-  SerialDebug.println("in chooseStrategy.chooseStrategy");
-  SerialDebug.flush();
   // Then we choose the appropriate Strategy
   if (!oBP.hasValue()) {
     SerialDebug.println(String(oBP.hasValue()));
@@ -78,12 +74,8 @@ FutureAction chooseStrategy(
       return FutureAction::stopRobot();
     }
   } else {
-    SerialDebug.println("in else");
-    SerialDebug.flush();
     BallPos bP = oBP.value();
     if (ballIsCaught(fP, bP)) {
-      SerialDebug.println("in ball is caught");
-      SerialDebug.flush();
       // The ball is caught
       if (oEGP.hasValue()) {
         if (ballInCenter(fP, bP)) {
@@ -101,8 +93,6 @@ FutureAction chooseStrategy(
         return FutureAction::stopRobot();
       }
     } else {
-      SerialDebug.println("in ball is not caught");
-      SerialDebug.flush();
       // The ball is not caught
       if (ballAhead(fP, bP)) {
         return goToBall_C(fP, bP);
