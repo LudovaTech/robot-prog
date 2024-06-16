@@ -66,6 +66,7 @@ FutureAction chooseStrategy(
 
   // Then we choose the appropriate Strategy
   if (!oBP.hasValue()) {
+    SerialDebug.println(String(oBP.hasValue()));
     // We don't know where is the ball
     if (oLDI.hasValue()) {
       return slalowingBackwards_D(fP, oLDI.value());
@@ -129,7 +130,7 @@ bool leavingField_D(FieldProperties fP, LidarDetailedInfos lDI) {
 
 bool leavingField_B(FieldProperties fP, LidarBasicInfos lBI) {
   bool approachingNearestWall = lBI.norm() < criticalWallDistance;
-  SerialDebug.println("Nearest Wall : " + String(approachingNearestWall));
+  SerialDebug.println("Nearest Wall too near: " + String(approachingNearestWall));
   return approachingNearestWall;
 }
 
