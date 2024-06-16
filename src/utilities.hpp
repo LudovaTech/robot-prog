@@ -122,6 +122,35 @@ class Optional {
     }
   }
 
+  Optional(Optional &&other) noexcept : _value(other._value), _hasValue(other._hasValue) {
+    other._value = nullptr;
+    other._hasValue = false;
+  }
+
+  Optional &operator=(const Optional &other) {
+    if (this != &other) {
+      delete _value;
+      _hasValue = other._hasValue;
+      if (_hasValue) {
+        _value = new T(*other._value);
+      } else {
+        _value = nullptr;
+      }
+    }
+    return *this;
+  }
+
+  Optional &operator=(Optional &&other) noexcept {
+    if (this != &other) {
+      delete _value;
+      _value = other._value;
+      _hasValue = other._hasValue;
+      other._value = nullptr;
+      other._hasValue = false;
+    }
+    return *this;
+  }
+
   ~Optional() {
     delete _value;
   }

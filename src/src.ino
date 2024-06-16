@@ -141,10 +141,6 @@ void loop() {
   // GETTING CAM DATA
   CamInfosGlue camInfos = getCamInfos();
 
-  SerialDebug.println("ballPos has value : " + String(camInfos.ballPos.hasValue()));
-  SerialDebug.println("myGoalPos has value : " + String(camInfos.myGoalPos.hasValue()));
-  SerialDebug.println("enemyGoalPos has value : " + String(camInfos.enemyGoalPos.hasValue()));
-
   // calculating the orientation of the robot
 
   double orientation = 0;
@@ -170,16 +166,21 @@ void loop() {
       }
     }
   }
-
+  SerialDebug.println("load bPT");
+  SerialDebug.flush();
   // DOING ACTION
+  Optional<BallPos> bPT = camInfos.ballPos;
+  SerialDebug.println("call chooseStrategy");
+  SerialDebug.flush();
   FutureAction currentAction = chooseStrategy(
       fieldProperties,
       lidarInfos.oLDI,
       lidarInfos.oLBI,
-      camInfos.ballPos,
+      bPT,
       camInfos.myGoalPos,
       camInfos.enemyGoalPos);
-
+  SerialDebug.println("have called chooseStrategy");
+  SerialDebug.flush();
   if (currentAction.changeTarget()) {
     motors.goTo(currentAction.target(), currentAction.celerity(), orientation);
     previousTarget = currentAction.target();
