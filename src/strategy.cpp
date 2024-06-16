@@ -31,7 +31,7 @@ FutureAction FutureAction::stopRobot() {
 const int criticalWallDistance = 25;
 const int goalMinDistance = 90;  // 85 pour SN10 et 95 pour SN9
 const int myGoalMinDistance = 82;
-const int speedmotors = 120;
+const int speedmotors = 180;
 const int shootSpeed = 180;
 
 FutureAction chooseStrategy(
@@ -148,7 +148,7 @@ bool ballInCenter(FieldProperties fP, BallPos bP) {
 }
 
 bool ballIsCaught(FieldProperties fP, BallPos bP) {
-  return ballAtLevel(fP, bP) && ballInCenter(fP, bP) && bP.y() <= 40;  // TODO create parameter
+  return ballAtLevel(fP, bP) && ballInCenter(fP, bP) && bP.y() <= 60;  // TODO create parameter
 }
 
 FutureAction refrainLeavingField_D(FieldProperties fP, LidarDetailedInfos lDI) {

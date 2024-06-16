@@ -143,29 +143,30 @@ void loop() {
 
   // calculating the orientation of the robot
 
-  double orientation = 0;
+  Radians orientation = 0;
   if (lidarInfos.oLDI.hasValue()) {
     orientation = lidarInfos.oLDI.value().orientation();
   }
 
-  if (camInfos.enemyGoalPos.hasValue()) {
+  /*if (camInfos.enemyGoalPos.hasValue()) {
     if (camInfos.enemyGoalPos.value().y() < 50 && camInfos.enemyGoalPos.value().y() != 0) {
       if (camInfos.enemyGoalPos.value().x() > 0) {
-        orientation = -180;
+        orientation = -PI/2;
       } else {
-        orientation = 180;
+        orientation = PI/2;
       }
     }
   }
   if (camInfos.myGoalPos.hasValue()) {
     if (camInfos.myGoalPos.value().y() > 50 && camInfos.myGoalPos.value().y() != 0) {
       if (camInfos.myGoalPos.value().x() > 0) {
-        orientation = 180;
+        orientation = PI/2;
       } else {
-        orientation = -180;
+        orientation = -PI/2;
       }
     }
-  }
+  }*/
+  
   // DOING ACTION
   FutureAction currentAction = chooseStrategy(
       fieldProperties,

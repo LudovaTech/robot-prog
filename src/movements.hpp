@@ -58,7 +58,7 @@ class Motors {
 
   void fullStop() const;
 
-  void goTo(Vector2 distances, int celerity, float rotation) const;
+  void goTo(Vector2 distances, int celerity, Radians orientation) const;
 };
 
 #endif
