@@ -690,10 +690,48 @@ LidarInfosGlue getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool
       -centroid.y * sin(orientation) - centroid.x * cos(orientation),
       -centroid.y * cos(orientation) + centroid.x * sin(orientation)};
 
+  int smallWall1_firstCornerIndex = (firstCornerIndex + 3) % 4;
+  int smallWall1_secondCornerIndex = firstCornerIndex;
+  float firstGoalX = (corners[smallWall1_firstCornerIndex].x + corners[smallWall1_secondCornerIndex].x) / 2.0;
+  float firstGoalY = (corners[smallWall1_firstCornerIndex].y + corners[smallWall1_secondCornerIndex].y) / 2.0;
+
+  int smallWall2_firstCornerIndex = secondCornerIndex;
+  int smallWall2_secondCornerIndex = (secondCornerIndex + 1) % 4;
+  float secondGoalX = (corners[smallWall2_firstCornerIndex].x + corners[smallWall2_secondCornerIndex].x) / 2.0;
+  float secondGoalY = (corners[smallWall2_firstCornerIndex].y + corners[smallWall2_secondCornerIndex].y) / 2.0;
+
+  float frontGoalX, frontGoalY, rearGoalX, rearGoalY;
+  if (firstGoalY > secondGoalY) {
+    frontGoalX = firstGoalX;
+    frontGoalY = firstGoalY;
+    rearGoalX = secondGoalX;
+    rearGoalY = secondGoalY;
+  } else {
+    frontGoalX = secondGoalX;
+    frontGoalY = secondGoalY;
+    rearGoalX = firstGoalX;
+    rearGoalY = firstGoalY;
+  }
+
+  if (firstCornerIndex == 1 || firstCornerIndex == 2 || firstCornerIndex == 3 || firstCornerIndex == 4 || firstCornerIndex == 0) {
+  } else {
+    frontGoalX, frontGoalY, rearGoalX, rearGoalY = 0;
+  }
+
+  // SerialDebug.println(firstCornerIndex);
+  
+  // Vector2 frontGoal = {frontGoalX, frontGoalY};
+  // Vector2 rearGoal = {rearGoalX, rearGoalY};
+  Vector2 frontGoal = {0, 0};
+  Vector2 rearGoal = {0, 0};
+
+  // SerialDebug.println(frontGoal.toString());
   LidarInfosGlue nInfos{
     Optional<LidarDetailedInfos>(LidarDetailedInfos(
       Vector2(coordinates.x/10, coordinates.y/10),
-      Radians(orientation)
+      Radians(orientation),
+      Vector2(frontGoal),
+      Vector2(rearGoal)
     )),
     getNearestWall(points_walls)
   };
