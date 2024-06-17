@@ -83,44 +83,59 @@ CamInfosGlue getCamInfos(Radians angleFrontGoalLidar, Radians angleRearGoalLidar
       if (sscanf(lastCompleteSequence.c_str(), "b%d%d%d%d%d%d%d%d%d%d%d%d%d%de", 
                 &ballX, &ballY, &myGoalX1, &myGoalY1, &myGoalX2, &myGoalY2, &myGoalX3, &myGoalY3, 
                 &enemyGoalX1, &enemyGoalY1, &enemyGoalX2, &enemyGoalY2, &enemyGoalX3, &enemyGoalY3) == 14) {
-
-        SerialDebug.println("Position balle: x=" + String(ballX) + ", y=" + String(ballY) + ", my goal x=" +
-                            String(myGoalX1) + ", y=" + String(myGoalY1) + ", ennemy goal x=" + String(enemyGoalX1) + ", y=" + String(enemyGoalY1));
         
         Radians angleMargin = 0.3;
+        if(angleFrontGoalLidar == 999 || angleRearGoalLidar == 999) {
+          angleMargin = 10;
+        } 
+            
         int myGoalX, myGoalY, enemyGoalX, enemyGoalY;
 
         Radians angleMyGoalCam3 = Vector2(myGoalX3, myGoalY3).angle();
+        Radians angleMyGoalCam2 = Vector2(myGoalX2, myGoalY2).angle();
+        Radians angleMyGoalCam1 = Vector2(myGoalX1, myGoalY1).angle();
         if (abs(angleMyGoalCam3 - angleFrontGoalLidar) < angleMargin || abs(angleMyGoalCam3 - angleRearGoalLidar) < angleMargin) {
           myGoalX = myGoalX3;
-          myGoalY = myGoalX3;
-        }
-        Radians angleMyGoalCam2 = Vector2(myGoalX2, myGoalY2).angle();
-        if (abs(angleMyGoalCam2 - angleFrontGoalLidar) < angleMargin || abs(angleMyGoalCam2 - angleRearGoalLidar) < angleMargin) {
+          myGoalY = myGoalY3;
+          SerialDebug.println("angleMyGoalCam3 chosen");
+        } else if (abs(angleMyGoalCam2 - angleFrontGoalLidar) < angleMargin || abs(angleMyGoalCam2 - angleRearGoalLidar) < angleMargin) {
           myGoalX = myGoalX2;
-          myGoalY = myGoalX2;
-        }
-        Radians angleMyGoalCam1 = Vector2(myGoalX1, myGoalY1).angle();
-        if (abs(angleMyGoalCam1 - angleFrontGoalLidar) < angleMargin || abs(angleMyGoalCam1 - angleRearGoalLidar) < angleMargin) {
+          myGoalY = myGoalY2;
+          SerialDebug.println("angleMyGoalCam2 chosen");
+        } else if (abs(angleMyGoalCam1 - angleFrontGoalLidar) < angleMargin || abs(angleMyGoalCam1 - angleRearGoalLidar) < angleMargin) {
           myGoalX = myGoalX1;
-          myGoalY = myGoalX1;
+          myGoalY = myGoalY1;
+          SerialDebug.println("angleMyGoalCam1 chosen");
+        } else {
+          myGoalX = 0;
+          myGoalY = 0;
+          SerialDebug.println("myGoal nothing chosen");
         }
 
         Radians angleEnemyGoalCam3 = Vector2(enemyGoalX3, enemyGoalY3).angle();
+        Radians angleEnemyGoalCam2 = Vector2(enemyGoalX2, enemyGoalY2).angle();
+        Radians angleEnemyGoalCam1 = Vector2(enemyGoalX1, enemyGoalY1).angle();
         if (abs(angleEnemyGoalCam3 - angleFrontGoalLidar) < angleMargin || abs(angleMyGoalCam3 - angleRearGoalLidar) < angleMargin) {
           enemyGoalX = enemyGoalX3;
-          enemyGoalY = enemyGoalX3;
-        }
-        Radians angleEnemyGoalCam2 = Vector2(enemyGoalX2, enemyGoalY2).angle();
-        if (abs(angleEnemyGoalCam2 - angleFrontGoalLidar) < angleMargin || abs(angleMyGoalCam2 - angleRearGoalLidar) < angleMargin) {
+          enemyGoalY = enemyGoalY3;
+          SerialDebug.println("angleEnemyGoalCam3 chosen");
+        } else if (abs(angleEnemyGoalCam2 - angleFrontGoalLidar) < angleMargin || abs(angleMyGoalCam2 - angleRearGoalLidar) < angleMargin) {
           enemyGoalX = enemyGoalX2;
-          enemyGoalY = enemyGoalX2;
-        }
-        Radians angleEnemyGoalCam1 = Vector2(enemyGoalX1, enemyGoalY1).angle();
-        if (abs(angleEnemyGoalCam1 - angleFrontGoalLidar) < angleMargin || abs(angleMyGoalCam1 - angleRearGoalLidar) < angleMargin) {
+          enemyGoalY = enemyGoalY2;
+          SerialDebug.println("angleEnemyGoalCam2 chosen");
+        } else if (abs(angleEnemyGoalCam1 - angleFrontGoalLidar) < angleMargin || abs(angleMyGoalCam1 - angleRearGoalLidar) < angleMargin) {
           enemyGoalX = enemyGoalX1;
-          enemyGoalY = enemyGoalX1;
+          enemyGoalY = enemyGoalY1;
+          SerialDebug.println("angleEnemyGoalCam1 chosen");
+        } else {
+          enemyGoalX = 0;
+          enemyGoalY = 0;
+          SerialDebug.println("enemyGoal nothing chosen");
         }
+
+        SerialDebug.println("Position balle: x=" + String(ballX) + ", y=" + String(ballY) + 
+                            ", my goal x=" + String(myGoalX) + ", y=" + String(myGoalY) + 
+                            ", ennemy goal x=" + String(enemyGoalX) + ", y=" + String(enemyGoalY));
         
         Optional<BallPos> bP;
         if (ballX != 0 && ballY != 0) {
@@ -137,6 +152,7 @@ CamInfosGlue getCamInfos(Radians angleFrontGoalLidar, Radians angleRearGoalLidar
         
         CamInfosGlue cIG {bP, mGP, eGP};
         return cIG;
+
       } else {
         SerialDebug.println("Erreur lors de l'extraction des données de la caméra: " + String(lastCompleteSequence.c_str()));
       }
@@ -181,29 +197,33 @@ void loop() {
   }
   SerialDebug.println(full_log);
 
-  Radians angleFrontGoalLidar = Vector2(lidarInfos.oLDI.value().frontGoalCoordinates().x(), lidarInfos.oLDI.value().frontGoalCoordinates().y()).angle();
-  Radians angleRearGoalLidar = Vector2(lidarInfos.oLDI.value().rearGoalCoordinates().x(), lidarInfos.oLDI.value().rearGoalCoordinates().y()).angle();
+  Radians angleFrontGoalLidar = 999; 
+  Radians angleRearGoalLidar = 999;
+  if (lidarInfos.oLDI.hasValue()) {
+    angleFrontGoalLidar = Vector2(lidarInfos.oLDI.value().frontGoalCoordinates().x(), lidarInfos.oLDI.value().frontGoalCoordinates().y()).angle();
+    angleRearGoalLidar = Vector2(lidarInfos.oLDI.value().rearGoalCoordinates().x(), lidarInfos.oLDI.value().rearGoalCoordinates().y()).angle();
+    //SerialDebug.println(angleFrontGoalLidar);
+  }
 
   // GETTING CAM DATA
   CamInfosGlue camInfos = getCamInfos(angleFrontGoalLidar, angleRearGoalLidar);
-
-  SerialDebug.println(angleFrontGoalLidar);
 
   // Calculating the orientation of the robot
   Radians orientation = 0;
   if (lidarInfos.oLDI.hasValue()) {
     orientation = lidarInfos.oLDI.value().orientation();
   }
-  // if (camInfos.enemyGoalPos.hasValue()) {
-  //   if (camInfos.enemyGoalPos.value().y() < 0) {
-  //     orientation = -(abs(x)/x) * (PI/2)
-  //   }
-  // }
-  // if (camInfos.myGoalPos.hasValue()) {
-  //   if (camInfos.myGoalPos.value().y() > 0) {
-  //     orientation = (abs(x)/x) * (PI/2)
-  //   }
-  // }
+  
+  if (camInfos.enemyGoalPos.hasValue()) {
+    if (camInfos.enemyGoalPos.value().y() < 0) {
+      orientation = -abs(camInfos.enemyGoalPos.value().x())/camInfos.enemyGoalPos.value().x() * PI/2;
+    }
+  }
+  if (camInfos.myGoalPos.hasValue()) {
+    if (camInfos.myGoalPos.value().y() > 0) {
+      orientation = abs(camInfos.myGoalPos.value().x())/camInfos.myGoalPos.value().x() * PI/2;
+    }
+  }
 
   // DOING ACTION
   FutureAction currentAction = chooseStrategy(
@@ -226,7 +246,7 @@ void loop() {
   } else {
     full_log2 += "Target : Unchanged (" + previousTarget.toVector2().toString() + ") ";
   }
-  full_log2 += "Vitesse : " + String(currentAction.celerity()) + " Rotation : " + String(currentAction.rotation());
+  full_log2 += "Vitesse : " + String(currentAction.celerity()) + " Rotation : " + String(orientation);
   SerialDebug.println(full_log2);
 
   if (currentAction.activeKicker()) {

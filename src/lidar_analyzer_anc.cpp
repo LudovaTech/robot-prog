@@ -713,19 +713,9 @@ LidarInfosGlue getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool
     rearGoalY = firstGoalY;
   }
 
-  if (firstCornerIndex == 1 || firstCornerIndex == 2 || firstCornerIndex == 3 || firstCornerIndex == 4 || firstCornerIndex == 0) {
-  } else {
-    frontGoalX, frontGoalY, rearGoalX, rearGoalY = 0;
-  }
+  Vector2 frontGoal = {frontGoalX, frontGoalY};
+  Vector2 rearGoal = {rearGoalX, rearGoalY};
 
-  // SerialDebug.println(firstCornerIndex);
-  
-  // Vector2 frontGoal = {frontGoalX, frontGoalY};
-  // Vector2 rearGoal = {rearGoalX, rearGoalY};
-  Vector2 frontGoal = {0, 0};
-  Vector2 rearGoal = {0, 0};
-
-  // SerialDebug.println(frontGoal.toString());
   LidarInfosGlue nInfos{
     Optional<LidarDetailedInfos>(LidarDetailedInfos(
       Vector2(coordinates.x/10, coordinates.y/10),
