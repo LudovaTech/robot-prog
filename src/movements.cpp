@@ -1,4 +1,4 @@
-#include "movements.h"
+#include "movements.hpp"
 
 ///////MOTORMOV
 MotorMov::MotorMov(
@@ -88,7 +88,7 @@ void Motors::fullStop() const {
   backLeft().stop();
 }
 
-void Motors::goTo(Vector2 vector, int celerity, float rotation) const {
+void Motors::goTo(Vector2 vector, int celerity, Radians orientation) const {
   // If the distance to the destination is less than x, stop the motors
   if (vector.norm() < 0) {  // TODO faire de 3 un parametre global
     fullStop();
@@ -114,6 +114,7 @@ void Motors::goTo(Vector2 vector, int celerity, float rotation) const {
     float speedBL = MBLcelerity * rapport;
 
     float minimumSpeed = min(speedFR, min(speedFL, min(speedBR, speedBL)));
+    Radians rotation = orientation * celerity * 0.6;
 
     if (minimumSpeed - rotation < -255) {
       float rapport = (-255 + rotation) / minimumSpeed;

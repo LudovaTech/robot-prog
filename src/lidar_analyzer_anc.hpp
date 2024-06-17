@@ -3,30 +3,50 @@
 
 #include <Arduino.h>
 
-#include "strategy.h"
-#include "utilities.h"
+#include "parameters.hpp"
+#include "utilities.hpp"
 
-class LidarInfos {
+class LidarBasicInfos : public Vector2 {
+  using Vector2::Vector2;
+};
+
+class LidarDetailedInfos {
+ private:
+  Vector2 _coordinates;
+  Radians _orientation;
+
  public:
-  LidarInfos(const Vector2& coordinates, double orientation, std::vector<Vector2> walls)
-      : coordinates(coordinates), orientation(orientation), walls(walls) {}
+  LidarDetailedInfos(Vector2 coordinates, Radians orientation)
+    : _coordinates(coordinates), _orientation(orientation) {}
+
+  // TODO alias for strategy
+  inline Vector2 coordinates() { return _coordinates; }
+
+  // TODO alias for strategy
+  inline Radians orientation() { return _orientation; }
+};
+
+class LidarAncInfos {
+ public:
+  LidarAncInfos(const Vector2& coordinates, double orientation, std::vector<Vector2> walls)
+      : _coordinates(coordinates), _orientation(orientation), walls(walls) {}
 
   /* Retourne les coordonnées du robot dans le référentiel du terrain. Centre du terrain: x=0, y=0.
      Axe y positif dans la direction du regard du robot
   */
   Vector2 getCoordinates() {
-    return coordinates;
+    return _coordinates;
   }
 
   /* Retourne l'orientation du robot (en degrés) : 0° s'il regarde droit vers le goal, < 0 s'il regarde vers la gauche, > 0 s'il regarde vers la droite
      max 90° (ensuite tout le repère s'inverse)
   */
   double getOrientation() {
-    return orientation * (180.0 / M_PI);
+    return _orientation * (180.0 / M_PI);
   }
 
   double getOrientationRadians() {
-    return orientation;
+    return _orientation;
   }
 
   /* retourne les murs (le point le plus proche de chaque mur) */
@@ -53,12 +73,20 @@ class LidarInfos {
   }
 
  private:
-  Vector2 coordinates;
-  double orientation;
+  Vector2 _coordinates;
+  double _orientation;
   std::vector<Vector2> walls;
 };
 
-LidarInfos getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool show_log = false, const char* input = nullptr);
+// TODO: temporaire
+struct LidarInfosGlue {
+  Optional<LidarDetailedInfos> oLDI;
+  Optional<LidarBasicInfos> oLBI;
+};
+
+LidarInfosGlue getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool show_log = false, const char* input = nullptr);
 void testsLidar(FieldProperties fP);
+
+Optional<LidarBasicInfos> getNearestWall(std::vector<Vector2> walls);
 
 #endif

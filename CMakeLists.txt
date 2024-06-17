@@ -23,7 +23,7 @@ target_include_directories(Arduino PUBLIC ./test/faking)
 file(GLOB TEST_SOURCES "test/*_unit.cpp")
 # file(GLOB SRC_SOURCES "src/*.cpp")
 # add_executable(unitTest ${TEST_SOURCES} ${SRC_SOURCES})
-add_executable(unitTest ${TEST_SOURCES} ./src/utilities.cpp ./src/states.cpp ./src/strategy.cpp ./src/movements.cpp ./src/lidar.cpp ./src/logger.cpp)
+add_executable(unitTest ${TEST_SOURCES} ./src/utilities.cpp ./src/cam_reader.cpp ./src/strategy.cpp ./src/movements.cpp ./src/lidar_reader.cpp ./src/logger.cpp)
 
 target_link_libraries(unitTest gtest_main Arduino)
 add_test(NAME example_test COMMAND unitTest)

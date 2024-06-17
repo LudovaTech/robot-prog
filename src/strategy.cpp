@@ -1,4 +1,4 @@
-#include "strategy.h"
+#include "strategy.hpp"
 
 //////// FutureAction
 
@@ -12,255 +12,248 @@ FutureAction::FutureAction(
       _rotation(rotation),
       _activeKicker(activeKicker) {}
 
+FutureAction::FutureAction(
+    int celerity,
+    Radians rotation,
+    bool activeKicker)
+    : _target(Optional<MutableVector2>()),
+      _celerity(celerity),
+      _rotation(rotation),
+      _activeKicker(activeKicker) {}
+
 FutureAction FutureAction::stopRobot() {
   return FutureAction(Vector2(0, 0), 0, 0, false);
 }
 
 //////// Functions
 
-//TODO: remove parameters
+// TODO: remove parameters
 const int criticalWallDistance = 25;
 const int goalMinDistance = 90;  // 85 pour SN10 et 95 pour SN9
 const int myGoalMinDistance = 82;
-const int speedmotors = 120;
+const int speedmotors = 180;
 const int shootSpeed = 180;
 
-FutureAction chooseStrategy(FieldProperties fP, RobotState cS, FutureAction lA) {
-  if (robotIsLost(fP, cS)) {
-    if (leavingField(fP, cS)) {
-      return refrainFromLeavingStrategy(fP, cS);
-    } else if (!ballIsDetected(fP, cS)) {
-      SerialDebug.println("stopRobotStrategy");
+FutureAction chooseStrategy(
+    FieldProperties fP,
+    Optional<LidarDetailedInfos> oLDI,
+    Optional<LidarBasicInfos> oLBI,
+    Optional<BallPos> oBP,
+    Optional<MyGoalPos> oMGP,
+    Optional<EnemyGoalPos> oEGP) {
+  // First we look to see if there's a risk of leaving the field
+  if (oLDI.hasValue()) {
+    if (leavingField_D(fP, oLDI.value())) {
+      return refrainLeavingField_D(fP, oLDI.value());
+    }
+  } else if (oLBI.hasValue()) {
+    if (leavingField_B(fP, oLBI.value())) {
+      return refrainLeavingField_B(fP, oLBI.value());
+    }
+  // } else {
+  //   return FutureAction::stopRobot();
+  }
+  if (oMGP.hasValue()) {
+    if (enterInMyGoal_C(fP, oMGP.value())) {
+      return refrainEnterInMyGoal_C(fP, oMGP.value());
+    }
+  }
+  if (oEGP.hasValue()) {
+    if (enterInEnnemyGoal_C(fP, oEGP.value())) {
+      return refrainEnterInEnnemyGoal_C(fP, oEGP.value());
+    }
+  }
+
+  // Then we choose the appropriate Strategy
+  if (!oBP.hasValue()) {
+    // We don't know where is the ball
+    if (oLDI.hasValue()) {
+      return slalowingBackwards_D(fP, oLDI.value());
+    } else {
       return FutureAction::stopRobot();
-
-    } else if (ballIsCaught(fP, cS)) {
-      if (!goalIsDetected(fP, cS)) {
-        SerialDebug.println("stopRobotStrategy");
+    }
+  } else {
+    BallPos bP = oBP.value();
+    if (ballIsCaught(fP, bP)) {
+      // The ball is caught
+      if (oEGP.hasValue()) {
+        if (ballInCenter(fP, bP)) {
+          return shoot_C(fP, oEGP.value());
+        } else {
+          return accelerateToGoal_C(fP, oEGP.value());
+        }
+      } else if (oLDI.hasValue()) {
+        if (ballInCenter(fP, bP)) {
+          return shoot_D(fP, oLDI.value());
+        } else {
+          return accelerateToGoal_D(fP, oLDI.value());
+        }
+      } else {
         return FutureAction::stopRobot();
-      } else if (targetJustInFrontOfRobot(fP, cS, cS.enemyGoalPos())) {
-        return shootStrategy(fP, cS);
-      } else {
-        return accelerateToGoalStrategyWithCam(fP, cS);
       }
-
     } else {
-      if (targetInFrontOfRobotFromFront(fP, cS, cS.ballPos())) {
-        return goToBallStrategy(fP, cS);
+      // The ball is not caught
+      if (ballAhead(fP, bP)) {
+        return goToBall_C(fP, bP);
       } else {
-        return goToBallAvoidingBallStrategyWithCam(fP, cS);
-      }
-    }
-
-  } else {
-    if (leavingField(fP, cS)) {
-      return refrainFromLeavingStrategy(fP, cS);
-
-    } else if (!ballIsDetected(fP, cS)) {
-      return slalowingBackwardsStrategy(fP, cS, lA);
-
-    } else if (ballIsCaught(fP, cS)) {
-      if (targetJustInFrontOfRobot(fP, cS, cS.myPos().distanceRef(fP.enemyGoalPos()))) {
-        return shootStrategy(fP, cS);
-      } else {
-        return accelerateToGoalStrategyWithLidar(fP, cS);
-      }
-
-    } else {
-      if (targetInFrontOfRobotFromFront(fP, cS, cS.ballPos())) {
-        return goToBallStrategy(fP, cS);
-      } else {
-        return goToBallAvoidingBallStrategyWithLidar(fP, cS);
+        if (oLDI.hasValue()) {
+          return goToBallAvoidingBall_CD(fP, bP, oLDI.value());
+        } else {
+          return goToBallAvoidingBall_C(fP, bP);
+        }
       }
     }
   }
 }
 
-bool lidarIssue(FieldProperties fP, RobotState cS) {
-  return cS.nearestWall() == Vector2(-9999, -9999);
+bool enterInMyGoal_C(FieldProperties fP, MyGoalPos mGP) {
+  return mGP.norm() < myGoalMinDistance && mGP.norm() > 1;
 }
 
-bool robotIsLost(FieldProperties fP, RobotState cS) {
-  return cS.myPos() == Vector2(-999.9, -999.9);
+bool enterInEnnemyGoal_C(FieldProperties fP, EnemyGoalPos eGP) {
+  return (eGP.norm() < goalMinDistance && eGP.norm() > 1);
 }
 
-bool leavingField(FieldProperties fP, RobotState cS) {
-  if (!robotIsLost(fP, cS)) {
-    SerialDebug.println("Left wall : " + String(cS.myPos().x() < -fP.fieldWidth() / 2 + 3 * fP.robotRadius()) + " Right wall : " + String((fP.fieldWidth() / 2) - 3 * fP.robotRadius() < cS.myPos().x()) + " Back wall : " + String(cS.myPos().y() < -fP.fieldLength() / 2 + 3 * fP.robotRadius()) + " Front wall : " + String(fP.fieldLength() / 2 - 3 * fP.robotRadius() < cS.myPos().y()) + " Enemy goal : " + String(cS.enemyGoalPos().norm() < goalMinDistance && cS.enemyGoalPos().norm() > 1) + " My goal : " + String(cS.myGoalPos().norm() < myGoalMinDistance && cS.myGoalPos().norm() > 1) + " Nearest wall : " + String(cS.nearestWall().norm() < criticalWallDistance));
-
-    int distanceDevitementY;
-    if (abs(cS.myPos().x()) < 40) {
-      distanceDevitementY = 50;
-    } else {
-      distanceDevitementY = criticalWallDistance;
-    }
-
-    SerialDebug.println(distanceDevitementY);
-
-    return (cS.myPos().x() < -fP.fieldWidth() / 2 + criticalWallDistance) ||
-           (fP.fieldWidth() / 2 - criticalWallDistance < cS.myPos().x()) ||
-           (cS.myPos().y() < -fP.fieldLength() / 2 + distanceDevitementY - 5) ||
-           (fP.fieldLength() / 2 - distanceDevitementY < cS.myPos().y()) ||
-           (cS.nearestWall().norm() < criticalWallDistance);
-
-  } else if (!lidarIssue(fP, cS)) {
-    return (cS.enemyGoalPos().norm() < goalMinDistance && cS.enemyGoalPos().norm() > 1) ||
-           (cS.myGoalPos().norm() < myGoalMinDistance && cS.myGoalPos().norm() > 1) ||
-           (cS.nearestWall().norm() < criticalWallDistance);
-
-  } else {
-    return (cS.enemyGoalPos().norm() < goalMinDistance && cS.enemyGoalPos().norm() > 1) ||
-           (cS.myGoalPos().norm() < myGoalMinDistance && cS.myGoalPos().norm() > 1);
-  }
+bool leavingField_D(FieldProperties fP, LidarDetailedInfos lDI) {
+  bool leftWall = lDI.coordinates().x() < -fP.fieldWidth() / 2 + criticalWallDistance;
+  bool rightWall = fP.fieldWidth() / 2 - criticalWallDistance < lDI.coordinates().x();
+  bool backWall = lDI.coordinates().y() < -fP.fieldLength() / 2 + criticalWallDistance - 5;
+  bool frontWall = fP.fieldLength() / 2 - criticalWallDistance < lDI.coordinates().y();
+  
+  SerialDebug.println("Left Wall : " + String(leftWall) +
+                      " Right Wall : " + String(rightWall) +
+                      " Back Wall : " + String(backWall) +
+                      " Front Wall : " + String(frontWall));
+  return leftWall || rightWall || backWall || frontWall;
 }
 
-bool ballIsDetected(FieldProperties fP, RobotState cS) {
-  return cS.ballPos() != Vector2(0, 0);
+bool leavingField_B(FieldProperties fP, LidarBasicInfos lBI) {
+  bool approachingNearestWall = lBI.norm() < criticalWallDistance;
+  SerialDebug.println("Nearest Wall too near: " + String(approachingNearestWall));
+  return approachingNearestWall;
 }
 
-bool goalIsDetected(FieldProperties fP, RobotState cS) {
-  return cS.enemyGoalPos() != Vector2(0, 0);
+bool ballAhead(FieldProperties fP, BallPos bP) {
+  float longRobot = (fP.robotRadius() * 1);
+  return bP.y() > longRobot;
 }
 
-bool targetInFrontOfRobotFromFront(FieldProperties fP, RobotState cS, Vector2 tL) {
-  float longRobot = (fP.robotRadius() * 1);  // Aussi modifié sur autre ordi
-  return tL.y() > longRobot;
+bool ballAtLevel(FieldProperties fP, BallPos bP) {
+  return bP.y() > 0;
 }
 
-bool targetInFrontOfRobotFromMiddle(FieldProperties fP, RobotState cS, Vector2 tL) {
-  return tL.y() > 0;
+bool ballInCenter(FieldProperties fP, BallPos bP) {
+  return abs(bP.x()) <= 25;  // TODO create parameter
 }
 
-bool targetCenterOfRobot(FieldProperties fP, RobotState cS, Vector2 tL) {
-  return abs(tL.x()) <= 25;
+bool ballIsCaught(FieldProperties fP, BallPos bP) {
+  return ballAtLevel(fP, bP) && ballInCenter(fP, bP) && bP.y() <= 60;  // TODO create parameter
 }
 
-bool targetJustInFrontOfRobot(FieldProperties fP, RobotState cS, Vector2 tL) {
-  return targetInFrontOfRobotFromMiddle(fP, cS, tL) && targetCenterOfRobot(fP, cS, tL);
-}
-
-bool targetJustBehindOfRobot(FieldProperties fP, RobotState cS, Vector2 tL) {
-  return (!targetInFrontOfRobotFromMiddle(fP, cS, tL)) && targetCenterOfRobot(fP, cS, tL);
-}
-
-bool ballIsCaught(FieldProperties fP, RobotState cS) {
-  SerialDebug.println("ballIsCaught : " + String(targetJustInFrontOfRobot(fP, cS, cS.ballPos()) && cS.ballPos().y() <= 40));
-  return targetJustInFrontOfRobot(fP, cS, cS.ballPos()) && cS.ballPos().y() <= 40;
-}
-
-float correctOrientation(RobotState cS) {
-  return sin(cS.orientation()) * 25;
-}
-
-FutureAction refrainFromLeavingStrategy(FieldProperties fP, RobotState cS) {
-  SerialDebug.println("refrainFromLeavingStrategy");
-
+FutureAction refrainLeavingField_D(FieldProperties fP, LidarDetailedInfos lDI) {
+  SerialDebug.println("Choosed strategy : refrainLeavingField_D");
   float xDirection = 0;
   float yDirection = 0;
 
-  if (!robotIsLost(fP, cS)) {
-    int distanceDevitementY;
-    if (abs(cS.myPos().x()) < 40) {
-      distanceDevitementY = 50;
-    } else {
-      distanceDevitementY = criticalWallDistance;
-    }
-
-    if (cS.myPos().x() < -fP.fieldWidth() / 2 + criticalWallDistance) {
-      xDirection = cos(cS.orientation());
-      yDirection = sin(cS.orientation());
-    } else if (fP.fieldWidth() / 2 - criticalWallDistance < cS.myPos().x()) {
-      xDirection = -cos(cS.orientation());
-      yDirection = -sin(cS.orientation());
-    }
-
-    if (cS.myPos().y() < -fP.fieldLength() / 2 + distanceDevitementY - 5) {
-      xDirection = sin(cS.orientation());
-      yDirection = cos(cS.orientation());
-    } else if (fP.fieldLength() / 2 - distanceDevitementY < cS.myPos().y()) {
-      xDirection = -sin(cS.orientation());
-      yDirection = -cos(cS.orientation());
-    }
-
-    if (cS.nearestWall().norm() < criticalWallDistance) {
-      xDirection = -cS.nearestWall().x();
-      yDirection = -cS.nearestWall().y();
-    }
-
-  } else if (!lidarIssue(fP, cS)) {
-    if (cS.enemyGoalPos().norm() < goalMinDistance && cS.enemyGoalPos().norm() > 1) {
-      xDirection = -cS.enemyGoalPos().x();
-      yDirection = -cS.enemyGoalPos().y();
-    } else if (cS.myGoalPos().norm() < myGoalMinDistance && cS.myGoalPos().norm() > 1) {
-      xDirection = -cS.myGoalPos().x();
-      yDirection = -cS.myGoalPos().y();
-    }
-
-    if (cS.nearestWall().norm() < criticalWallDistance) {
-      xDirection = -cS.nearestWall().x();
-      yDirection = -cS.nearestWall().y();
-    }
-
-  } else {
-    if (cS.enemyGoalPos().norm() < goalMinDistance && cS.enemyGoalPos().norm() > 1) {
-      xDirection = -cS.enemyGoalPos().x();
-      yDirection = -cS.enemyGoalPos().y();
-    } else if (cS.myGoalPos().norm() < myGoalMinDistance && cS.myGoalPos().norm() > 1) {
-      xDirection = -cS.myGoalPos().x();
-      yDirection = -cS.myGoalPos().y();
-    }
+  if (lDI.coordinates().x() < -fP.fieldWidth() / 2 + criticalWallDistance) {
+    xDirection = cos(lDI.orientation());
+    yDirection = sin(lDI.orientation());
+  } else if (fP.fieldWidth() / 2 - criticalWallDistance < lDI.coordinates().x()) {
+    xDirection = -cos(lDI.orientation());
+    yDirection = -sin(lDI.orientation());
   }
 
-  SerialDebug.println(String(xDirection) + " " + String(yDirection));
+  if (lDI.coordinates().y() < -fP.fieldLength() / 2 + criticalWallDistance - 5) {
+    xDirection = sin(lDI.orientation());
+    yDirection = cos(lDI.orientation());
+  } else if (fP.fieldLength() / 2 - criticalWallDistance < lDI.coordinates().y()) {
+    xDirection = -sin(lDI.orientation());
+    yDirection = -cos(lDI.orientation());
+  }
   return FutureAction(
       Vector2(
           xDirection,
           yDirection),
       speedmotors,
       0,
-      false);  //@Gandalfph add orientation and celerity
+      false);
 }
 
-FutureAction goToBallStrategy(FieldProperties fP, RobotState cS) {
-  SerialDebug.println("goToBallStrategy");
-
+FutureAction refrainLeavingField_B(FieldProperties fP, LidarBasicInfos lBI) {
+  SerialDebug.println("Choosed strategy : refrainLeavingField_B");
   return FutureAction(
       Vector2(
-          cS.ballPos().x(),
-          cS.ballPos().y() - fP.robotRadius() * 4),
+          -lBI.x(),
+          -lBI.y()),
+      speedmotors,
+      0,
+      false);
+}
+
+FutureAction refrainEnterInMyGoal_C(FieldProperties fP, MyGoalPos mGP) {
+  SerialDebug.println("Choosed strategy : refrainEnterInMyGoal_C");
+  return FutureAction(
+      Vector2(
+          -mGP.x(),
+          -mGP.y()),
       speedmotors,
       0,
       false);  //@Gandalfph add orientation and celerity
 }
 
-FutureAction goToBallAvoidingBallStrategyWithCam(FieldProperties fP, RobotState cS) {
-  SerialDebug.println("goToBallAvoidingBallStrategyWithCam");
-  if (targetJustBehindOfRobot(fP, cS, cS.ballPos())) {
+FutureAction refrainEnterInEnnemyGoal_C(FieldProperties fP, EnemyGoalPos eGP) {
+  SerialDebug.println("Choosed strategy : refrainEnterInEnnemyGoal_C");
+  return FutureAction(
+      Vector2(
+          -eGP.x(),
+          -eGP.y()),
+      speedmotors,
+      0,
+      false);  //@Gandalfph add orientation and celerity
+}
+
+FutureAction goToBall_C(FieldProperties fP, BallPos bP) {
+  SerialDebug.println("Choosed strategy : goToBall_C");
+  return FutureAction(
+      Vector2(
+          bP.x(),
+          bP.y() - fP.robotRadius() * 4),  // TODO make parameter
+      speedmotors,
+      0,
+      false);  //@Gandalfph add orientation and celerity
+}
+
+FutureAction goToBallAvoidingBall_C(FieldProperties fP, BallPos bP) {
+  SerialDebug.println("Choosed strategy : goToBallAvoidingBall_C");
+  if (!ballAtLevel(fP, bP) && ballInCenter(fP, bP)) {
     return FutureAction(
         Vector2(10, -10),
         speedmotors,
         0,
         false);  //@Gandalfph add orientation and celerity
 
-  } else if (cS.ballPos().x() < 0) {
+  } else if (bP.x() <= 0) {
     return FutureAction(
         Vector2(2, -10),
         speedmotors,
         0,
         false);  //@Gandalfph add orientation and celerity
-  } else if (cS.ballPos().x() > 0) {
+  } else if (bP.x() > 0) {
     return FutureAction(
         Vector2(-2, -10),
         speedmotors,
         0,
         false);  //@Gandalfph add orientation and celerity
+  } else {
+    Serial.println("ERROR STRANGE");
   }
 }
 
-FutureAction goToBallAvoidingBallStrategyWithLidar(FieldProperties fP, RobotState cS) {
-  SerialDebug.println("goToBallAvoidingBallStrategyWithLidar");
-  if (targetJustBehindOfRobot(fP, cS, cS.ballPos())) {
-    if (cS.ballPos().x() < 0) {
-      if (cS.myPos().x() > (fP.fieldWidth() / 2) - 6 * fP.robotRadius()) {
+FutureAction goToBallAvoidingBall_CD(FieldProperties fP, BallPos bP, LidarDetailedInfos lDI) {
+  SerialDebug.println("Choosed strategy : goToBallAvoidingBall_CD");
+  if (!ballAtLevel(fP, bP) && ballInCenter(fP, bP)) {
+    if (bP.x() < 0) {
+      if (lDI.coordinates().x() > (fP.fieldWidth() / 2) - 6 * fP.robotRadius()) {
         return FutureAction(
             Vector2(-10, -10),
             speedmotors,
@@ -275,7 +268,7 @@ FutureAction goToBallAvoidingBallStrategyWithLidar(FieldProperties fP, RobotStat
       }
 
     } else {
-      if (-(fP.fieldWidth() / 2) + 6 * fP.robotRadius() > cS.myPos().x()) {
+      if (-(fP.fieldWidth() / 2) + 6 * fP.robotRadius() > lDI.coordinates().x()) {
         return FutureAction(
             Vector2(10, -10),
             speedmotors,
@@ -291,14 +284,14 @@ FutureAction goToBallAvoidingBallStrategyWithLidar(FieldProperties fP, RobotStat
       }
     }
 
-  } else if (cS.ballPos().x() < 0 && cS.ballPos().x() > -40) {
+  } else if (bP.x() < 0 && bP.x() > -40) {
     return FutureAction(
         Vector2(5, -10),
         speedmotors,
         0,
         false);  //@Gandalfph add orientation and celerity
 
-  } else if (cS.ballPos().x() > 0 && cS.ballPos().x() < 40) {
+  } else if (bP.x() > 0 && bP.x() < 40) {
     return FutureAction(
         Vector2(-5, -10),
         speedmotors,
@@ -314,40 +307,56 @@ FutureAction goToBallAvoidingBallStrategyWithLidar(FieldProperties fP, RobotStat
   }
 }
 
-FutureAction accelerateToGoalStrategyWithCam(FieldProperties fP, RobotState cS) {
-  SerialDebug.println("accelerateToGoalStrategyWithCam");
-
+FutureAction accelerateToGoal_C(FieldProperties fP, EnemyGoalPos eGP) {
+  SerialDebug.println("Choosed strategy : accelerateToGoal_C");
   return FutureAction(
-      Vector2(
-          cS.enemyGoalPos().x(),
-          cS.enemyGoalPos().y()),
+      eGP,
       speedmotors,
       0,
       false);  //@Gandalfph add orientation and celerity
 }
 
-FutureAction accelerateToGoalStrategyWithLidar(FieldProperties fP, RobotState cS) {
-  SerialDebug.println("accelerateToGoalStrategyWithLidar");
-
+FutureAction accelerateToGoal_D(FieldProperties fP, LidarDetailedInfos lDI) {
+  SerialDebug.println("Choosed strategy : accelerateToGoal_D");
   return FutureAction(
       Vector2(
-          fP.enemyGoalPos().x(),
-          10),
+          fP.enemyGoalPos().x() - lDI.coordinates().x(),
+          fP.enemyGoalPos().y() - lDI.coordinates().y()),
       speedmotors,
       0,
       false);  //@Gandalfph add orientation and celerity
 }
 
-FutureAction slalowingBackwardsStrategy(FieldProperties fP, RobotState cS, FutureAction lA) {
-  SerialDebug.println("slalowingBackwardsStrategy");
-  if (cS.myPos().y() < -50) {
-    if (cS.myPos().x() < -5) {
+FutureAction shoot_C(FieldProperties fP, EnemyGoalPos eGP) {
+  SerialDebug.println("Choosed strategy : shoot_C");
+  return FutureAction(
+      eGP,
+      shootSpeed,
+      0,
+      true);  //@Gandalfph add orientation and celerity
+}
+
+FutureAction shoot_D(FieldProperties fP, LidarDetailedInfos lDI) {
+  SerialDebug.println("Choosed strategy : shoot_D");
+  return FutureAction(
+      Vector2(
+          fP.enemyGoalPos().x() - lDI.coordinates().x(),
+          fP.enemyGoalPos().y() - lDI.coordinates().y()),
+      shootSpeed,
+      0,
+      true);  //@Gandalfph add orientation and celerity
+}
+
+FutureAction slalowingBackwards_D(FieldProperties fP, LidarDetailedInfos lDI) {
+  SerialDebug.println("Choosed strategy : slalowingBackwards_D");
+  if (lDI.coordinates().y() < -50) {
+    if (lDI.coordinates().x() < -5) {
       return FutureAction(
           Vector2(10, 0),
           speedmotors,
           0,
           false);  //@Gandalfph add orientation and celerity
-    } else if (5 < cS.myPos().x()) {
+    } else if (5 < lDI.coordinates().x()) {
       return FutureAction(
           Vector2(-10, 0),
           speedmotors,
@@ -361,7 +370,7 @@ FutureAction slalowingBackwardsStrategy(FieldProperties fP, RobotState cS, Futur
           false);  //@Gandalfph add orientation and celerity
     }
 
-  } else if (50 < cS.myPos().y()) {
+  } else if (50 < lDI.coordinates().y()) {
     return FutureAction(
         Vector2(-20, -10),
         speedmotors,
@@ -369,13 +378,13 @@ FutureAction slalowingBackwardsStrategy(FieldProperties fP, RobotState cS, Futur
         false);  //@Gandalfph add orientation and celerity
 
   } else {
-    if (cS.myPos().x() < -fP.fieldWidth() / 6) {
+    if (lDI.coordinates().x() < -fP.fieldWidth() / 6) {
       return FutureAction(
           Vector2(20, -10),
           speedmotors,
           0,
           false);  //@Gandalfph add orientation and celerity
-    } else if (fP.fieldWidth() / 6 < cS.myPos().x()) {
+    } else if (fP.fieldWidth() / 6 < lDI.coordinates().x()) {
       return FutureAction(
           Vector2(-20, -10),
           speedmotors,
@@ -383,20 +392,9 @@ FutureAction slalowingBackwardsStrategy(FieldProperties fP, RobotState cS, Futur
           false);  //@Gandalfph add orientation and celerity
     } else {
       return FutureAction(
-          lA.target(),
           speedmotors,
           0,
           false);  //@Gandalfph add orientation and celerity
     }
   }
-}
-
-FutureAction shootStrategy(FieldProperties fP, RobotState cS) {
-  SerialDebug.println("shootStrategy");
-
-  return FutureAction(
-      Vector2(0, 20),
-      shootSpeed,
-      0,
-      true);  //@Gandalfph add orientation and celerity
 }

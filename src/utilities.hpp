@@ -104,15 +104,72 @@ class ResultOrError {
 template <typename T>
 class Optional {
  private:
-  T _value;
-  const bool _hasValue;
+  T *_value;
+  bool _hasValue;
 
  public:
-  Optional() : _hasValue(false) {}
-  Optional(T value) : _value(value), _hasValue(true) {}
+  Optional() : _value(nullptr), _hasValue(false) {}
 
-  inline bool hasValue() const { return _hasValue; }
-  inline T value() const { return _value; }
+  Optional(const T &value) : _hasValue(true) {
+    _value = new T(value);
+  }
+
+  Optional(const Optional &other) : _hasValue(other._hasValue) {
+    if (_hasValue) {
+      _value = new T(*other._value);
+    } else {
+      _value = nullptr;
+    }
+  }
+
+  Optional(Optional &&other) noexcept : _value(other._value), _hasValue(other._hasValue) {
+    other._value = nullptr;
+    other._hasValue = false;
+  }
+
+  Optional &operator=(const Optional &other) {
+    if (this != &other) {
+      delete _value;
+      _hasValue = other._hasValue;
+      if (_hasValue) {
+        _value = new T(*other._value);
+      } else {
+        _value = nullptr;
+      }
+    }
+    return *this;
+  }
+
+  Optional &operator=(Optional &&other) noexcept {
+    if (this != &other) {
+      delete _value;
+      _value = other._value;
+      _hasValue = other._hasValue;
+      other._value = nullptr;
+      other._hasValue = false;
+    }
+    return *this;
+  }
+
+  ~Optional() {
+    delete _value;
+  }
+
+  bool hasValue() const { return _hasValue; }
+
+  T &value() {
+    if (!_hasValue) {
+      SerialDebug.println("Error: Attempted to access value when none is present.");
+    }
+    return *_value;
+  }
+
+  const T &value() const {
+    if (!_hasValue) {
+      SerialDebug.println("Error: Attempted to access value when none is present.");
+    }
+    return *_value;
+  }
 };
 
 #endif

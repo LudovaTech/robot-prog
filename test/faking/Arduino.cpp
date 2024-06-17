@@ -14,6 +14,10 @@ double sq(double x) {
   return x * x;
 }
 
+void delay(int time) {
+  std::this_thread::sleep_for(std::chrono::milliseconds(time));
+}
+
 std::string _removeZeros(std::string str) {
   size_t dotPos = str.find_last_of('.');
   if (dotPos != std::string::npos) {
@@ -38,6 +42,19 @@ String::String(unsigned long s) : std::string(_removeZeros(std::to_string(s))) {
 
 float String::toFloat() {
   return std::stof(*this);
+}
+
+String String::substring(size_t from, size_t to = std::string::npos) {
+  if (from >= size()) {
+    return "";
+  }
+  if (to == std::string::npos || to > size()) {
+    to = size();
+  }
+  if (to <= from) {
+    return "";
+  }
+  return substr(from, to - from);
 }
 
 SerialClass::SerialClass() {}
@@ -110,6 +127,10 @@ bool SerialClass::find(String str) {
 byte SerialClass::readBytes(byte* buffer, int length) {
   // unsupported yet
   throw std::exception();
+}
+
+void SerialClass::setTimeout(int time) {
+  // unsupported yet, ignore
 }
 
 PinsClass::PinsClass(int numPins) : pinsMode(numPins, PinState::pUNDEF), pinsValue(numPins, 0) {}

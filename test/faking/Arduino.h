@@ -10,6 +10,7 @@
 #include <stdexcept>
 #include <string>
 #include <chrono>
+#include <thread>
 
 #define PI 3.1415926535897932384626433832795
 #define DEG_TO_RAD 0.017453292519943295769236907684886
@@ -22,12 +23,15 @@
 #define sqrt std::sqrt
 #define isDigit std::isdigit
 #define max std::max
+#define min std::min
 typedef uint8_t byte;
 
 const std::chrono::time_point<std::chrono::steady_clock> _start_time = std::chrono::steady_clock::now();
 unsigned long millis();
 
 double sq(double x);
+
+void delay(int time);
 
 std::string _removeZeros(std::string str);
 class String : public std::string {
@@ -42,6 +46,7 @@ class String : public std::string {
   String(long unsigned int);
 
   float toFloat();
+  String substring(size_t from, size_t to);
 };
 
 class SerialClass {
@@ -64,6 +69,7 @@ class SerialClass {
   void debugPrintln(const String& str);
   bool find(String str);
   byte readBytes(byte* buffer, int length);
+  void setTimeout(int time);
 };
 
 extern SerialClass Serial;

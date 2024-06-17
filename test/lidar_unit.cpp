@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "../src/lidar.h"
+#include "../src/lidar_reader.hpp"
 
 TEST(LidarGetter, CircularLidarPointsBufferAddValueMinimum) {
   CircularLidarPointsBuffer clpb{5};

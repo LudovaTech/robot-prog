@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "../src/utilities.h"
+#include "../src/utilities.hpp"
 
 TEST(Vector2, equalZeroXY) {
   ASSERT_EQ(Vector2(0, 0), Vector2(0, 0));

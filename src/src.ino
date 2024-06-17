@@ -1,41 +1,47 @@
 #include <string>
 
-#include "lidar.h"
-#include "lidar_analyzer_anc.h"
-#include "movements.h"
-#include "states.h"
-#include "strategy.h"
-#include "utilities.h"
+#include "cam_reader.hpp"
+#include "lidar_analyzer_anc.hpp"
+#include "lidar_reader.hpp"
+#include "movements.hpp"
+#include "strategy.hpp"
+#include "utilities.hpp"
 
 const FieldProperties fieldProperties = FieldProperties(
-    243,               // fieldLength
-    182,               // fieldWidth
-    12,                // spaceBeforeLineSide
-    60,                // goalWidth
-    Vector2(0, -115),  // myGoalPos
-    Vector2(0, 115),   // enemyGoalPos
-    9,                 // robotRadius
-    2                  // ballRadius
+    243,  // fieldLength
+    182,  // fieldWidth
+    12,   // spaceBeforeLineSide
+    60,   // goalWidth
+    115,  // distanceYGoalFromCenter
+    9,    // robotRadius
+    2     // ballRadius
 );
 
 const Motors motors = Motors(
-
-    // Arduino UNO
-    // MotorMov(11, 12, 0, Degree(-40)),
-    // MotorMov(5, 4, 0, Degree(40)),
-    // MotorMov(6, 7, 0, Degree(-140)),
-    // MotorMov(9, 8, 0, Degree(140))
-
     // Teensy
     MotorMov(15, 14, 0, Degree(-40)),
     MotorMov(36, 33, 0, Degree(40)),
     MotorMov(22, 19, 0, Degree(-140)),
     MotorMov(11, 12, 0, Degree(140)));
 
+// TODO: temporaire
+struct CamInfosGlue {
+  Optional<BallPos> ballPos;
+  Optional<MyGoalPos> myGoalPos;
+  Optional<EnemyGoalPos> enemyGoalPos;
+};
+
+uint8_t bigserialbuffer[4000];
+//uint8_t bigserialbufferlidar[4000];
+
+
 void setup() {
   SerialDebug.begin(115200);
   SerialCam.begin(115200);
   SerialLidar.begin(230400);
+
+  SerialCam.addMemoryForRead(&bigserialbuffer, sizeof(bigserialbuffer));
+  //SerialLidar.addMemoryForRead(&bigserialbufferlidar, sizeof(bigserialbufferlidar));
 
   SerialCam.setTimeout(10);
   SerialLidar.setTimeout(10);
@@ -56,118 +62,143 @@ std::string extractLastCompleteSequence(const char* buffer) {
   return "";
 }
 
-RobotState getCamInfos() {
+CamInfosGlue getCamInfos() {
   size_t bytesAvailable = SerialCam.available();
   // SerialDebug.println("nb of bytes available: " + String(bytesAvailable));
 
   if (bytesAvailable >= 26) {
-    byte buffer[65];
-    size_t nbrBytesReceived = SerialCam.readBytes(buffer, min(bytesAvailable, sizeof(buffer) - 1));
-    buffer[nbrBytesReceived] = '\0';
-    // SerialDebug.println(" reçu: " + String((char*)buffer));
+    //byte buffer[301];
+    size_t nbrBytesReceived = SerialCam.readBytes(bigserialbuffer, min(bytesAvailable, sizeof(bigserialbuffer) - 1));
+    bigserialbuffer[nbrBytesReceived] = '\0';
+    //SerialDebug.println(" reçu: " + String((char*)bigserialbuffer));
 
-    std::string lastCompleteSequence = extractLastCompleteSequence((char*)buffer);
+    std::string lastCompleteSequence = extractLastCompleteSequence((char*)bigserialbuffer);
     if (!lastCompleteSequence.empty()) {
-      // exemple : b-096-121+000+000+000+000e
-      int ball_x, ball_y, my_goal_x, my_goal_y, enemy_goal_x, enemy_goal_y;
-      if (sscanf(lastCompleteSequence.c_str(), "b%d%d%d%d%d%de", &ball_x, &ball_y, &my_goal_x, &my_goal_y,
-                 &enemy_goal_x, &enemy_goal_y) == 6) {
-        SerialDebug.println("Position balle: x=" + String(ball_x) + ", y=" + String(ball_y) + ", my goal x=" +
-                            String(my_goal_x) + ", y=" + String(my_goal_y) + ", ennemy goal x=" + String(enemy_goal_x) + ", y=" + String(enemy_goal_y));
+      // exemple : b+048+019+006+065-045+027+000+000+090+015+065+070+066-059e
 
-        return RobotState(Vector2(ball_x, ball_y), Vector2(0, 0), Vector2(0, 0),
-                          Vector2(my_goal_x, my_goal_y), Vector2(enemy_goal_x, enemy_goal_y),
-                          Vector2(0, 0), 0);
+      int ballX, ballY, 
+          myGoalX1, myGoalY1, myGoalX2, myGoalY2, myGoalX3, myGoalY3, 
+          enemyGoalX1, enemyGoalY1, enemyGoalX2, enemyGoalY2, enemyGoalX3, enemyGoalY3;
 
+      if (sscanf(lastCompleteSequence.c_str(), "b%d%d%d%d%d%d%d%d%d%d%d%d%d%de", 
+                &ballX, &ballY, &myGoalX1, &myGoalY1, &myGoalX2, &myGoalY2, &myGoalX3, &myGoalY3, 
+                &enemyGoalX1, &enemyGoalY1, &enemyGoalX2, &enemyGoalY2, &enemyGoalX3, &enemyGoalY3) == 14) {
+
+        SerialDebug.println("Position balle: x=" + String(ballX) + ", y=" + String(ballY) + ", my goal x=" +
+                            String(myGoalX1) + ", y=" + String(myGoalY1) + ", ennemy goal x=" + String(enemyGoalX1) + ", y=" + String(enemyGoalY1));
+        Optional<BallPos> bP;
+        if (ballX != 0 && ballY != 0) {
+          bP = BallPos(ballX, ballY);
+        }
+        Optional<MyGoalPos> mGP;
+        if (myGoalX1 != 0 && myGoalY1 != 0) {
+          mGP = MyGoalPos(myGoalX1, myGoalY1);
+        }
+        Optional<EnemyGoalPos> eGP;
+        if (enemyGoalX1 != 0 && enemyGoalY1 != 0) {
+          eGP = EnemyGoalPos(enemyGoalX1, enemyGoalY1);
+        }
+        CamInfosGlue cIG{
+            bP,
+            mGP,
+            eGP};
+
+        return cIG;
       } else {
         SerialDebug.println("Erreur lors de l'extraction des données de la caméra: " + String(lastCompleteSequence.c_str()));
       }
 
     } else {
-      SerialDebug.println("Aucune séquence complète trouvée, reçu: " + String((char*)buffer));
+      SerialDebug.println("Aucune séquence complète trouvée, reçu: " + String((char*)bigserialbuffer));
     }
   }
-  return RobotState(Vector2(0, 0), Vector2(0, 0), Vector2(0, 0), Vector2(0, 0), Vector2(0, 0), Vector2(0, 0), 0);
+  return CamInfosGlue();
 }
 
-int compteur;
+bool ledCounter = true;
 
-void aloop() {
-  motors.goTo(Vector2(0, -100), 100, 0);
-  delay(1000);
-  motors.goTo(Vector2(0, 100), 100, 0);
-  delay(1000);
-
-  if (compteur % 2 == 0) {
-    digitalWrite(13, HIGH);
-    compteur = 1;
-  } else {
-    digitalWrite(13, LOW);
-    compteur = 0;
-  }
-}
-
-FutureAction lastAction = FutureAction(Vector2(0, 0), 0, 0, false);
-FutureAction currentAction = FutureAction(Vector2(0, 0), 0, 0, false);
+// TODO: temporary
+MutableVector2 previousTarget;
 
 void loop() {
   unsigned long start_millis = millis();
   SerialDebug.println("***");
 
-  // Faire clignoter la LED pour s'assurer que le code tourne correctement
-  if (compteur % 2 == 0) {
+  // Flash the LED to make sure the code is running correctly
+  if (ledCounter) {
     digitalWrite(13, HIGH);
-    compteur = 1;
+    ledCounter = false;
   } else {
     digitalWrite(13, LOW);
-    compteur = 0;
+    ledCounter = true;
   }
-
-  // testsLidar(fieldProperties); // tests du LIDAR
-  // return;
 
   // GETTING LIDAR DATA
-  LidarInfos lidarInfos = getLidarInfos(fieldProperties, true, false);
-  SerialDebug.println("Coordonnées robot: x=" + String(lidarInfos.getCoordinates().x() / 10.0) + " cm, y=" + String(lidarInfos.getCoordinates().y() / 10.0) + " cm, orientation: " + String(lidarInfos.getOrientation()) + "°, Nearest Wall distance=" + String(lidarInfos.getNearestWall().distance({0, 0}) / 10.0) + " cm");
+  LidarInfosGlue lidarInfos = getLidarInfos(fieldProperties, true, false);
+  String full_log;
+  if (lidarInfos.oLDI.hasValue()) {
+    full_log += "Coordonnées robot: x=" + String(lidarInfos.oLDI.value().coordinates().x()) + " cm, y=" + String(lidarInfos.oLDI.value().coordinates().y()) + " cm, orientation: " + String(lidarInfos.oLDI.value().orientation()) + " rad, ";
+  } else {
+    full_log += "Coordonnées robot: x= not found, y= not found, orientation: not found, ";
+  }
+  if (lidarInfos.oLBI.hasValue()) {
+    full_log += "Nearest Wall distance=" + String(lidarInfos.oLBI.value().distance(Vector2(0, 0))) + " cm";
+  } else {
+    full_log += "Nearest Wall distance= not found";
+  }
+  SerialDebug.println(full_log);
 
   // GETTING CAM DATA
-  RobotState camInfos = getCamInfos();
+  CamInfosGlue camInfos = getCamInfos();
 
-  double orientation = lidarInfos.getOrientation();
-  if (lidarInfos.getOrientationRadians() == -9999) {
-    orientation = 0;
+  // calculating the orientation of the robot
+
+  Radians orientation = 0;
+  if (lidarInfos.oLDI.hasValue()) {
+    orientation = lidarInfos.oLDI.value().orientation();
   }
 
-  if (camInfos.enemyGoalPos().y() < 50 && camInfos.enemyGoalPos().y() != 0) {
-    if (camInfos.enemyGoalPos().x() > 0) {
-      orientation = -180;
-    } else {
-      orientation = 180;
-    }
-  } else if (camInfos.myGoalPos().y() > 50 && camInfos.myGoalPos().y() != 0) {
-    if (camInfos.myGoalPos().x() > 0) {
-      orientation = 180;
-    } else {
-      orientation = -180;
+  /*if (camInfos.enemyGoalPos.hasValue()) {
+    if (camInfos.enemyGoalPos.value().y() < 50 && camInfos.enemyGoalPos.value().y() != 0) {
+      if (camInfos.enemyGoalPos.value().x() > 0) {
+        orientation = -PI/2;
+      } else {
+        orientation = PI/2;
+      }
     }
   }
-
-  RobotState currentState = RobotState(
-      camInfos.ballPos(),
-      Vector2(lidarInfos.getCoordinates().x() / 10, lidarInfos.getCoordinates().y() / 10),
-      Vector2(0, 0),
-      camInfos.myGoalPos(),
-      camInfos.enemyGoalPos(),
-      Vector2(lidarInfos.getNearestWall().x() / 10, lidarInfos.getNearestWall().y() / 10),
-      Radians(Degree(orientation)));
-
+  if (camInfos.myGoalPos.hasValue()) {
+    if (camInfos.myGoalPos.value().y() > 50 && camInfos.myGoalPos.value().y() != 0) {
+      if (camInfos.myGoalPos.value().x() > 0) {
+        orientation = PI/2;
+      } else {
+        orientation = -PI/2;
+      }
+    }
+  }*/
   // DOING ACTION
-  // TODO: must work without lidar data or without cam data
-  FutureAction lastAction = currentAction;
-  FutureAction currentAction = chooseStrategy(fieldProperties, currentState, lastAction);
+  FutureAction currentAction = chooseStrategy(
+      fieldProperties,
+      lidarInfos.oLDI,
+      lidarInfos.oLBI,
+      camInfos.ballPos,
+      camInfos.myGoalPos,
+      camInfos.enemyGoalPos);
+  if (currentAction.changeTarget()) {
+    motors.goTo(currentAction.target(), currentAction.celerity(), orientation);
+    previousTarget = currentAction.target();
+  } else {
+    motors.goTo(previousTarget.toVector2(), currentAction.celerity(), orientation);
+  }
 
-  motors.goTo(currentAction.target(), currentAction.celerity(), currentAction.rotation());
-  SerialDebug.println("Direction : " + currentAction.target().toString() + " Vitesse : " + String(currentAction.celerity()) + " Rotation : " + String(currentAction.rotation()));
+  String full_log2;
+  if (currentAction.changeTarget()) {
+    full_log2 += "Target : " + currentAction.target().toString() + " ";
+  } else {
+    full_log2 += "Target : Unchanged (" + previousTarget.toVector2().toString() + ") ";
+  }
+  full_log2 += "Vitesse : " + String(currentAction.celerity()) + " Rotation : " + String(currentAction.rotation());
+  SerialDebug.println(full_log2);
 
   if (currentAction.activeKicker()) {
     // TODO active kicker

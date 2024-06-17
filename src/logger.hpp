@@ -7,7 +7,7 @@
 #include <SD.h>
 #endif
 
-#include "utilities.h"
+#include "utilities.hpp"
 
 const unsigned int NoteLevel = 10;
 const unsigned int DebugLevel = 20;

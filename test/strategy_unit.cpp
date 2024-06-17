@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "../src/strategy.h"
+#include "../src/strategy.hpp"
 
 TEST(FutureAction, accessToDataWithTarget) {
   FutureAction fA = FutureAction(Vector2(50, 13), 125, 1, true);
@@ -32,7 +32,7 @@ TEST(FutureAction, leavingField) {
       2                  // ballRadius
   );
 
-  RobotState cS0 = RobotState(
+  CamInfos cS0 = CamInfos(
       Vector2(0, 0),      // ballPos
       Vector2(0, 0),      // myPos
       Vector2(0, 0),      // partnerPos
@@ -42,7 +42,7 @@ TEST(FutureAction, leavingField) {
 
   ASSERT_FALSE(leavingField(fP, cS0));
 
-  RobotState cS1 = RobotState(
+  CamInfos cS1 = CamInfos(
       Vector2(0, 0),      // ballPos
       Vector2(-83, 0),    // myPos
       Vector2(0, 0),      // partnerPos
@@ -52,7 +52,7 @@ TEST(FutureAction, leavingField) {
 
   ASSERT_TRUE(leavingField(fP, cS1));
 
-  RobotState cS2 = RobotState(
+  CamInfos cS2 = CamInfos(
       Vector2(0, 0),      // ballPos
       Vector2(-81, 0),    // myPos
       Vector2(0, 0),      // partnerPos
@@ -62,7 +62,7 @@ TEST(FutureAction, leavingField) {
 
   ASSERT_FALSE(leavingField(fP, cS2));
 
-  RobotState cS3 = RobotState(
+  CamInfos cS3 = CamInfos(
       Vector2(0, 0),      // ballPos
       Vector2(83, 0),     // myPos
       Vector2(0, 0),      // partnerPos
@@ -72,7 +72,7 @@ TEST(FutureAction, leavingField) {
 
   ASSERT_TRUE(leavingField(fP, cS3));
 
-  RobotState cS4 = RobotState(
+  CamInfos cS4 = CamInfos(
       Vector2(0, 0),      // ballPos
       Vector2(81, 0),     // myPos
       Vector2(0, 0),      // partnerPos
@@ -82,7 +82,7 @@ TEST(FutureAction, leavingField) {
 
   ASSERT_FALSE(leavingField(fP, cS4));
 
-  RobotState cS5 = RobotState(
+  CamInfos cS5 = CamInfos(
       Vector2(0, 0),      // ballPos
       Vector2(81, 113),   // myPos
       Vector2(0, 0),      // partnerPos
@@ -92,7 +92,7 @@ TEST(FutureAction, leavingField) {
 
   ASSERT_TRUE(leavingField(fP, cS5));
 
-  RobotState cS6 = RobotState(
+  CamInfos cS6 = CamInfos(
       Vector2(0, 0),      // ballPos
       Vector2(81, 111),   // myPos
       Vector2(0, 0),      // partnerPos
@@ -102,7 +102,7 @@ TEST(FutureAction, leavingField) {
 
   ASSERT_FALSE(leavingField(fP, cS6));
 
-  RobotState cS7 = RobotState(
+  CamInfos cS7 = CamInfos(
       Vector2(0, 0),      // ballPos
       Vector2(81, -113),  // myPos
       Vector2(0, 0),      // partnerPos
@@ -112,7 +112,7 @@ TEST(FutureAction, leavingField) {
 
   ASSERT_TRUE(leavingField(fP, cS7));
 
-  RobotState cS8 = RobotState(
+  CamInfos cS8 = CamInfos(
       Vector2(0, 0),      // ballPos
       Vector2(81, -111),  // myPos
       Vector2(0, 0),      // partnerPos
@@ -122,7 +122,7 @@ TEST(FutureAction, leavingField) {
 
   ASSERT_FALSE(leavingField(fP, cS8));
 
-  RobotState cS9 = RobotState(
+  CamInfos cS9 = CamInfos(
       Vector2(0, 0),     // ballPos
       Vector2(0, 0),     // myPos
       Vector2(0, 0),     // partnerPos
@@ -132,7 +132,7 @@ TEST(FutureAction, leavingField) {
 
   ASSERT_TRUE(leavingField(fP, cS9));
 
-  RobotState cS10 = RobotState(
+  CamInfos cS10 = CamInfos(
       Vector2(0, 0),      // ballPos
       Vector2(0, 0),      // myPos
       Vector2(0, 0),      // partnerPos
@@ -155,7 +155,7 @@ TEST(FutureAction, targetInFrontOfRobotFromFront) {
       2               // ballRadius
   );
 
-  RobotState cS = RobotState(
+  CamInfos cS = CamInfos(
       Vector2(0, 0),  // ballPos
       Vector2(0, 0),  // myPos
       Vector2(0, 0),  // partnerPos
@@ -182,7 +182,7 @@ TEST(FutureAction, targetInFrontOfRobotFromMiddle) {
       2               // ballRadius
   );
 
-  RobotState cS = RobotState(
+  CamInfos cS = CamInfos(
       Vector2(0, 0),  // ballPos
       Vector2(0, 0),  // myPos
       Vector2(0, 0),  // partnerPos
@@ -209,7 +209,7 @@ TEST(FutureAction, targetCenterOfRobot) {
       2               // ballRadius
   );
 
-  RobotState cS = RobotState(
+  CamInfos cS = CamInfos(
       Vector2(0, 0),  // ballPos
       Vector2(0, 0),  // myPos
       Vector2(0, 0),  // partnerPos
@@ -236,7 +236,7 @@ TEST(FutureAction, targetJustInFrontOfRobot) {
       2               // ballRadius
   );
 
-  RobotState cS = RobotState(
+  CamInfos cS = CamInfos(
       Vector2(0, 0),  // ballPos
       Vector2(0, 0),  // myPos
       Vector2(0, 0),  // partnerPos
@@ -266,7 +266,7 @@ TEST(FutureAction, targetJustBehindOfRobot) {
       2               // ballRadius
   );
 
-  RobotState cS = RobotState(
+  CamInfos cS = CamInfos(
       Vector2(0, 0),  // ballPos
       Vector2(0, 0),  // myPos
       Vector2(0, 0),  // partnerPos
@@ -296,7 +296,7 @@ TEST(FutureAction, ballIsCaught) {
       2               // ballRadius
   );
 
-  RobotState cS0 = RobotState(
+  CamInfos cS0 = CamInfos(
       Vector2(0, 16),  // ballPos
       Vector2(0, 0),   // myPos
       Vector2(0, 0),   // partnerPos
@@ -306,7 +306,7 @@ TEST(FutureAction, ballIsCaught) {
 
   ASSERT_TRUE(ballIsCaught(fP, cS0));
 
-  RobotState cS1 = RobotState(
+  CamInfos cS1 = CamInfos(
       Vector2(0, 17),  // ballPos
       Vector2(0, 0),   // myPos
       Vector2(0, 0),   // partnerPos
@@ -315,7 +315,7 @@ TEST(FutureAction, ballIsCaught) {
   );
   ASSERT_FALSE(ballIsCaught(fP, cS1));
 
-  RobotState cS2 = RobotState(
+  CamInfos cS2 = CamInfos(
       Vector2(-6, 16),  // ballPos
       Vector2(0, 0),    // myPos
       Vector2(0, 0),    // partnerPos
@@ -324,7 +324,7 @@ TEST(FutureAction, ballIsCaught) {
   );
   ASSERT_TRUE(ballIsCaught(fP, cS2));
 
-  RobotState cS3 = RobotState(
+  CamInfos cS3 = CamInfos(
       Vector2(-7, 16),  // ballPos
       Vector2(0, 0),    // myPos
       Vector2(0, 0),    // partnerPos
@@ -333,7 +333,7 @@ TEST(FutureAction, ballIsCaught) {
   );
   ASSERT_FALSE(ballIsCaught(fP, cS3));
 
-  RobotState cS4 = RobotState(
+  CamInfos cS4 = CamInfos(
       Vector2(6, 16),  // ballPos
       Vector2(0, 0),   // myPos
       Vector2(0, 0),   // partnerPos
@@ -342,7 +342,7 @@ TEST(FutureAction, ballIsCaught) {
   );
   ASSERT_TRUE(ballIsCaught(fP, cS4));
 
-  RobotState cS5 = RobotState(
+  CamInfos cS5 = CamInfos(
       Vector2(7, 16),  // ballPos
       Vector2(0, 0),   // myPos
       Vector2(0, 0),   // partnerPos
@@ -351,7 +351,7 @@ TEST(FutureAction, ballIsCaught) {
   );
   ASSERT_FALSE(ballIsCaught(fP, cS5));
 
-  RobotState cS6 = RobotState(
+  CamInfos cS6 = CamInfos(
       Vector2(-6, 17),  // ballPos
       Vector2(0, 0),    // myPos
       Vector2(0, 0),    // partnerPos
@@ -360,7 +360,7 @@ TEST(FutureAction, ballIsCaught) {
   );
   ASSERT_FALSE(ballIsCaught(fP, cS6));
 
-  RobotState cS7 = RobotState(
+  CamInfos cS7 = CamInfos(
       Vector2(6, 17),  // ballPos
       Vector2(0, 0),   // myPos
       Vector2(0, 0),   // partnerPos
@@ -382,7 +382,7 @@ TEST(FutureAction, refrainFromLeavingStrategy) {
       2               // ballRadius
   );
 
-  RobotState cS0 = RobotState(
+  CamInfos cS0 = CamInfos(
       Vector2(0, 0),      // ballPos
       Vector2(0, 0),      // myPos
       Vector2(0, 0),      // partnerPos
@@ -393,7 +393,7 @@ TEST(FutureAction, refrainFromLeavingStrategy) {
   ASSERT_EQ(refrainFromLeavingStrategy(fP, cS0).target(), Vector2(0, 0));
   ASSERT_FALSE(refrainFromLeavingStrategy(fP, cS0).activeKicker());
 
-  RobotState cS1 = RobotState(
+  CamInfos cS1 = CamInfos(
       Vector2(0, 0),      // ballPos
       Vector2(-300, 0),   // myPos
       Vector2(0, 0),      // partnerPos
@@ -404,7 +404,7 @@ TEST(FutureAction, refrainFromLeavingStrategy) {
   ASSERT_EQ(refrainFromLeavingStrategy(fP, cS1).target(), Vector2(10, 0));
   ASSERT_FALSE(refrainFromLeavingStrategy(fP, cS1).activeKicker());
 
-  RobotState cS2 = RobotState(
+  CamInfos cS2 = CamInfos(
       Vector2(0, 0),      // ballPos
       Vector2(300, 0),    // myPos
       Vector2(0, 0),      // partnerPos
@@ -415,7 +415,7 @@ TEST(FutureAction, refrainFromLeavingStrategy) {
   ASSERT_EQ(refrainFromLeavingStrategy(fP, cS2).target(), Vector2(-10, 0));
   ASSERT_FALSE(refrainFromLeavingStrategy(fP, cS2).activeKicker());
 
-  RobotState cS3 = RobotState(
+  CamInfos cS3 = CamInfos(
       Vector2(0, 0),      // ballPos
       Vector2(0, 300),    // myPos
       Vector2(0, 0),      // partnerPos
@@ -426,7 +426,7 @@ TEST(FutureAction, refrainFromLeavingStrategy) {
   ASSERT_EQ(refrainFromLeavingStrategy(fP, cS3).target(), Vector2(0, -10));
   ASSERT_FALSE(refrainFromLeavingStrategy(fP, cS3).activeKicker());
 
-  RobotState cS4 = RobotState(
+  CamInfos cS4 = CamInfos(
       Vector2(0, 0),      // ballPos
       Vector2(0, -300),   // myPos
       Vector2(0, 0),      // partnerPos
@@ -437,7 +437,7 @@ TEST(FutureAction, refrainFromLeavingStrategy) {
   ASSERT_EQ(refrainFromLeavingStrategy(fP, cS4).target(), Vector2(0, 10));
   ASSERT_FALSE(refrainFromLeavingStrategy(fP, cS4).activeKicker());
 
-  RobotState cS5 = RobotState(
+  CamInfos cS5 = CamInfos(
       Vector2(0, 0),       // ballPos
       Vector2(-300, 300),  // myPos
       Vector2(0, 0),       // partnerPos
@@ -448,7 +448,7 @@ TEST(FutureAction, refrainFromLeavingStrategy) {
   ASSERT_EQ(refrainFromLeavingStrategy(fP, cS5).target(), Vector2(10, -10));
   ASSERT_FALSE(refrainFromLeavingStrategy(fP, cS5).activeKicker());
 
-  RobotState cS6 = RobotState(
+  CamInfos cS6 = CamInfos(
       Vector2(0, 0),      // ballPos
       Vector2(300, 300),  // myPos
       Vector2(0, 0),      // partnerPos
@@ -459,7 +459,7 @@ TEST(FutureAction, refrainFromLeavingStrategy) {
   ASSERT_EQ(refrainFromLeavingStrategy(fP, cS6).target(), Vector2(-10, -10));
   ASSERT_FALSE(refrainFromLeavingStrategy(fP, cS6).activeKicker());
 
-  RobotState cS7 = RobotState(
+  CamInfos cS7 = CamInfos(
       Vector2(0, 0),        // ballPos
       Vector2(-300, -300),  // myPos
       Vector2(0, 0),        // partnerPos
@@ -470,7 +470,7 @@ TEST(FutureAction, refrainFromLeavingStrategy) {
   ASSERT_EQ(refrainFromLeavingStrategy(fP, cS7).target(), Vector2(10, 10));
   ASSERT_FALSE(refrainFromLeavingStrategy(fP, cS7).activeKicker());
 
-  RobotState cS8 = RobotState(
+  CamInfos cS8 = CamInfos(
       Vector2(0, 0),       // ballPos
       Vector2(300, -300),  // myPos
       Vector2(0, 0),       // partnerPos
@@ -481,7 +481,7 @@ TEST(FutureAction, refrainFromLeavingStrategy) {
   ASSERT_EQ(refrainFromLeavingStrategy(fP, cS8).target(), Vector2(-10, 10));
   ASSERT_FALSE(refrainFromLeavingStrategy(fP, cS8).activeKicker());
 
-  RobotState cS9 = RobotState(
+  CamInfos cS9 = CamInfos(
       Vector2(0, 0),     // ballPos
       Vector2(0, 0),     // myPos
       Vector2(0, 0),     // partnerPos
@@ -492,7 +492,7 @@ TEST(FutureAction, refrainFromLeavingStrategy) {
   ASSERT_EQ(refrainFromLeavingStrategy(fP, cS9).target(), Vector2(0, 0));
   ASSERT_FALSE(refrainFromLeavingStrategy(fP, cS9).activeKicker());
 
-  RobotState cS10 = RobotState(
+  CamInfos cS10 = CamInfos(
       Vector2(0, 0),     // ballPos
       Vector2(0, 0),     // myPos
       Vector2(0, 0),     // partnerPos
@@ -503,7 +503,7 @@ TEST(FutureAction, refrainFromLeavingStrategy) {
   ASSERT_EQ(refrainFromLeavingStrategy(fP, cS10).target(), Vector2(0, 10));
   ASSERT_FALSE(refrainFromLeavingStrategy(fP, cS10).activeKicker());
 
-  RobotState cS11 = RobotState(
+  CamInfos cS11 = CamInfos(
       Vector2(0, 0),      // ballPos
       Vector2(0, 0),      // myPos
       Vector2(0, 0),      // partnerPos
@@ -514,7 +514,7 @@ TEST(FutureAction, refrainFromLeavingStrategy) {
   ASSERT_EQ(refrainFromLeavingStrategy(fP, cS11).target(), Vector2(0, 0));
   ASSERT_FALSE(refrainFromLeavingStrategy(fP, cS11).activeKicker());
 
-  RobotState cS12 = RobotState(
+  CamInfos cS12 = CamInfos(
       Vector2(0, 0),      // ballPos
       Vector2(0, 0),      // myPos
       Vector2(0, 0),      // partnerPos
@@ -538,7 +538,7 @@ TEST(FutureAction, goToBallStrategy) {
       2               // ballRadius
   );
 
-  RobotState cS = RobotState(
+  CamInfos cS = CamInfos(
       Vector2(50, 50),  // ballPos
       Vector2(0, 0),    // myPos
       Vector2(0, 0),    // partnerPos

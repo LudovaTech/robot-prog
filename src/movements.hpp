@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 
-#include "utilities.h"
+#include "utilities.hpp"
 
 // TODO supprimer la mémorisation de sens en la remplaçant par une détection en temps réel grâce à FG
 enum class Direction { forward,
@@ -58,7 +58,7 @@ class Motors {
 
   void fullStop() const;
 
-  void goTo(Vector2 distances, int celerity, float rotation) const;
+  void goTo(Vector2 distances, int celerity, Radians orientation) const;
 };
 
 #endif
