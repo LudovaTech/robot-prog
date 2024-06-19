@@ -41,38 +41,6 @@ class MutableLidarPoint {
   Degree _angle;
 };
 
-class CircularLidarPointsBuffer {
- public:
-  CircularLidarPointsBuffer(int bufferSize);
-  ~CircularLidarPointsBuffer();
-
-  void addValue(const LidarPoint newValue);
-  bool existValue(size_t indice) const;
-  LidarPoint getValue(size_t indice) const;
-  void flush();
-
-  size_t sizeFilled() const;
-  inline size_t lastRoundIndex() const { return _lastRoundIndex; }
-  inline size_t index() const { return _index; }
-  int savePointsLocal(int alreadySavedIndex) const;
-  String toString() const;
-
-  void readPointsAndAddToBuffer();
-  std::vector<LidarPoint> getPoints();
-
- private:
-  MutableLidarPoint *_buffer;
-  const size_t _size;
-  size_t _index = 0;
-  bool _firstRound = true;
-  size_t _lastRoundIndex = 0;
-  // Data are initialized to 0 by default,
-  // to avoid calculation errors when the first buffer round is not completed,
-  // the logic takes this into account.
-
-  void _printSpecificValue(size_t valueIndex) const;
-};
-
 static const uint8_t crcTable[256] = {
     0x00, 0x4d, 0x9a, 0xd7, 0x79, 0x34, 0xe3,
     0xae, 0xf2, 0xbf, 0x68, 0x25, 0x8b, 0xc6, 0x11, 0x5c, 0xa9, 0xe4, 0x33,
@@ -96,6 +64,8 @@ static const uint8_t crcTable[256] = {
     0xb7, 0x5d, 0x10, 0xc7, 0x8a, 0x24, 0x69, 0xbe, 0xf3, 0xaf, 0xe2, 0x35,
     0x78, 0xd6, 0x9b, 0x4c, 0x01, 0xf4, 0xb9, 0x6e, 0x23, 0x8d, 0xc0, 0x17,
     0x5a, 0x06, 0x4b, 0x9c, 0xd1, 0x7f, 0x32, 0xe5, 0xa8};
+
+std::vector<LidarPoint> ancLidarAnalyzer_getPoints();
 
 uint8_t _calCRC8FromBuffer(uint8_t *p, uint8_t lenWithoutCRCCheckValue);
 uint16_t _get2BytesLsbMsb(byte buffer[], int index);

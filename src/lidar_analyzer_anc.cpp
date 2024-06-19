@@ -227,10 +227,8 @@ LidarInfosGlue getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool
   unsigned long start_millis = millis();
 
   if (readFromLidar) {
-    CircularLidarPointsBuffer lidarPointsBuffer = CircularLidarPointsBuffer(456);
-
     for (int i = 0; i < nb_tours_lidar; i++) {
-      std::vector<LidarPoint> lidarPoints = lidarPointsBuffer.getPoints();
+      std::vector<LidarPoint> lidarPoints = ancLidarAnalyzer_getPoints();
       for (size_t j = 0; j < lidarPoints.size(); j++) {
         LidarPoint lidarPoint = lidarPoints[j];
         if (lidarPoint.distance() > LidarDistanceMin && lidarPoint.distance() < 3000)  // on ne prend pas les points < 10cm et > 300cm
