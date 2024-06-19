@@ -2,7 +2,7 @@
 
 //////LIDARPOINT
 
-LidarPoint::LidarPoint(uint16_t distance, uint8_t intensity, uint16_t angle)
+LidarPoint::LidarPoint(uint16_t distance, uint8_t intensity, Degree angle)
     : _distance(distance), _intensity(intensity), _angle(angle) {}
 
 String LidarPoint::toString() const {
@@ -103,7 +103,7 @@ void CircularLidarPointsBuffer::flush() {
 void CircularLidarPointsBuffer::_printSpecificValue(size_t valueIndex) const {
   if (existValue(valueIndex)) {
     SerialDebug.print(",(");
-    SerialDebug.print(getValue(valueIndex).angle());
+    SerialDebug.print(String(getValue(valueIndex).angle()));
     SerialDebug.print(",");
     SerialDebug.print(getValue(valueIndex).distance());
     SerialDebug.print(")");

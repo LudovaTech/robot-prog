@@ -276,7 +276,7 @@ LidarInfosGlue getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool
     full_log += "** LIDAR points: ";
     for (size_t i = 0; i < nb_points; i++) {
       MutableLidarPoint lidarPoint = points2[i];
-      full_log += "(" + String(lidarPoint.angle()) + "," + String(lidarPoint.distance()) + ");";
+      full_log += "(" + String(lidarPoint.angle()) + " deg *100," + String(lidarPoint.distance()) + ");";
     }
     if (full_log.length() > 0 && full_log[full_log.length() - 1] == ';') {
       full_log = full_log.substring(0, full_log.length() - 1);
@@ -290,8 +290,8 @@ LidarInfosGlue getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool
     for (size_t i = 0; i < nb_points; i++) {
       MutableLidarPoint lidarPoint = points2[i];
       // avec rotation de 90° vers la droite (pour que l'avant du lidar pointe vers le haut sur les graphes)
-      float x = lidarPoint.distance() * cos(lidarPoint.angle() / 18000.0 * PI);
-      float y = -lidarPoint.distance() * sin(lidarPoint.angle() / 18000.0 * PI);
+      float x = lidarPoint.distance() * cos(Radians(lidarPoint.angle()) / 100.0);
+      float y = -lidarPoint.distance() * sin(Radians(lidarPoint.angle()) / 100.0);
       points_cart.push_back(Vector2(x, y));
     }
   }

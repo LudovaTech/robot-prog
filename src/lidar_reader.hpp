@@ -7,20 +7,20 @@
 
 class LidarPoint {
  public:
-  LidarPoint(uint16_t distance, uint8_t intensity, uint16_t angle);
+  LidarPoint(uint16_t distance, uint8_t intensity, Degree angle);
 
   LidarPoint &operator=(const LidarPoint &) = delete;
 
   inline uint16_t distance() const { return _distance; }  // distance from the center of the lidar
   inline uint8_t intensity() const { return _intensity; }
-  inline uint16_t angle() const { return _angle; }
+  inline Degree angle() const { return _angle; }
 
   String toString() const;
 
  private:
   const uint16_t _distance;
   const uint8_t _intensity;
-  const uint16_t _angle;
+  const Degree _angle;
 };
 
 class MutableLidarPoint {
@@ -30,7 +30,7 @@ class MutableLidarPoint {
 
   inline uint16_t distance() const { return _distance; }  // distance from the center of the lidar
   inline uint8_t intensity() const { return _intensity; }
-  inline uint16_t angle() const { return _angle; }
+  inline Degree angle() const { return _angle; }
 
   LidarPoint toLidarPoint() const;
   String toString() const;
@@ -38,7 +38,7 @@ class MutableLidarPoint {
  private:
   uint16_t _distance;
   uint8_t _intensity;
-  uint16_t _angle;
+  Degree _angle;
 };
 
 class CircularLidarPointsBuffer {
