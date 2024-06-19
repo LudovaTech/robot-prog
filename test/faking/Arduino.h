@@ -22,9 +22,10 @@
 
 #define sqrt std::sqrt
 #define isDigit std::isdigit
-#define max std::max
-#define min std::min
 typedef uint8_t byte;
+
+using std::max;
+using std::min;
 
 const std::chrono::time_point<std::chrono::steady_clock> _start_time = std::chrono::steady_clock::now();
 unsigned long millis();
