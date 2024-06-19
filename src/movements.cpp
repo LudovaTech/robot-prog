@@ -54,7 +54,7 @@ void MotorMov::move(int value) {
   }
 }
 
-float MotorMov::anglePowerAxisKicker() const {
+Radians MotorMov::anglePowerAxisKicker() const {
   return _angleAxisKicker - (PI / 2);
 }
 

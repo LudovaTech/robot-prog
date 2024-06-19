@@ -20,7 +20,7 @@ class MotorMov {
   void stop();
   void move(int value);
   inline Radians angleAxisKicker() const { return _angleAxisKicker; }
-  float anglePowerAxisKicker() const;
+  Radians anglePowerAxisKicker() const;
 
   bool isLeft() const { return _angleAxisKicker < 0; }
 
