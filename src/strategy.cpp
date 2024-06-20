@@ -50,8 +50,8 @@ FutureAction chooseStrategy(
     if (leavingField_B(fP, oLBI.value())) {
       return refrainLeavingField_B(fP, oLBI.value());
     }
-  // } else {
-  //   return FutureAction::stopRobot();
+    // } else {
+    //   return FutureAction::stopRobot();
   }
   if (oMGP.hasValue()) {
     if (enterInMyGoal_C(fP, oMGP.value())) {
@@ -119,17 +119,14 @@ bool leavingField_D(FieldProperties fP, LidarDetailedInfos lDI) {
   bool rightWall = fP.fieldWidth() / 2 - criticalWallDistance < lDI.coordinates().x();
   bool backWall = lDI.coordinates().y() < -fP.fieldLength() / 2 + criticalWallDistance - 5;
   bool frontWall = fP.fieldLength() / 2 - criticalWallDistance < lDI.coordinates().y();
-  
-  SerialDebug.println("Left Wall : " + String(leftWall) +
-                      " Right Wall : " + String(rightWall) +
-                      " Back Wall : " + String(backWall) +
-                      " Front Wall : " + String(frontWall));
+
+  log_a(StratLevel, "strategy.leavingField_D", "Left Wall : " + String(leftWall) + " Right Wall : " + String(rightWall) + " Back Wall : " + String(backWall) + " Front Wall : " + String(frontWall));
   return leftWall || rightWall || backWall || frontWall;
 }
 
 bool leavingField_B(FieldProperties fP, LidarBasicInfos lBI) {
   bool approachingNearestWall = lBI.norm() < criticalWallDistance;
-  SerialDebug.println("Nearest Wall too near: " + String(approachingNearestWall));
+  log_a(StratLevel, "strategy.leavingField_B", "Nearest Wall too near: " + String(approachingNearestWall));
   return approachingNearestWall;
 }
 
@@ -151,7 +148,7 @@ bool ballIsCaught(FieldProperties fP, BallPos bP) {
 }
 
 FutureAction refrainLeavingField_D(FieldProperties fP, LidarDetailedInfos lDI) {
-  SerialDebug.println("Choosed strategy : refrainLeavingField_D");
+  log_a(StratLevel, "strategy.refrainLeavingField_D", "Choosed strategy : refrainLeavingField_D");
   float xDirection = 0;
   float yDirection = 0;
 
@@ -180,7 +177,7 @@ FutureAction refrainLeavingField_D(FieldProperties fP, LidarDetailedInfos lDI) {
 }
 
 FutureAction refrainLeavingField_B(FieldProperties fP, LidarBasicInfos lBI) {
-  SerialDebug.println("Choosed strategy : refrainLeavingField_B");
+  log_a(StratLevel, "strategy.refrainLeavingField_B", "Choosed strategy : refrainLeavingField_B");
   return FutureAction(
       Vector2(
           -lBI.x(),
@@ -191,7 +188,7 @@ FutureAction refrainLeavingField_B(FieldProperties fP, LidarBasicInfos lBI) {
 }
 
 FutureAction refrainEnterInMyGoal_C(FieldProperties fP, MyGoalPos mGP) {
-  SerialDebug.println("Choosed strategy : refrainEnterInMyGoal_C");
+  log_a(StratLevel, "strategy.refrainEnterInMyGoal_C", "Choosed strategy : refrainEnterInMyGoal_C");
   return FutureAction(
       Vector2(
           -mGP.x(),
@@ -202,7 +199,7 @@ FutureAction refrainEnterInMyGoal_C(FieldProperties fP, MyGoalPos mGP) {
 }
 
 FutureAction refrainEnterInEnnemyGoal_C(FieldProperties fP, EnemyGoalPos eGP) {
-  SerialDebug.println("Choosed strategy : refrainEnterInEnnemyGoal_C");
+  log_a(StratLevel, "strategy.refrainEnterInEnnemyGoal_C", "Choosed strategy : refrainEnterInEnnemyGoal_C");
   return FutureAction(
       Vector2(
           -eGP.x(),
@@ -213,7 +210,7 @@ FutureAction refrainEnterInEnnemyGoal_C(FieldProperties fP, EnemyGoalPos eGP) {
 }
 
 FutureAction goToBall_C(FieldProperties fP, BallPos bP) {
-  SerialDebug.println("Choosed strategy : goToBall_C");
+  log_a(StratLevel, "strategy.goToBall_C", "Choosed strategy : goToBall_C");
   return FutureAction(
       Vector2(
           bP.x(),
@@ -224,7 +221,7 @@ FutureAction goToBall_C(FieldProperties fP, BallPos bP) {
 }
 
 FutureAction goToBallAvoidingBall_C(FieldProperties fP, BallPos bP) {
-  SerialDebug.println("Choosed strategy : goToBallAvoidingBall_C");
+  log_a(StratLevel, "strategy.goToBallAvoidingBall_C", "Choosed strategy : goToBallAvoidingBall_C");
   if (!ballAtLevel(fP, bP) && ballInCenter(fP, bP)) {
     return FutureAction(
         Vector2(10, -10),
@@ -250,7 +247,7 @@ FutureAction goToBallAvoidingBall_C(FieldProperties fP, BallPos bP) {
 }
 
 FutureAction goToBallAvoidingBall_CD(FieldProperties fP, BallPos bP, LidarDetailedInfos lDI) {
-  SerialDebug.println("Choosed strategy : goToBallAvoidingBall_CD");
+  log_a(StratLevel, "strategy.goToBallAvoidingBall_CD", "Choosed strategy : goToBallAvoidingBall_CD");
   if (!ballAtLevel(fP, bP) && ballInCenter(fP, bP)) {
     if (bP.x() < 0) {
       if (lDI.coordinates().x() > (fP.fieldWidth() / 2) - 6 * fP.robotRadius()) {
@@ -308,7 +305,7 @@ FutureAction goToBallAvoidingBall_CD(FieldProperties fP, BallPos bP, LidarDetail
 }
 
 FutureAction accelerateToGoal_C(FieldProperties fP, EnemyGoalPos eGP) {
-  SerialDebug.println("Choosed strategy : accelerateToGoal_C");
+  log_a(StratLevel, "strategy.accelerateToGoal_C", "Choosed strategy : accelerateToGoal_C");
   return FutureAction(
       eGP,
       speedmotors,
@@ -317,7 +314,7 @@ FutureAction accelerateToGoal_C(FieldProperties fP, EnemyGoalPos eGP) {
 }
 
 FutureAction accelerateToGoal_D(FieldProperties fP, LidarDetailedInfos lDI) {
-  SerialDebug.println("Choosed strategy : accelerateToGoal_D");
+  log_a(StratLevel, "strategy.accelerateToGoal_D", "Choosed strategy : accelerateToGoal_D");
   return FutureAction(
       Vector2(
           fP.enemyGoalPos().x() - lDI.coordinates().x(),
@@ -328,7 +325,7 @@ FutureAction accelerateToGoal_D(FieldProperties fP, LidarDetailedInfos lDI) {
 }
 
 FutureAction shoot_C(FieldProperties fP, EnemyGoalPos eGP) {
-  SerialDebug.println("Choosed strategy : shoot_C");
+  log_a(StratLevel, "strategy.shoot_C", "Choosed strategy : shoot_C");
   return FutureAction(
       eGP,
       shootSpeed,
@@ -337,7 +334,7 @@ FutureAction shoot_C(FieldProperties fP, EnemyGoalPos eGP) {
 }
 
 FutureAction shoot_D(FieldProperties fP, LidarDetailedInfos lDI) {
-  SerialDebug.println("Choosed strategy : shoot_D");
+  log_a(StratLevel, "strategy.shoot_D", "Choosed strategy : shoot_D");
   return FutureAction(
       Vector2(
           fP.enemyGoalPos().x() - lDI.coordinates().x(),
@@ -348,7 +345,7 @@ FutureAction shoot_D(FieldProperties fP, LidarDetailedInfos lDI) {
 }
 
 FutureAction slalowingBackwards_D(FieldProperties fP, LidarDetailedInfos lDI) {
-  SerialDebug.println("Choosed strategy : slalowingBackwards_D");
+  log_a(StratLevel, "strategy.slalowingBackwards_D", "Choosed strategy : slalowingBackwards_D");
   if (lDI.coordinates().y() < -50) {
     if (lDI.coordinates().x() < -5) {
       return FutureAction(

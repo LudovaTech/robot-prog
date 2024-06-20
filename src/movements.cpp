@@ -103,9 +103,6 @@ void Motors::goTo(Vector2 vector, int celerity, Radians orientation) const {
     float maximum = max(abs(MFRcelerity), max(abs(MFLcelerity), max(abs(MBRcelerity), abs(MBLcelerity))));
     float rapport = celerity / maximum;
 
-    // SerialDebug.println("rapport : " + String(rapport));
-    // SerialDebug.println(MFRcelerity);
-
     // Speeds are recalculated taking into account the desired speed and
     // Sends speeds to motors
     float speedFR = MFRcelerity * rapport;

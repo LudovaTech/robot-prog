@@ -42,6 +42,8 @@ String logGetName(unsigned int level) {
       return "DEBUG";
     case InfoLevel:
       return "INFO";
+    case StratLevel:
+      return "STRAT";
     case ErrorLevel:
       return "!ERROR!";
     case CriticalLevel:

@@ -11,9 +11,10 @@
 
 const unsigned int NoteLevel = 10;
 const unsigned int DebugLevel = 20;
-const unsigned int InfoLevel = 30;
-const unsigned int ErrorLevel = 40;
-const unsigned int CriticalLevel = 50;
+const unsigned int StratLevel = 30;
+const unsigned int InfoLevel = 40;
+const unsigned int ErrorLevel = 50;
+const unsigned int CriticalLevel = 60;
 
 String logGetName(unsigned int level);
 

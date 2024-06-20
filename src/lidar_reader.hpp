@@ -4,6 +4,7 @@
 #include <Arduino.h>
 
 #include "utilities.hpp"
+#include "logger.hpp"
 
 class LidarPoint {
  public:

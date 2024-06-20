@@ -5,6 +5,7 @@
 
 #include "cam_reader.hpp"
 #include "lidar_analyzer_anc.hpp"
+#include "logger.hpp"
 #include "parameters.hpp"
 #include "utilities.hpp"
 

@@ -83,8 +83,7 @@ CamInfosGlue getCamInfos() {
       if (sscanf(lastCompleteSequence.c_str(), "b%d%d%d%d%d%d%d%d%d%d%d%d%d%de", 
                 &ballX, &ballY, &myGoalX1, &myGoalY1, &myGoalX2, &myGoalY2, &myGoalX3, &myGoalY3, 
                 &enemyGoalX1, &enemyGoalY1, &enemyGoalX2, &enemyGoalY2, &enemyGoalX3, &enemyGoalY3) == 14) {
-
-        SerialDebug.println("Position balle: x=" + String(ballX) + ", y=" + String(ballY) + ", my goal x=" +
+        log_a(InfoLevel, "src.getCamInfos", "Position balle: x=" + String(ballX) + ", y=" + String(ballY) + ", my goal x=" +
                             String(myGoalX1) + ", y=" + String(myGoalY1) + ", ennemy goal x=" + String(enemyGoalX1) + ", y=" + String(enemyGoalY1));
         Optional<BallPos> bP;
         if (ballX != 0 && ballY != 0) {
@@ -105,11 +104,11 @@ CamInfosGlue getCamInfos() {
 
         return cIG;
       } else {
-        SerialDebug.println("Erreur lors de l'extraction des données de la caméra: " + String(lastCompleteSequence.c_str()));
+        log_a(ErrorLevel, "src.getCamInfos", "Erreur lors de l'extraction des données de la caméra: " + String(lastCompleteSequence.c_str()));
       }
 
     } else {
-      SerialDebug.println("Aucune séquence complète trouvée, reçu: " + String((char*)bigserialbuffer));
+      log_a(ErrorLevel, "src.getCamInfos", "Aucune séquence complète trouvée, reçu: " + String((char*)bigserialbuffer));
     }
   }
   return CamInfosGlue();
@@ -122,7 +121,7 @@ MutableVector2 previousTarget;
 
 void loop() {
   unsigned long start_millis = millis();
-  SerialDebug.println("***");
+  log_a(InfoLevel, "src.loop", "***");
 
   // Flash the LED to make sure the code is running correctly
   if (ledCounter) {
@@ -146,7 +145,7 @@ void loop() {
   } else {
     full_log += "Nearest Wall distance= not found";
   }
-  SerialDebug.println(full_log);
+  log_a(InfoLevel, "src.loop", full_log);
 
   // GETTING CAM DATA
   CamInfosGlue camInfos = getCamInfos();
@@ -198,12 +197,12 @@ void loop() {
     full_log2 += "Target : Unchanged (" + previousTarget.toVector2().toString() + ") ";
   }
   full_log2 += "Vitesse : " + String(currentAction.celerity()) + " Rotation : " + String(currentAction.rotation());
-  SerialDebug.println(full_log2);
+  log_a(InfoLevel, "src.loop", full_log2);
 
   if (currentAction.activeKicker()) {
     // TODO active kicker
   }
 
   unsigned long elapsed = millis() - start_millis;
-  SerialDebug.println("Temps loop : " + String(elapsed) + "ms");
+  log_a(InfoLevel, "src.loop", "Temps loop : " + String(elapsed) + "ms");
 }
