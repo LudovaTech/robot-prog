@@ -266,3 +266,10 @@ TEST(fakeArduino, PinsClassDigitalReadWrite) {
   debugPins.debugWrite(1, LOW);
   ASSERT_EQ(debugPins.analogRead(1), LOW);
 }
+
+TEST(fakeArduino, delay) {
+  unsigned long start_millis = millis();
+  delay(300);
+  unsigned long elapsed = millis() - start_millis;
+  ASSERT_TRUE((300 <= elapsed) && (elapsed <= 315));
+}
