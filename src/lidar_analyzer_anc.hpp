@@ -19,10 +19,7 @@ class LidarDetailedInfos {
   LidarDetailedInfos(Vector2 coordinates, Radians orientation)
     : _coordinates(coordinates), _orientation(orientation) {}
 
-  // TODO alias for strategy
   inline Vector2 coordinates() { return _coordinates; }
-
-  // TODO alias for strategy
   inline Radians orientation() { return _orientation; }
 };
 

@@ -24,7 +24,7 @@ const Motors motors = Motors(
     MotorMov(22, 19, 0, Degree(-140)),
     MotorMov(11, 12, 0, Degree(140)));
 
-// TODO: temporaire
+// TODO: temporary
 struct CamInfosGlue {
   Optional<BallPos> ballPos;
   Optional<MyGoalPos> myGoalPos;

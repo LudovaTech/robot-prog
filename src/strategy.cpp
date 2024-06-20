@@ -217,7 +217,7 @@ FutureAction goToBall_C(FieldProperties fP, BallPos bP) {
   return FutureAction(
       Vector2(
           bP.x(),
-          bP.y() - fP.robotRadius() * 4),  // TODO make parameter
+          bP.y() - fP.robotRadius() * 4),  // TODO create parameter
       speedmotors,
       0,
       false);  //@Gandalfph add orientation and celerity
