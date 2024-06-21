@@ -3,8 +3,8 @@
 
 #include <Arduino.h>
 
-#include "utilities.hpp"
 #include "logger.hpp"
+#include "utilities.hpp"
 
 class LidarPoint {
  public:

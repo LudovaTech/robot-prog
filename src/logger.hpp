@@ -1,5 +1,5 @@
 #ifndef LOGGER_H
-#define LOOGER_H
+#define LOGGER_H
 
 #include <Arduino.h>
 

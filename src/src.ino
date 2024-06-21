@@ -3,6 +3,7 @@
 #include "cam_reader.hpp"
 #include "lidar_analyzer_anc.hpp"
 #include "lidar_reader.hpp"
+#include "logger.hpp"
 #include "movements.hpp"
 #include "strategy.hpp"
 #include "utilities.hpp"
@@ -32,8 +33,7 @@ struct CamInfosGlue {
 };
 
 uint8_t bigserialbuffer[4000];
-//uint8_t bigserialbufferlidar[4000];
-
+// uint8_t bigserialbufferlidar[4000];
 
 void setup() {
   SerialDebug.begin(115200);
@@ -41,7 +41,7 @@ void setup() {
   SerialLidar.begin(230400);
 
   SerialCam.addMemoryForRead(&bigserialbuffer, sizeof(bigserialbuffer));
-  //SerialLidar.addMemoryForRead(&bigserialbufferlidar, sizeof(bigserialbufferlidar));
+  // SerialLidar.addMemoryForRead(&bigserialbufferlidar, sizeof(bigserialbufferlidar));
 
   SerialCam.setTimeout(10);
   SerialLidar.setTimeout(10);
@@ -67,24 +67,23 @@ CamInfosGlue getCamInfos() {
   // SerialDebug.println("nb of bytes available: " + String(bytesAvailable));
 
   if (bytesAvailable >= 26) {
-    //byte buffer[301];
+    // byte buffer[301];
     size_t nbrBytesReceived = SerialCam.readBytes(bigserialbuffer, min(bytesAvailable, sizeof(bigserialbuffer) - 1));
     bigserialbuffer[nbrBytesReceived] = '\0';
-    //SerialDebug.println(" reçu: " + String((char*)bigserialbuffer));
+    // SerialDebug.println(" reçu: " + String((char*)bigserialbuffer));
 
     std::string lastCompleteSequence = extractLastCompleteSequence((char*)bigserialbuffer);
     if (!lastCompleteSequence.empty()) {
       // exemple : b+048+019+006+065-045+027+000+000+090+015+065+070+066-059e
 
-      int ballX, ballY, 
-          myGoalX1, myGoalY1, myGoalX2, myGoalY2, myGoalX3, myGoalY3, 
+      int ballX, ballY,
+          myGoalX1, myGoalY1, myGoalX2, myGoalY2, myGoalX3, myGoalY3,
           enemyGoalX1, enemyGoalY1, enemyGoalX2, enemyGoalY2, enemyGoalX3, enemyGoalY3;
 
-      if (sscanf(lastCompleteSequence.c_str(), "b%d%d%d%d%d%d%d%d%d%d%d%d%d%de", 
-                &ballX, &ballY, &myGoalX1, &myGoalY1, &myGoalX2, &myGoalY2, &myGoalX3, &myGoalY3, 
-                &enemyGoalX1, &enemyGoalY1, &enemyGoalX2, &enemyGoalY2, &enemyGoalX3, &enemyGoalY3) == 14) {
-        log_a(InfoLevel, "src.getCamInfos", "Position balle: x=" + String(ballX) + ", y=" + String(ballY) + ", my goal x=" +
-                            String(myGoalX1) + ", y=" + String(myGoalY1) + ", ennemy goal x=" + String(enemyGoalX1) + ", y=" + String(enemyGoalY1));
+      if (sscanf(lastCompleteSequence.c_str(), "b%d%d%d%d%d%d%d%d%d%d%d%d%d%de",
+                 &ballX, &ballY, &myGoalX1, &myGoalY1, &myGoalX2, &myGoalY2, &myGoalX3, &myGoalY3,
+                 &enemyGoalX1, &enemyGoalY1, &enemyGoalX2, &enemyGoalY2, &enemyGoalX3, &enemyGoalY3) == 14) {
+        log_a(InfoLevel, "src.getCamInfos", "Position balle: x=" + String(ballX) + ", y=" + String(ballY) + ", my goal x=" + String(myGoalX1) + ", y=" + String(myGoalY1) + ", ennemy goal x=" + String(enemyGoalX1) + ", y=" + String(enemyGoalY1));
         Optional<BallPos> bP;
         if (ballX != 0 && ballY != 0) {
           bP = BallPos(ballX, ballY);
