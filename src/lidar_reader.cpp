@@ -57,7 +57,7 @@ std::vector<LidarPoint> ancLidarAnalyzer_getPoints() {
       byte buffer[45];
       size_t nbrBytesReceived = SerialLidar.readBytes(buffer, 45);
       if (nbrBytesReceived != 45) {
-        log_a(ErrorLevel, "lidar_reader.ancLidarAnalyzer_getPoints", "error, wrong number of bytes received (" + String(nbrBytesReceived) + ")");
+        log_a(ErrorLevel, "lidar_reader.ancLidarAnalyzer_getPoints", "error, wrong number of bytes received (" + String((uint32_t) nbrBytesReceived) + ")");
       } else {
         uint16_t speed = _get2BytesLsbMsb(buffer, 0);
         uint16_t startAngle = _get2BytesLsbMsb(buffer, 2);

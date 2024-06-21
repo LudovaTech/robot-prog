@@ -44,7 +44,7 @@ class String : public std::string {
   String(uint16_t s);
   String(int s);
   String(unsigned int s);
-  String(long unsigned int);
+  String(unsigned long s);
 
   float toFloat();
   String substring(size_t from, size_t to);
