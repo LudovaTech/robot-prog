@@ -7,29 +7,31 @@ unsigned int _fixedMessageLength;
 
 void setupLog(int logLevel, unsigned int fixedMessageLength) {
   _fixedMessageLength = fixedMessageLength;
+  _logLevel = logLevel;
   if (!SD.begin(BUILTIN_SDCARD)) {
-    Serial.println("logger.setupLog : Erreur lors de l'initialisation de la carte microSD !, maybe there is no SD card, logger desactivated");
-    return;
-  }
-  if (_logFile) {
-    log_a(ErrorLevel, "logger.setupLog", "already setup");
+    Serial.println("logger.setupLog : Error initializing microSD !, maybe there is no SD card, logger desactivated");
   } else {
-    _logFile = SD.open("log1.log", FILE_WRITE);
-    _logLevel = logLevel;
-    if (!_logFile) {
-      SerialDebug.println("logger.setupLog : cannot open a file, logger desactivated");
+    if (_logFile) {
+      log_a(ErrorLevel, "logger.setupLog", "already setup");
+    } else {
+      _logFile = SD.open("log1.log", FILE_WRITE);
+      if (!_logFile) {
+        SerialDebug.println("logger.setupLog : cannot open a file, logger desactivated");
+      }
     }
-    log_a(InfoLevel, "logger.setupLog", "------- NEW SESSION -------");
   }
+  log_a(InfoLevel, "logger.setupLog", "------- NEW SESSION -------");
 }
 
 void log_a(unsigned int level, String fromFun, String message) {
-  String formattedMessage = getTimestamp() + " : " + logGetName(level) + " from " + cutString(fromFun, _fixedMessageLength) + " : " + message;
-  Serial.println(formattedMessage);
-  Serial.flush();
-  if (_logFile && level >= _logLevel) {
-    _logFile.println(formattedMessage);
-    _logFile.flush();
+  if (level >= _logLevel) {
+    String formattedMessage = getTimestamp() + " : " + logGetName(level) + " from " + cutString(fromFun, _fixedMessageLength) + " : " + message;
+    Serial.println(formattedMessage);
+    Serial.flush();
+    if (_logFile) {
+      _logFile.println(formattedMessage);
+      _logFile.flush();
+    }
   }
 }
 
@@ -85,7 +87,7 @@ String getTimestamp() {
 
 String cutString(String input, int fixedLength) {
   int inputLength = input.length();
-  
+
   // Si la chaîne d'origine est plus courte que la longueur fixe
   if (inputLength < fixedLength) {
     // Ajouter des espaces à la fin de la chaîne
@@ -94,22 +96,22 @@ String cutString(String input, int fixedLength) {
     }
     return input;
   }
-  
+
   // Si la chaîne d'origine est plus longue que la longueur fixe
   if (inputLength > fixedLength) {
     // Longueur des parties à garder de chaque côté
     int keepLength = (fixedLength - 3) / 2;
     // Gérer les cas où la longueur fixe est impaire
     int extraChar = (fixedLength - 3) % 2;
-    
+
     // Partie de début et de fin
     String startPart = input.substring(0, keepLength + extraChar);
     String endPart = input.substring(inputLength - keepLength);
-    
+
     // Retourner la chaîne formatée
     return startPart + "..." + endPart;
   }
-  
+
   // Si la chaîne d'origine a exactement la longueur fixe
   return input;
 }

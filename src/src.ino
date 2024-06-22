@@ -145,7 +145,7 @@ void loop() {
   } else {
     full_log += "Nearest Wall distance= not found";
   }
-  log_a(InfoLevel, "src.loop", full_log);
+  log_a(StratLevel, "src.loop", full_log);
 
   // GETTING CAM DATA
   CamInfosGlue camInfos = getCamInfos();
