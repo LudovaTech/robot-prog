@@ -16,12 +16,11 @@ const unsigned int InfoLevel = 40;
 const unsigned int ErrorLevel = 50;
 const unsigned int CriticalLevel = 60;
 
-String logGetName(unsigned int level);
-
-void setupLog(int logLevel);
-
+void setupLog(int logLevel, unsigned int fixedMessageLength);
 void log_a(unsigned int level, String fromFun, String message);
 
+String logGetName(unsigned int level);
 String getTimestamp();
+String cutString(String input, int fixedLength);
 
 #endif

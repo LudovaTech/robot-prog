@@ -64,7 +64,7 @@ Vector2 Vector2::rotate(Radians rad) {
 Vector2 Vector2::transformToUV(Vector2 origin, Radians rotationAngle) {
   // Calculate the direction vectors of u and v
   Vector2 u_dir = Vector2(1, 0).rotate(-rotationAngle);  // Rotation of -rotationAngle
-  Vector2 v_dir = Vector2(0, 1).rotate(-rotationAngle);  // Rotation of -rotationAngle
+  Vector2 v_dir = Vector2(0, 1).rotate(-rotationAngle);  // Rotation of -Angle
 
   // Obtain the coordinates of O relative to M (the centre of the rectangle)
   Vector2 OM = Vector2(origin.x() - x(), origin.y() - y());

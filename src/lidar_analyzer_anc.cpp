@@ -319,7 +319,7 @@ LidarInfosGlue getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool
 
   std::vector<HoughLine> walls;
   if (lines.empty()) {
-    SerialDebug.println("lines empty!");
+    SerialDebug.println("lines empty!");                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
     return LidarInfosGlue{
         Optional<LidarDetailedInfos>(),
         Optional<LidarBasicInfos>()};
