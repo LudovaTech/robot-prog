@@ -84,7 +84,7 @@ CamInfosGlue getCamInfos() {
       if (sscanf(lastCompleteSequence.c_str(), "b%d%d%d%d%d%d%d%d%d%d%d%d%d%de",
                  &ballX, &ballY, &myGoalX1, &myGoalY1, &myGoalX2, &myGoalY2, &myGoalX3, &myGoalY3,
                  &enemyGoalX1, &enemyGoalY1, &enemyGoalX2, &enemyGoalY2, &enemyGoalX3, &enemyGoalY3) == 14) {
-        log_a(InfoLevel, "src.getCamInfos", "Position balle: x=" + String(ballX) + ", y=" + String(ballY) + ", my goal x=" + String(myGoalX1) + ", y=" + String(myGoalY1) + ", ennemy goal x=" + String(enemyGoalX1) + ", y=" + String(enemyGoalY1));
+        log_a(InfoLevel, "src.getCamInfos", "position-ball: x=" + String(ballX) + ", y=" + String(ballY) + ", my-goal x=" + String(myGoalX1) + ", y=" + String(myGoalY1) + ", enemy-goal x=" + String(enemyGoalX1) + ", y=" + String(enemyGoalY1));
         Optional<BallPos> bP;
         if (ballX != 0 && ballY != 0) {
           bP = BallPos(ballX, ballY);
@@ -104,7 +104,7 @@ CamInfosGlue getCamInfos() {
 
         return cIG;
       } else {
-        log_a(ErrorLevel, "src.getCamInfos", "Erreur lors de l'extraction des données de la caméra: " + String(lastCompleteSequence.c_str()));
+        log_a(ErrorLevel, "src.getCamInfos", "Erreur lors de l'extraction des donnees de la camera: " + String(lastCompleteSequence.c_str()));
       }
 
     } else {
@@ -136,14 +136,14 @@ void loop() {
   LidarInfosGlue lidarInfos = getLidarInfos(fieldProperties, true, false);
   String full_log;
   if (lidarInfos.oLDI.hasValue()) {
-    full_log += "Coordonnees robot: x=" + String(lidarInfos.oLDI.value().coordinates().x()) + " cm, y=" + String(lidarInfos.oLDI.value().coordinates().y()) + " cm, orientation: " + String(lidarInfos.oLDI.value().orientation()) + " rad, ";
+    full_log += "robot-position: x=" + String(lidarInfos.oLDI.value().coordinates().x()) + " cm, y=" + String(lidarInfos.oLDI.value().coordinates().y()) + " cm, orientation: " + String(lidarInfos.oLDI.value().orientation()) + " rad, ";
   } else {
-    full_log += "Coordonnees robot: x= not found, y= not found, orientation: not found, ";
+    full_log += "robot-position: x= not found, y= not found, orientation: not found, ";
   }
   if (lidarInfos.oLBI.hasValue()) {
-    full_log += "Nearest Wall distance=" + String(lidarInfos.oLBI.value().distance(Vector2(0, 0))) + " cm";
+    full_log += "nearest-wall-distance=" + String(lidarInfos.oLBI.value().distance(Vector2(0, 0))) + " cm";
   } else {
-    full_log += "Nearest Wall distance= not found";
+    full_log += "nearest-wall-distance= not found";
   }
   log_a(StratLevel, "src.loop", full_log);
 
