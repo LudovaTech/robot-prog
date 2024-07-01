@@ -106,7 +106,7 @@ String cutString(String input, int fixedLength) {
 
     // Partie de début et de fin
     String startPart = input.substring(0, keepLength + extraChar);
-    String endPart = input.substring(inputLength - keepLength);
+    String endPart = input.substring((size_t) inputLength - keepLength);
 
     // Retourner la chaîne formatée
     return startPart + "..." + endPart;

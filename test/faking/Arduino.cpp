@@ -44,7 +44,7 @@ float String::toFloat() {
   return std::stof(*this);
 }
 
-String String::substring(size_t from, size_t to = std::string::npos) {
+String String::substring(size_t from, size_t to) {
   if (from >= size()) {
     return "";
   }
