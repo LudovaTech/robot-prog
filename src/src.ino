@@ -91,9 +91,7 @@ CamInfosGlue getCamInfos(Radians angleFrontGoalLidar, Radians angleRearGoalLidar
         } 
 
         int myGoalX, myGoalY, enemyGoalX, enemyGoalY;
-        
-        log_a(InfoLevel, "src.getCamInfos", "position-ball: x=" + String(ballX) + ", y=" + String(ballY) + ", my-goal x=" + String(myGoalX) + ", y=" + String(myGoalY) + ", enemy-goal x=" + String(enemyGoalX) + ", y=" + String(enemyGoalY));
-        
+              
         Radians angleMyGoalCam3 = Vector2(myGoalX3, myGoalY3).angle();
         Radians angleMyGoalCam2 = Vector2(myGoalX2, myGoalY2).angle();
         Radians angleMyGoalCam1 = Vector2(myGoalX1, myGoalY1).angle();
@@ -135,6 +133,8 @@ CamInfosGlue getCamInfos(Radians angleFrontGoalLidar, Radians angleRearGoalLidar
           enemyGoalY = 0;
           SerialDebug.println("enemyGoal nothing chosen");
         }
+
+        log_a(InfoLevel, "src.getCamInfos", "position-ball: x=" + String(ballX) + ", y=" + String(ballY) + ", my-goal x=" + String(myGoalX) + ", y=" + String(myGoalY) + ", enemy-goal x=" + String(enemyGoalX) + ", y=" + String(enemyGoalY));
         
         Optional<BallPos> bP;
         if (ballX != 0 && ballY != 0) {
