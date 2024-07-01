@@ -45,7 +45,7 @@ void setup() {
   // SerialLidar.addMemoryForRead(&bigserialbufferlidar, sizeof(bigserialbufferlidar));
 
   SerialCam.setTimeout(10);
-  SerialLidar.setTimeout(10);
+  SerialLidar.setTimeout(2); // !!! 2 !!!
 
   pinMode(13, OUTPUT);
   pinMode(26, INPUT);
