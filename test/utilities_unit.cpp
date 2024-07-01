@@ -97,10 +97,14 @@ TEST(Vector2, normZero) {
   ASSERT_EQ(Vector2(0, 0).norm(), 0);
 }
 
-// TODO realNorm
-// TODO angle
-// TODO rotate
-// TODO transformToUV
+TEST(Vector2, angle) {
+  ASSERT_FLOAT_EQ(Vector2(10, 10).angle(), -PI/4);
+}
+
+TEST(Vector2, rotate) {
+  ASSERT_NEAR(Vector2(1, 0).rotate(-PI/2).x(), 0, 1e-6);
+  ASSERT_NEAR(Vector2(1, 0).rotate(-PI/2).y(), -1, 1e-6);
+}
 
 TEST(MutableVector2, toStringContainsInfo) {
   std::string str = MutableVector2(Vector2(1.5, -20)).toString();

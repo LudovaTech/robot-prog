@@ -27,10 +27,8 @@ class Vector2 {
   Vector2 distanceRef(Vector2 other) const;
   float distance(Vector2 other) const;
   float norm() const;
-  float realNorm() const;
   Radians angle() const;
   Vector2 rotate(Radians rad);
-  Vector2 transformToUV(Vector2 origin, Radians rotationAngle);
 
  private:
   const float _x, _y;
