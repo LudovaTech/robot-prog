@@ -20,10 +20,10 @@ const FieldProperties fieldProperties = FieldProperties(
 
 const Motors motors = Motors(
     // Teensy
-    MotorMov(15, 14, 0, Degree(-40)),
-    MotorMov(36, 33, 0, Degree(40)),
-    MotorMov(22, 19, 0, Degree(-140)),
-    MotorMov(11, 12, 0, Degree(140)));
+    MotorMov(15, 14, 18, Degree(-40)),
+    MotorMov(36, 33, 37, Degree(40)),
+    MotorMov(22, 19, 23, Degree(-140)),
+    MotorMov(11, 12, 10, Degree(140)));
 
 // TODO: temporary
 struct CamInfosGlue {
@@ -34,6 +34,8 @@ struct CamInfosGlue {
 
 uint8_t bigserialbuffer[4000];
 uint8_t bigserialbufferlidar[10000];
+const int pinLED = 13;
+const int pinSwitch = 26;
 
 void setup() {
   SerialDebug.begin(115200);
@@ -42,13 +44,13 @@ void setup() {
   setupLog(DebugLevel, 25);
 
   SerialCam.addMemoryForRead(&bigserialbuffer, sizeof(bigserialbuffer));
-  // SerialLidar.addMemoryForRead(&bigserialbufferlidar, sizeof(bigserialbufferlidar));
+  SerialLidar.addMemoryForRead(&bigserialbufferlidar, sizeof(bigserialbufferlidar));
 
   SerialCam.setTimeout(10);
   SerialLidar.setTimeout(2); // !!! 2 !!!
 
-  pinMode(13, OUTPUT);
-  pinMode(26, INPUT);
+  pinMode(pinLED, OUTPUT);
+  pinMode(pinSwitch, INPUT);
 }
 
 std::string extractLastCompleteSequence(const char* buffer) {
@@ -177,10 +179,10 @@ void loop() {
 
   // Flash the LED to make sure the code is running correctly
   if (ledCounter) {
-    digitalWrite(13, HIGH);
+    digitalWrite(pinLED, HIGH);
     ledCounter = false;
   } else {
-    digitalWrite(13, LOW);
+    digitalWrite(pinLED, LOW);
     ledCounter = true;
   }
 

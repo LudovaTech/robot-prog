@@ -12,7 +12,7 @@ MotorMov::MotorMov(
       _angleAxisKicker(angleAxisKicker - (PI / 2)) {
   pinMode(_pinPWM, OUTPUT);
   pinMode(_pinCWCCW, OUTPUT);
-  // pinMode(_pinFG, INPUT);
+  pinMode(_pinFG, INPUT);
   stop();
   _direction = Direction::stopped;
 }
@@ -30,11 +30,6 @@ void MotorMov::move(int value) {
     if (_direction == Direction::backward) {
       stop();
     }
-    // if (isLeft()) {
-    //   _cwccw(LOW);
-    // } else {
-    //   _cwccw(HIGH);
-    // }
     _cwccw(HIGH);
     _pwm(value);
     _direction = Direction::forward;
@@ -43,11 +38,6 @@ void MotorMov::move(int value) {
     if (_direction == Direction::forward) {
       stop();
     }
-    // if (isLeft()) {
-    //   _cwccw(HIGH);
-    // } else {
-    //   _cwccw(LOW);
-    // }
     _cwccw(LOW);
     _pwm(-value);
     _direction = Direction::backward;
