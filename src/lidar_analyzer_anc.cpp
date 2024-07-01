@@ -688,10 +688,32 @@ LidarInfosGlue getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool
       -centroid.y * sin(orientation) - centroid.x * cos(orientation),
       -centroid.y * cos(orientation) + centroid.x * sin(orientation)};
 
+  int smallWall1_firstCornerIndex = (firstCornerIndex + 3) % 4;
+  int smallWall1_secondCornerIndex = firstCornerIndex;
+  Vector2 firstGoal = {((corners[smallWall1_firstCornerIndex].x + corners[smallWall1_secondCornerIndex].x) / 2.0),
+                       ((corners[smallWall1_firstCornerIndex].y + corners[smallWall1_secondCornerIndex].y) / 2.0)};
+
+  int smallWall2_firstCornerIndex = secondCornerIndex;
+  int smallWall2_secondCornerIndex = (secondCornerIndex + 1) % 4;
+  Vector2 secondGoal = {((corners[smallWall2_firstCornerIndex].x + corners[smallWall2_secondCornerIndex].x) / 2.0),
+                       ((corners[smallWall2_firstCornerIndex].y + corners[smallWall2_secondCornerIndex].y) / 2.0)};
+
+  MutableVector2 frontGoal(0,0);
+  MutableVector2 rearGoal(0,0);
+  if (firstGoal.y() > secondGoal.y()) {
+    frontGoal = {firstGoal.x(), firstGoal.y()};
+    rearGoal = {secondGoal.x(), secondGoal.y()};
+  } else {
+    frontGoal = {secondGoal.x(), secondGoal.y()};
+    rearGoal = {firstGoal.x(), firstGoal.y()};
+  }
+
   LidarInfosGlue nInfos{
     Optional<LidarDetailedInfos>(LidarDetailedInfos(
       Vector2(coordinates.x/10, coordinates.y/10),
-      Radians(orientation)
+      Radians(orientation),
+      frontGoal.toVector2(),
+      rearGoal.toVector2()
     )),
     getNearestWall(points_walls)
   };

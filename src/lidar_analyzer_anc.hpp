@@ -14,13 +14,18 @@ class LidarDetailedInfos {
  private:
   Vector2 _coordinates;
   Radians _orientation;
+  Vector2 _frontGoalCoordinates;
+  Vector2 _rearGoalCoordinates;
 
  public:
-  LidarDetailedInfos(Vector2 coordinates, Radians orientation)
-    : _coordinates(coordinates), _orientation(orientation) {}
+  LidarDetailedInfos(Vector2 coordinates, Radians orientation, Vector2 frontGoalCoordinates, Vector2 rearGoalCoordinates)
+    : _coordinates(coordinates), _orientation(orientation), 
+    _frontGoalCoordinates(frontGoalCoordinates), _rearGoalCoordinates(rearGoalCoordinates) {}
 
   inline Vector2 coordinates() { return _coordinates; }
   inline Radians orientation() { return _orientation; }
+  inline Vector2 frontGoalCoordinates() { return _frontGoalCoordinates; }
+  inline Vector2 rearGoalCoordinates() { return _rearGoalCoordinates; }
 };
 
 class LidarAncInfos {
