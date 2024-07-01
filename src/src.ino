@@ -169,6 +169,7 @@ bool ledCounter = true;
 
 // TODO: temporary
 MutableVector2 previousTarget;
+Optional<LidarInfosGlue> previousLidarInfosGlue;
 
 void loop() {
   unsigned long start_millis = millis();
@@ -184,7 +185,14 @@ void loop() {
   }
 
   // GETTING LIDAR DATA
-  LidarInfosGlue lidarInfos = getLidarInfos(fieldProperties, true, false);
+  LidarInfosGlue lidarInfos;
+  if (SerialLidar.available() < 2600 && previousLidarInfosGlue.hasValue()) {
+    lidarInfos = previousLidarInfosGlue.value();
+  } else {
+    lidarInfos = getLidarInfos(fieldProperties, true, false);
+    previousLidarInfosGlue = lidarInfos;
+  }
+
   String full_log;
   if (lidarInfos.oLDI.hasValue()) {
     full_log += "robot-position: x=" + String(lidarInfos.oLDI.value().coordinates().x()) + " cm, y=" + String(lidarInfos.oLDI.value().coordinates().y()) + " cm, orientation: " + String(lidarInfos.oLDI.value().orientation()) + " rad, ";
