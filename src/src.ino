@@ -33,7 +33,7 @@ struct CamInfosGlue {
 };
 
 uint8_t bigserialbuffer[4000];
-// uint8_t bigserialbufferlidar[4000];
+uint8_t bigserialbufferlidar[10000];
 
 void setup() {
   SerialDebug.begin(115200);

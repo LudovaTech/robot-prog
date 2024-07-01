@@ -318,7 +318,8 @@ FutureAction accelerateToGoal_D(FieldProperties fP, LidarDetailedInfos lDI) {
   return FutureAction(
       Vector2(
           fP.enemyGoalPos().x() - lDI.coordinates().x(),
-          fP.enemyGoalPos().y() - lDI.coordinates().y()),
+          fP.enemyGoalPos().y() - lDI.coordinates().y()
+          ).rotate(-lDI.orientation()),
       speedmotors,
       0,
       false);  //@Gandalfph add orientation and celerity
