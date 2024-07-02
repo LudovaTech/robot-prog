@@ -110,6 +110,10 @@ CamInfosGlue getCamInfos(Radians angleFrontGoalLidar, Radians angleRearGoalLidar
                                       Vector2(myGoalsX[1], myGoalsY[1]).angle(),
                                       Vector2(myGoalsX[2], myGoalsY[2]).angle()};
 
+        Radians angleEnemyGoalsCam[3] = {Vector2(enemyGoalsX[0], enemyGoalsY[0]).angle(), 
+                                      Vector2(enemyGoalsX[1], enemyGoalsY[1]).angle(),
+                                      Vector2(enemyGoalsX[2], enemyGoalsY[2]).angle()};
+
         for (int i=2; i>=0; i--) {
           if (abs(angleMyGoalsCam[i] - angleFrontGoalLidar) < angleMargin || 
               abs(angleMyGoalsCam[i] - angleRearGoalLidar) < angleMargin) {
@@ -122,13 +126,7 @@ CamInfosGlue getCamInfos(Radians angleFrontGoalLidar, Radians angleRearGoalLidar
             myGoalX = previousMyGoalX;
             myGoalY = previousMyGoalY;
           }
-        }
-
-        Radians angleEnemyGoalsCam[3] = {Vector2(enemyGoalsX[0], enemyGoalsY[0]).angle(), 
-                                      Vector2(enemyGoalsX[1], enemyGoalsY[1]).angle(),
-                                      Vector2(enemyGoalsX[2], enemyGoalsY[2]).angle()};
-
-        for (int i=2; i>=0; i--) {
+        
           if (abs(angleEnemyGoalsCam[i] - angleFrontGoalLidar) < angleMargin || 
               abs(angleEnemyGoalsCam[i] - angleRearGoalLidar) < angleMargin) {
             previousMyGoalY = enemyGoalsX[i];
