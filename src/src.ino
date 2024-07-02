@@ -71,26 +71,33 @@ std::string extractLastCompleteSequence(const char* buffer) {
   return "";
 }
 
+int previousMyGoalX, previousMyGoalY, previousEnemyGoalX, previousEnemyGoalY, timePreviousMyGoal, timePreviousEnemyGoal; 
+
 CamInfosGlue getCamInfos(Radians angleFrontGoalLidar, Radians angleRearGoalLidar) {
   size_t bytesAvailable = SerialCam.available();
-  // SerialDebug.println("nb of bytes available: " + String(bytesAvailable));
+
+  if (millis() - timePreviousMyGoal > 100) {
+    previousMyGoalX = 0;
+    previousMyGoalY = 0;
+  } 
+  if (millis() - timePreviousEnemyGoal > 100) {
+    previousEnemyGoalX = 0; 
+    previousEnemyGoalY = 0;
+  }
 
   if (bytesAvailable >= 26) {
     size_t nbrBytesReceived = SerialCam.readBytes(bigserialbuffer, min(bytesAvailable, sizeof(bigserialbuffer) - 1));
     bigserialbuffer[nbrBytesReceived] = '\0';
-    // SerialDebug.println(" reçu: " + String((char*)bigserialbuffer));
 
     std::string lastCompleteSequence = extractLastCompleteSequence((char*)bigserialbuffer);
     if (!lastCompleteSequence.empty()) {
       // exemple : b+048+019+006+065-045+027+000+000+090+015+065+070+066-059e
 
-      int ballX, ballY,
-          myGoalX1, myGoalY1, myGoalX2, myGoalY2, myGoalX3, myGoalY3,
-          enemyGoalX1, enemyGoalY1, enemyGoalX2, enemyGoalY2, enemyGoalX3, enemyGoalY3;
+      int ballX, ballY, myGoalsY[3], myGoalsX[3], enemyGoalsX[3], enemyGoalsY[3];
 
       if (sscanf(lastCompleteSequence.c_str(), "b%d%d%d%d%d%d%d%d%d%d%d%d%d%de",
-                 &ballX, &ballY, &myGoalX1, &myGoalY1, &myGoalX2, &myGoalY2, &myGoalX3, &myGoalY3,
-                 &enemyGoalX1, &enemyGoalY1, &enemyGoalX2, &enemyGoalY2, &enemyGoalX3, &enemyGoalY3) == 14) {
+        &ballX, &ballY, &myGoalsX[0], &myGoalsY[0], &myGoalsX[1], &myGoalsY[1], &myGoalsX[2], &myGoalsY[3],
+        &enemyGoalsX[0], &enemyGoalsY[0], &enemyGoalsX[1], &enemyGoalsY[1], &enemyGoalsX[2], &enemyGoalsY[2]) == 14) {
         
         Radians angleMargin = 0.3;
         if(angleFrontGoalLidar == 999 || angleRearGoalLidar == 999) {
@@ -98,47 +105,41 @@ CamInfosGlue getCamInfos(Radians angleFrontGoalLidar, Radians angleRearGoalLidar
         } 
 
         int myGoalX, myGoalY, enemyGoalX, enemyGoalY;
-              
-        Radians angleMyGoalCam3 = Vector2(myGoalX3, myGoalY3).angle();
-        Radians angleMyGoalCam2 = Vector2(myGoalX2, myGoalY2).angle();
-        Radians angleMyGoalCam1 = Vector2(myGoalX1, myGoalY1).angle();
-        if (abs(angleMyGoalCam3 - angleFrontGoalLidar) < angleMargin || abs(angleMyGoalCam3 - angleRearGoalLidar) < angleMargin) {
-          myGoalX = myGoalX3;
-          myGoalY = myGoalY3;
-          SerialDebug.println("angleMyGoalCam3 chosen");
-        } else if (abs(angleMyGoalCam2 - angleFrontGoalLidar) < angleMargin || abs(angleMyGoalCam2 - angleRearGoalLidar) < angleMargin) {
-          myGoalX = myGoalX2;
-          myGoalY = myGoalY2;
-          SerialDebug.println("angleMyGoalCam2 chosen");
-        } else if (abs(angleMyGoalCam1 - angleFrontGoalLidar) < angleMargin || abs(angleMyGoalCam1 - angleRearGoalLidar) < angleMargin) {
-          myGoalX = myGoalX1;
-          myGoalY = myGoalY1;
-          SerialDebug.println("angleMyGoalCam1 chosen");
-        } else {
-          myGoalX = 0;
-          myGoalY = 0;
-          SerialDebug.println("myGoal nothing chosen");
+
+        Radians angleMyGoalsCam[3] = {Vector2(myGoalsX[0], myGoalsY[0]).angle(), 
+                                      Vector2(myGoalsX[1], myGoalsY[1]).angle(),
+                                      Vector2(myGoalsX[2], myGoalsY[2]).angle()};
+
+        for (int i=2; i>=0; i--) {
+          if (abs(angleMyGoalsCam[i] - angleFrontGoalLidar) < angleMargin || 
+              abs(angleMyGoalsCam[i] - angleRearGoalLidar) < angleMargin) {
+            previousMyGoalX = myGoalsX[i];
+            myGoalX = myGoalsX[i];
+            previousMyGoalY = myGoalsY[i];
+            myGoalY = myGoalsY[i];
+            timePreviousMyGoal = millis();
+          } else {
+            myGoalX = previousMyGoalX;
+            myGoalY = previousMyGoalY;
+          }
         }
 
-        Radians angleEnemyGoalCam3 = Vector2(enemyGoalX3, enemyGoalY3).angle();
-        Radians angleEnemyGoalCam2 = Vector2(enemyGoalX2, enemyGoalY2).angle();
-        Radians angleEnemyGoalCam1 = Vector2(enemyGoalX1, enemyGoalY1).angle();
-        if (abs(angleEnemyGoalCam3 - angleFrontGoalLidar) < angleMargin || abs(angleMyGoalCam3 - angleRearGoalLidar) < angleMargin) {
-          enemyGoalX = enemyGoalX3;
-          enemyGoalY = enemyGoalY3;
-          SerialDebug.println("angleEnemyGoalCam3 chosen");
-        } else if (abs(angleEnemyGoalCam2 - angleFrontGoalLidar) < angleMargin || abs(angleMyGoalCam2 - angleRearGoalLidar) < angleMargin) {
-          enemyGoalX = enemyGoalX2;
-          enemyGoalY = enemyGoalY2;
-          SerialDebug.println("angleEnemyGoalCam2 chosen");
-        } else if (abs(angleEnemyGoalCam1 - angleFrontGoalLidar) < angleMargin || abs(angleMyGoalCam1 - angleRearGoalLidar) < angleMargin) {
-          enemyGoalX = enemyGoalX1;
-          enemyGoalY = enemyGoalY1;
-          SerialDebug.println("angleEnemyGoalCam1 chosen");
-        } else {
-          enemyGoalX = 0;
-          enemyGoalY = 0;
-          SerialDebug.println("enemyGoal nothing chosen");
+        Radians angleEnemyGoalsCam[3] = {Vector2(enemyGoalsX[0], enemyGoalsY[0]).angle(), 
+                                      Vector2(enemyGoalsX[1], enemyGoalsY[1]).angle(),
+                                      Vector2(enemyGoalsX[2], enemyGoalsY[2]).angle()};
+
+        for (int i=2; i>=0; i--) {
+          if (abs(angleEnemyGoalsCam[i] - angleFrontGoalLidar) < angleMargin || 
+              abs(angleEnemyGoalsCam[i] - angleRearGoalLidar) < angleMargin) {
+            previousMyGoalY = enemyGoalsX[i];
+            enemyGoalX = enemyGoalsX[i];
+            previousMyGoalY = enemyGoalsY[i];
+            enemyGoalY = enemyGoalsY[i];
+          } else {
+            enemyGoalX = previousEnemyGoalX;
+            enemyGoalY = previousEnemyGoalY;
+            timePreviousEnemyGoal = millis();
+          }
         }
 
         log_a(InfoLevel, "src.getCamInfos", "position-ball: x=" + String(ballX) + ", y=" + String(ballY) + ", my-goal x=" + String(myGoalX) + ", y=" + String(myGoalY) + ", enemy-goal x=" + String(enemyGoalX) + ", y=" + String(enemyGoalY));
@@ -169,7 +170,10 @@ CamInfosGlue getCamInfos(Radians angleFrontGoalLidar, Radians angleRearGoalLidar
       log_a(ErrorLevel, "src.getCamInfos", "Aucune séquence complète trouvée, reçu: " + String((char*)bigserialbuffer));
     }
   }
-  return CamInfosGlue();
+  CamInfosGlue cIG{BallPos(0, 0), 
+                  MyGoalPos(previousMyGoalX, previousMyGoalY), 
+                  EnemyGoalPos(previousEnemyGoalX, previousEnemyGoalY)};
+  return cIG;
 }
 
 bool ledCounter = true;
@@ -180,9 +184,9 @@ Optional<LidarInfosGlue> previousLidarInfosGlue;
 
 void kloop() {
   dribblerKicker.kick();
-  delay(1000);
+  delay(40);
   dribblerKicker.noKick();
-  delay(1000);
+  delay(3000);
 }
 
 void loop() {
