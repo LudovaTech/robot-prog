@@ -133,15 +133,20 @@ DribblerKicker::DribblerKicker(
 }
 
 void DribblerKicker::dribble(int value) {
-  _dribbler.move(value);
+  if (!_interrupForKicker) {
+    _dribbler.move(value);
+  }
 }
 
 void DribblerKicker::kick() {
+  _interrupForKicker = true;
+  _dribbler.move(-255);
   digitalWrite(_pinKicker1, HIGH);
   digitalWrite(_pinKicker2, HIGH);
 }
 
 void DribblerKicker::noKick() {
+  _interrupForKicker = false;
   digitalWrite(_pinKicker1, LOW);
   digitalWrite(_pinKicker2, LOW);
 }
