@@ -40,6 +40,19 @@ String::String(int s) : std::string(_removeZeros(std::to_string(s))) {}
 String::String(unsigned int s) : std::string(_removeZeros(std::to_string(s))) {}
 String::String(unsigned long s) : std::string(_removeZeros(std::to_string(s))) {}
 
+String pinStateToString(PinState pinState) {
+  switch (pinState) {
+    case PinState::pINPUT:
+      return "pINPUT";
+    case PinState::pOUTPUT:
+      return "pOUTPUT";
+    case PinState::pUNDEF:
+      return "pUNDEF";
+    default:
+      return "strange type";
+  }
+}
+
 float String::toFloat() {
   return std::stof(*this);
 }
@@ -153,7 +166,11 @@ PinState PinsClass::getPinState(int pin) {
 void PinsClass::assertIsOfState(int pin, PinState wantedPinState) {
   assertInRange(pin);
   if (getPinState(pin) != wantedPinState) {
-    throw std::invalid_argument("pin wrong state");
+    throw std::invalid_argument(
+        "pin wrong state, is of type " +
+        pinStateToString(getPinState(pin)) +
+        " although wanted type is " +
+        pinStateToString(wantedPinState));
   }
 }
 
@@ -168,7 +185,7 @@ void PinsClass::pinMode(int pin, PinState pinState) {
 
 void PinsClass::analogWrite(int pin, int value) {
   assertInRange(pin);
-  assertIsOfState(pin, PinState::pOUPUT);
+  assertIsOfState(pin, PinState::pOUTPUT);
   pinsValue[pin] = value;
 }
 
@@ -203,7 +220,7 @@ void PinsClass::debugWrite(int pin, int value) {
 
 int PinsClass::debugRead(int pin) {
   assertInRange(pin);
-  assertIsOfState(pin, PinState::pOUPUT);
+  assertIsOfState(pin, PinState::pOUTPUT);
   return pinsValue[pin];
 }
 
@@ -212,7 +229,7 @@ void pinMode(int pin, int pinState) {
   if (pinState == INPUT) {
     fakeArduinoPins.pinMode(pin, PinState::pINPUT);
   } else if (pinState == OUTPUT) {
-    fakeArduinoPins.pinMode(pin, PinState::pOUPUT);
+    fakeArduinoPins.pinMode(pin, PinState::pOUTPUT);
   } else {
     throw std::invalid_argument("wrong pinState");
   }

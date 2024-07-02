@@ -217,20 +217,20 @@ TEST(fakeArduino, PinsClassAssertInRange) {
 TEST(fakeArduino, PinsClassGetPinState) {
   PinsClass debugPins(10);
   debugPins.pinMode(1, PinState::pINPUT);
-  debugPins.pinMode(3, PinState::pOUPUT);
+  debugPins.pinMode(3, PinState::pOUTPUT);
   ASSERT_EQ(debugPins.getPinState(1), PinState::pINPUT);
-  ASSERT_EQ(debugPins.getPinState(3), PinState::pOUPUT);
+  ASSERT_EQ(debugPins.getPinState(3), PinState::pOUTPUT);
   ASSERT_EQ(debugPins.getPinState(5), PinState::pUNDEF);
 }
 
 TEST(fakeArduino, PinsClassAssertIsOfType) {
   PinsClass debugPins(10);
   debugPins.pinMode(1, PinState::pINPUT);
-  debugPins.pinMode(3, PinState::pOUPUT);
+  debugPins.pinMode(3, PinState::pOUTPUT);
   EXPECT_NO_THROW(debugPins.assertIsOfState(1, PinState::pINPUT));
   EXPECT_NO_THROW(debugPins.assertIsOfState(2, PinState::pUNDEF));
-  EXPECT_NO_THROW(debugPins.assertIsOfState(3, PinState::pOUPUT));
-  EXPECT_THROW(debugPins.assertIsOfState(1, PinState::pOUPUT), std::invalid_argument);
+  EXPECT_NO_THROW(debugPins.assertIsOfState(3, PinState::pOUTPUT));
+  EXPECT_THROW(debugPins.assertIsOfState(1, PinState::pOUTPUT), std::invalid_argument);
   EXPECT_THROW(debugPins.assertIsOfState(2, PinState::pINPUT), std::invalid_argument);
   EXPECT_THROW(debugPins.assertIsOfState(3, PinState::pUNDEF), std::invalid_argument);
   EXPECT_THROW(debugPins.assertIsOfState(3, PinState::pINPUT), std::invalid_argument);
@@ -248,7 +248,7 @@ TEST(fakeArduino, PinsClassTnvalidDebugReadWrite) {
 TEST(fakeArduino, PinsClassAnalogReadWrite) {
   PinsClass debugPins(10);
   debugPins.pinMode(1, PinState::pINPUT);
-  debugPins.pinMode(2, PinState::pOUPUT);
+  debugPins.pinMode(2, PinState::pOUTPUT);
   debugPins.debugWrite(1, 255);
   debugPins.analogWrite(2, 155);
   ASSERT_EQ(debugPins.analogRead(1), 255);
@@ -258,7 +258,7 @@ TEST(fakeArduino, PinsClassAnalogReadWrite) {
 TEST(fakeArduino, PinsClassDigitalReadWrite) {
   PinsClass debugPins(10);
   debugPins.pinMode(1, PinState::pINPUT);
-  debugPins.pinMode(2, PinState::pOUPUT);
+  debugPins.pinMode(2, PinState::pOUTPUT);
   debugPins.debugWrite(1, HIGH);
   ASSERT_EQ(debugPins.analogRead(1), HIGH);
   debugPins.analogWrite(2, HIGH);

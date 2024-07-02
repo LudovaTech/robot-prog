@@ -14,8 +14,8 @@ protected:
 TEST_F(MotorMovTest, ConstructorInitializesPinsCorrectly) {
     MotorMov motor(5, 6, 7, 1.57);
 
-    EXPECT_EQ(fakeArduinoPins.getPinState(5), PinState::pOUPUT);
-    EXPECT_EQ(fakeArduinoPins.getPinState(6), PinState::pOUPUT);
+    EXPECT_EQ(fakeArduinoPins.getPinState(5), PinState::pOUTPUT);
+    EXPECT_EQ(fakeArduinoPins.getPinState(6), PinState::pOUTPUT);
     EXPECT_EQ(fakeArduinoPins.getPinState(7), PinState::pINPUT);
 }
 
@@ -107,8 +107,8 @@ protected:
 };
 
 TEST_F(DribblerKickerTest, ConstructorInitializesPinsCorrectly) {
-    EXPECT_EQ(fakeArduinoPins.getPinState(16), PinState::pOUPUT);
-    EXPECT_EQ(fakeArduinoPins.getPinState(17), PinState::pOUPUT);
+    EXPECT_EQ(fakeArduinoPins.getPinState(16), PinState::pOUTPUT) << pinStateToString(fakeArduinoPins.getPinState(16));
+    EXPECT_EQ(fakeArduinoPins.getPinState(17), PinState::pOUTPUT) << pinStateToString(fakeArduinoPins.getPinState(17));
 }
 
 TEST_F(DribblerKickerTest, DribbleMovesMotorCorrectly) {

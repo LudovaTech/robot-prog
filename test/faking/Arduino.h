@@ -4,12 +4,12 @@
 #define UNIT_TEST_ACTIVATED
 
 #include <cctype>
+#include <chrono>
 #include <cmath>
 #include <cstdint>
 #include <queue>
 #include <stdexcept>
 #include <string>
-#include <chrono>
 #include <thread>
 
 #define PI 3.1415926535897932384626433832795
@@ -84,8 +84,10 @@ extern SerialClass Serial7;
 extern SerialClass Serial8;
 
 enum class PinState { pINPUT,
-                      pOUPUT,
+                      pOUTPUT,
                       pUNDEF };
+
+String pinStateToString(PinState pinState);
 
 class PinsClass {
  private:
