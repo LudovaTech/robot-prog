@@ -76,7 +76,6 @@ CamInfosGlue getCamInfos(Radians angleFrontGoalLidar, Radians angleRearGoalLidar
   // SerialDebug.println("nb of bytes available: " + String(bytesAvailable));
 
   if (bytesAvailable >= 26) {
-    // byte buffer[301];
     size_t nbrBytesReceived = SerialCam.readBytes(bigserialbuffer, min(bytesAvailable, sizeof(bigserialbuffer) - 1));
     bigserialbuffer[nbrBytesReceived] = '\0';
     // SerialDebug.println(" reçu: " + String((char*)bigserialbuffer));

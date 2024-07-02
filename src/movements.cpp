@@ -141,7 +141,7 @@ void DribblerKicker::dribble(int value) {
 void DribblerKicker::kick() {
   _isKicking = true;
   _timeWhenKick = millis();
-  _dribbler.move(-255);
+  _dribbler.move(0);
   digitalWrite(_pinKicker1, HIGH);
   digitalWrite(_pinKicker2, HIGH);
 }

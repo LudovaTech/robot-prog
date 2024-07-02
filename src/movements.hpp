@@ -67,7 +67,7 @@ class DribblerKicker {
   const uint8_t _pinKicker1;
   const uint8_t _pinKicker2;
 
-  const unsigned long _timeKick = 300;
+  const unsigned long _timeKick = 40;
   bool _isKicking = false;
   unsigned long _timeWhenKick = 0;
 
