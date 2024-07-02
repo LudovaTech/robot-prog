@@ -118,3 +118,30 @@ void Motors::goTo(Vector2 vector, int celerity, Radians orientation) const {
     }
   }
 }
+
+///// DribblerKicker
+
+DribblerKicker::DribblerKicker(
+    MotorMov dribbler,
+    uint8_t pinKicker1,
+    uint8_t pinKicker2)
+    : _dribbler(dribbler),
+      _pinKicker1(pinKicker1),
+      _pinKicker2(pinKicker2) {
+  pinMode(_pinKicker1, OUTPUT);
+  pinMode(_pinKicker2, OUTPUT);
+}
+
+void DribblerKicker::dribble(int value) {
+  _dribbler.move(value);
+}
+
+void DribblerKicker::kick() {
+  digitalWrite(_pinKicker1, HIGH);
+  digitalWrite(_pinKicker2, HIGH);
+}
+
+void DribblerKicker::noKick() {
+  digitalWrite(_pinKicker1, LOW);
+  digitalWrite(_pinKicker2, LOW);
+}

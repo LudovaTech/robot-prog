@@ -61,4 +61,22 @@ class Motors {
   void goTo(Vector2 distances, int celerity, Radians orientation) const;
 };
 
+class DribblerKicker {
+ private:
+  MotorMov _dribbler;
+  const uint8_t _pinKicker1;
+  const uint8_t _pinKicker2;
+
+ public:
+  DribblerKicker(
+    MotorMov dribbler,
+    uint8_t pinKicker1,
+    uint8_t pinKicker2
+  );
+
+  void dribble(int value);
+  void kick();
+  void noKick();
+};
+
 #endif

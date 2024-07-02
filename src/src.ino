@@ -18,12 +18,18 @@ const FieldProperties fieldProperties = FieldProperties(
     2     // ballRadius
 );
 
-const Motors motors = Motors(
+const Motors motors(
     // Teensy
     MotorMov(15, 14, 18, Degree(-40)),
     MotorMov(36, 33, 37, Degree(40)),
     MotorMov(22, 19, 23, Degree(-140)),
     MotorMov(11, 12, 10, Degree(140)));
+
+DribblerKicker dribblerKicker(
+  MotorMov(6, 9, 5, 0),
+  27,
+  28
+);
 
 // TODO: temporary
 struct CamInfosGlue {
@@ -172,6 +178,13 @@ bool ledCounter = true;
 // TODO: temporary
 MutableVector2 previousTarget;
 Optional<LidarInfosGlue> previousLidarInfosGlue;
+
+void kloop() {
+  dribblerKicker.kick();
+  delay(1000);
+  dribblerKicker.noKick();
+  delay(1000);
+}
 
 void loop() {
   unsigned long start_millis = millis();
