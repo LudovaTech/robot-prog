@@ -269,10 +269,10 @@ void aloop() {
       camInfos.myGoalPos,
       camInfos.enemyGoalPos);
   if (currentAction.changeTarget()) {
-    motors.goTo(currentAction.target(), currentAction.celerity(), orientation);
+    motors.goTo(currentAction.target(), currentAction.celerity(), orientation - currentAction.targetOrientation());
     previousTarget = currentAction.target();
   } else {
-    motors.goTo(previousTarget.toVector2(), currentAction.celerity(), orientation);
+    motors.goTo(previousTarget.toVector2(), currentAction.celerity(), orientation - currentAction.targetOrientation());
   }
 
   String full_log2;
@@ -285,7 +285,10 @@ void aloop() {
   log_a(InfoLevel, "src.loop", full_log2);
 
   if (currentAction.activeKicker()) {
-    // TODO active kicker
+    dribblerKicker.kick();
+  }
+  if (currentAction.activeDribbler()) {
+    dribblerKicker.dribble(255);
   }
 
   unsigned long elapsed = millis() - start_millis;
