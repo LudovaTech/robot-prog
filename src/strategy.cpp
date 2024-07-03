@@ -5,24 +5,28 @@
 FutureAction::FutureAction(
     Vector2 target,
     int celerity,
-    Radians rotation,
-    bool activeKicker)
+    Radians targetOrientation,
+    bool activeKicker,
+    bool activeDribbler)
     : _target(Optional<MutableVector2>(target)),
       _celerity(celerity),
-      _rotation(rotation),
-      _activeKicker(activeKicker) {}
+      _targetOrientation(targetOrientation),
+      _activeKicker(activeKicker),
+      _activeDribbler(activeDribbler) {}
 
 FutureAction::FutureAction(
     int celerity,
-    Radians rotation,
-    bool activeKicker)
+    Radians targetOrientation,
+    bool activeKicker,
+    bool activeDribbler)
     : _target(Optional<MutableVector2>()),
       _celerity(celerity),
-      _rotation(rotation),
-      _activeKicker(activeKicker) {}
+      _targetOrientation(targetOrientation),
+      _activeKicker(activeKicker),
+      _activeDribbler(activeDribbler) {}
 
 FutureAction FutureAction::stopRobot() {
-  return FutureAction(Vector2(0, 0), 0, 0, false);
+  return FutureAction(Vector2(0, 0), 0, 0, false, false);
 }
 
 //////// Functions
@@ -173,6 +177,7 @@ FutureAction refrainLeavingField_D(FieldProperties fP, LidarDetailedInfos lDI) {
           yDirection),
       speedmotors,
       0,
+      false, 
       false);
 }
 
@@ -184,6 +189,7 @@ FutureAction refrainLeavingField_B(FieldProperties fP, LidarBasicInfos lBI) {
           -lBI.y()),
       speedmotors,
       0,
+      false, 
       false);
 }
 
@@ -195,7 +201,8 @@ FutureAction refrainEnterInMyGoal_C(FieldProperties fP, MyGoalPos mGP) {
           -mGP.y()),
       speedmotors,
       0,
-      false);  //@Gandalfph add orientation and celerity
+      false, 
+      false);  
 }
 
 FutureAction refrainEnterInEnnemyGoal_C(FieldProperties fP, EnemyGoalPos eGP) {
@@ -206,7 +213,8 @@ FutureAction refrainEnterInEnnemyGoal_C(FieldProperties fP, EnemyGoalPos eGP) {
           -eGP.y()),
       speedmotors,
       0,
-      false);  //@Gandalfph add orientation and celerity
+      false, 
+      false);  
 }
 
 FutureAction goToBall_C(FieldProperties fP, BallPos bP) {
@@ -217,7 +225,8 @@ FutureAction goToBall_C(FieldProperties fP, BallPos bP) {
           bP.y() - fP.robotRadius() * 4),  // TODO create parameter
       speedmotors,
       0,
-      false);  //@Gandalfph add orientation and celerity
+      false, 
+      false);  
 }
 
 FutureAction goToBallAvoidingBall_C(FieldProperties fP, BallPos bP) {
@@ -227,20 +236,23 @@ FutureAction goToBallAvoidingBall_C(FieldProperties fP, BallPos bP) {
         Vector2(10, -10),
         speedmotors,
         0,
-        false);  //@Gandalfph add orientation and celerity
+        false, 
+        false);  
 
   } else if (bP.x() <= 0) {
     return FutureAction(
         Vector2(2, -10),
         speedmotors,
         0,
-        false);  //@Gandalfph add orientation and celerity
+        false, 
+        false);  
   } else if (bP.x() > 0) {
     return FutureAction(
         Vector2(-2, -10),
         speedmotors,
         0,
-        false);  //@Gandalfph add orientation and celerity
+        false, 
+        false);  
   } else {
     Serial.println("ERROR STRANGE");
   }
@@ -255,13 +267,15 @@ FutureAction goToBallAvoidingBall_CD(FieldProperties fP, BallPos bP, LidarDetail
             Vector2(-10, -10),
             speedmotors,
             0,
-            false);  //@Gandalfph add orientation and celerity
+            false, 
+            false);  
       } else {
         return FutureAction(
             Vector2(10, -10),
             speedmotors,
             0,
-            false);  //@Gandalfph add orientation and celerity
+            false, 
+            false);  
       }
 
     } else {
@@ -270,14 +284,16 @@ FutureAction goToBallAvoidingBall_CD(FieldProperties fP, BallPos bP, LidarDetail
             Vector2(10, -10),
             speedmotors,
             0,
-            false);  //@Gandalfph add orientation and celerity
+            false, 
+            false);  
 
       } else {
         return FutureAction(
             Vector2(-10, -10),
             speedmotors,
             0,
-            false);  //@Gandalfph add orientation and celerity
+            false, 
+            false);  
       }
     }
 
@@ -286,20 +302,23 @@ FutureAction goToBallAvoidingBall_CD(FieldProperties fP, BallPos bP, LidarDetail
         Vector2(5, -10),
         speedmotors,
         0,
-        false);  //@Gandalfph add orientation and celerity
+        false, 
+        false);  
 
   } else if (bP.x() > 0 && bP.x() < 40) {
     return FutureAction(
         Vector2(-5, -10),
         speedmotors,
         0,
-        false);  //@Gandalfph add orientation and celerity
+        false, 
+        false);  
 
   } else {
     return FutureAction(
         Vector2(0, -10),
         speedmotors,
         0,
+        false, 
         false);
   }
 }
@@ -310,7 +329,8 @@ FutureAction accelerateToGoal_C(FieldProperties fP, EnemyGoalPos eGP) {
       eGP,
       speedmotors,
       0,
-      false);  //@Gandalfph add orientation and celerity
+      false, 
+      false);  
 }
 
 FutureAction accelerateToGoal_D(FieldProperties fP, LidarDetailedInfos lDI) {
@@ -322,7 +342,8 @@ FutureAction accelerateToGoal_D(FieldProperties fP, LidarDetailedInfos lDI) {
           ).rotate(-lDI.orientation()),
       speedmotors,
       0,
-      false);  //@Gandalfph add orientation and celerity
+      false, 
+      false);  
 }
 
 FutureAction shoot_C(FieldProperties fP, EnemyGoalPos eGP) {
@@ -331,7 +352,8 @@ FutureAction shoot_C(FieldProperties fP, EnemyGoalPos eGP) {
       eGP,
       shootSpeed,
       0,
-      true);  //@Gandalfph add orientation and celerity
+      true, 
+      false);  
 }
 
 FutureAction shoot_D(FieldProperties fP, LidarDetailedInfos lDI) {
@@ -339,10 +361,12 @@ FutureAction shoot_D(FieldProperties fP, LidarDetailedInfos lDI) {
   return FutureAction(
       Vector2(
           fP.enemyGoalPos().x() - lDI.coordinates().x(),
-          fP.enemyGoalPos().y() - lDI.coordinates().y()),
+          fP.enemyGoalPos().y() - lDI.coordinates().y()
+          ).rotate(-lDI.orientation()),
       shootSpeed,
       0,
-      true);  //@Gandalfph add orientation and celerity
+      true,
+      false);  
 }
 
 FutureAction slalowingBackwards_D(FieldProperties fP, LidarDetailedInfos lDI) {
@@ -353,19 +377,22 @@ FutureAction slalowingBackwards_D(FieldProperties fP, LidarDetailedInfos lDI) {
           Vector2(10, 0),
           speedmotors,
           0,
-          false);  //@Gandalfph add orientation and celerity
+          false, 
+          false);  
     } else if (5 < lDI.coordinates().x()) {
       return FutureAction(
           Vector2(-10, 0),
           speedmotors,
           0,
-          false);  //@Gandalfph add orientation and celerity
+          false, 
+          false);  
     } else {
       return FutureAction(
           Vector2(0, 10),
           speedmotors,
           0,
-          false);  //@Gandalfph add orientation and celerity
+          false, 
+          false);  
     }
 
   } else if (50 < lDI.coordinates().y()) {
@@ -373,7 +400,8 @@ FutureAction slalowingBackwards_D(FieldProperties fP, LidarDetailedInfos lDI) {
         Vector2(-20, -10),
         speedmotors,
         0,
-        false);  //@Gandalfph add orientation and celerity
+        false, 
+        false);  
 
   } else {
     if (lDI.coordinates().x() < -fP.fieldWidth() / 6) {
@@ -381,18 +409,21 @@ FutureAction slalowingBackwards_D(FieldProperties fP, LidarDetailedInfos lDI) {
           Vector2(20, -10),
           speedmotors,
           0,
-          false);  //@Gandalfph add orientation and celerity
+          false, 
+          false);  
     } else if (fP.fieldWidth() / 6 < lDI.coordinates().x()) {
       return FutureAction(
           Vector2(-20, -10),
           speedmotors,
           0,
-          false);  //@Gandalfph add orientation and celerity
+          false, 
+          false);  
     } else {
       return FutureAction(
           speedmotors,
           0,
-          false);  //@Gandalfph add orientation and celerity
+          false, 
+          false);  
     }
   }
 }

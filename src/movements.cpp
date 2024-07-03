@@ -138,11 +138,17 @@ void DribblerKicker::dribble(int value) {
 }
 
 void DribblerKicker::kick() {
-  _dribbler.move(0);
-  delay(10);
-  digitalWrite(_pinKicker1, HIGH);
-  digitalWrite(_pinKicker2, HIGH);
-  delay(_timeKick);
-  digitalWrite(_pinKicker1, LOW);
-  digitalWrite(_pinKicker2, LOW);
+  if (millis() - _timeWhenKick > 2000) {
+    _dribbler.move(0);
+    delay(10);
+
+    digitalWrite(_pinKicker1, HIGH);
+    digitalWrite(_pinKicker2, HIGH);
+    delay(_timeKick);
+    
+    digitalWrite(_pinKicker1, LOW);
+    digitalWrite(_pinKicker2, LOW);
+
+    _timeWhenKick = millis();
+  }
 }
