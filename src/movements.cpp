@@ -134,24 +134,15 @@ DribblerKicker::DribblerKicker(
 }
 
 void DribblerKicker::dribble(int value) {
-  if (!_isKicking) {
-    _dribbler.move(value);
-  }
+  _dribbler.move(value);
 }
 
 void DribblerKicker::kick() {
-  _isKicking = true;
-  _timeWhenKick = millis();
   _dribbler.move(0);
+  delay(10);
   digitalWrite(_pinKicker1, HIGH);
   digitalWrite(_pinKicker2, HIGH);
-}
-
-void DribblerKicker::noKick() {
-  if (_isKicking && (_timeWhenKick + _timeKick) >= millis()) {
-    _isKicking = false;
-    _timeWhenKick = 0;
-    digitalWrite(_pinKicker1, LOW);
-    digitalWrite(_pinKicker2, LOW);
-  }
+  delay(_timeKick);
+  digitalWrite(_pinKicker1, LOW);
+  digitalWrite(_pinKicker2, LOW);
 }

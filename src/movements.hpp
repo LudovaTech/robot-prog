@@ -68,8 +68,6 @@ class DribblerKicker {
   const uint8_t _pinKicker2;
 
   const unsigned long _timeKick = 40;
-  bool _isKicking = false;
-  unsigned long _timeWhenKick = 0;
 
  public:
   DribblerKicker(
@@ -80,7 +78,6 @@ class DribblerKicker {
 
   void dribble(int value);
   void kick();
-  void noKick();
 };
 
 #endif

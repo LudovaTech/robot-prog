@@ -180,14 +180,23 @@ bool ledCounter = true;
 MutableVector2 previousTarget;
 Optional<LidarInfosGlue> previousLidarInfosGlue;
 
-void kloop() {
-  dribblerKicker.kick();
+void loop() {
+  digitalWrite(27, HIGH);
+  digitalWrite(28, HIGH);
   delay(40);
-  dribblerKicker.noKick();
-  delay(3000);
+  digitalWrite(27, LOW);
+  digitalWrite(28, LOW);
+  delay(2000);
+  if (ledCounter) {
+    digitalWrite(pinLED, HIGH);
+    ledCounter = false;
+  } else {
+    digitalWrite(pinLED, LOW);
+    ledCounter = true;
+  }
 }
 
-void loop() {
+void aloop() {
   unsigned long start_millis = millis();
   log_a(InfoLevel, "src.loop", "***");
 
