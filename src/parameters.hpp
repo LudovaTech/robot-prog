@@ -12,14 +12,16 @@ class FieldProperties {
       float goalWidth,
       float distanceYGoalFromCenter,
       float robotRadius,
-      float ballRadius)
+      float ballRadius,
+      float maxDribblerSpeed)
       : _fieldLength(fieldLength),
         _fieldWidth(fieldWidth),
         _spaceBeforeLineSide(spaceBeforeLineSide),
         _goalWidth(goalWidth),
         _distanceYGoalFromCenter(distanceYGoalFromCenter),
         _robotRadius(robotRadius),
-        _ballRadius(ballRadius) {}
+        _ballRadius(ballRadius),
+        _maxDribblerSpeed(maxDribblerSpeed) {}
 
   inline float fieldLength() const { return _fieldLength; }
   inline float fieldWidth() const { return _fieldWidth; }
@@ -28,6 +30,7 @@ class FieldProperties {
   inline float distanceYGoalFromCenter() const { return _distanceYGoalFromCenter; }
   inline float robotRadius() const { return _robotRadius; }
   inline float ballRadius() const { return _ballRadius; }
+  inline float maxDribblerSpeed() const { return _maxDribblerSpeed; }
 
   inline Vector2 enemyGoalPos() const { return Vector2(0, _distanceYGoalFromCenter);}
   inline Vector2 myGoalPos() const { return Vector2(0, -_distanceYGoalFromCenter);}
@@ -40,6 +43,7 @@ class FieldProperties {
   const float _distanceYGoalFromCenter;
   const float _robotRadius;
   const float _ballRadius;
+  const float _maxDribblerSpeed;
 };
 
 #endif
