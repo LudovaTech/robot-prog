@@ -48,6 +48,7 @@ void setup() {
   SerialDebug.begin(115200);
   SerialCam.begin(115200);
   SerialLidar.begin(230400);
+  SerialBlue.begin(115200);
   setupLog(DebugLevel, 25);
 
   SerialCam.addMemoryForRead(&bigserialbuffer, sizeof(bigserialbuffer));
@@ -182,6 +183,13 @@ MutableVector2 previousTarget;
 Optional<LidarInfosGlue> previousLidarInfosGlue;
 
 void loop() {
+  if (SerialBlue.available()) {
+    char incoming = SerialBlue.read();
+    SerialDebug.print("OK");
+  }
+}
+
+void bloop() {
   digitalWrite(27, HIGH);
   digitalWrite(28, HIGH);
   delay(40);

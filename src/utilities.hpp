@@ -6,6 +6,7 @@
 #define SerialDebug Serial
 #define SerialCam Serial2
 #define SerialLidar Serial6
+#define SerialBlue Serial1
 
 class Radians;
 class Degree;
