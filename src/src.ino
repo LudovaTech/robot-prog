@@ -237,7 +237,6 @@ void aloop() {
   if (lidarInfos.oLDI.hasValue()) {
     angleFrontGoalLidar = Vector2(lidarInfos.oLDI.value().frontGoalCoordinates().x(), lidarInfos.oLDI.value().frontGoalCoordinates().y()).angle();
     angleRearGoalLidar = Vector2(lidarInfos.oLDI.value().rearGoalCoordinates().x(), lidarInfos.oLDI.value().rearGoalCoordinates().y()).angle();
-    //SerialDebug.println(angleFrontGoalLidar);
   }
 
   // GETTING CAM DATA
@@ -247,6 +246,14 @@ void aloop() {
   Radians orientation = 0;
   if (lidarInfos.oLDI.hasValue()) {
     orientation = lidarInfos.oLDI.value().orientation();
+  }
+
+  // Slowing down when approaching a wall
+  float speedReductionRatio = 1;
+  int minimumVelocityRatio = 0.5;
+  int slowingDownWallDistance = 40;
+  if (lidarInfos.oLBI.hasValue()) {
+    speedReductionRatio = minimumVelocityRatio*(lidarInfos.oLBI.value().distance(Vector2(0, 0))/slowingDownWallDistance + 1);
   }
 
   if (camInfos.enemyGoalPos.hasValue()) {
@@ -268,12 +275,12 @@ void aloop() {
       lidarInfos.oLBI,
       camInfos.ballPos,
       camInfos.myGoalPos,
-      camInfos.enemyGoalPos);
+      camInfos.enemyGoalPos);  
   if (currentAction.changeTarget()) {
-    motors.goTo(currentAction.target(), currentAction.celerity(), orientation - currentAction.targetOrientation());
+    motors.goTo(currentAction.target(), currentAction.celerity()*speedReductionRatio, orientation - currentAction.targetOrientation());
     previousTarget = currentAction.target();
   } else {
-    motors.goTo(previousTarget.toVector2(), currentAction.celerity(), orientation - currentAction.targetOrientation());
+    motors.goTo(previousTarget.toVector2(), currentAction.celerity()*speedReductionRatio, orientation - currentAction.targetOrientation());
   }
 
   String full_log2;
@@ -282,7 +289,7 @@ void aloop() {
   } else {
     full_log2 += "Target : Unchanged (" + previousTarget.toVector2().toString() + ") ";
   }
-  full_log2 += "Vitesse : " + String(currentAction.celerity()) + " Rotation : " + String(orientation);
+  full_log2 += "Vitesse : " + String(currentAction.celerity()*speedReductionRatio) + " Rotation : " + String(orientation);
   log_a(InfoLevel, "src.loop", full_log2);
 
   if (currentAction.activeKicker()) {
