@@ -287,9 +287,7 @@ void aloop() {
   if (currentAction.activeKicker()) {
     dribblerKicker.kick();
   }
-  if (currentAction.activeDribbler()) {
-    dribblerKicker.dribble(255);
-  }
+  dribblerKicker.dribble(currentAction.celerityDribbler());
 
   unsigned long elapsed = millis() - start_millis;
   log_a(InfoLevel, "src.loop", "Temps loop : " + String(elapsed) + "ms");

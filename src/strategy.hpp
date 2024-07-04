@@ -15,7 +15,7 @@ class FutureAction {
   int _celerity;
   Radians _targetOrientation;
   bool _activeKicker;
-  bool _activeDribbler;
+  int _celerityDribbler;
 
  public:
   FutureAction(
@@ -23,20 +23,20 @@ class FutureAction {
       int celerity,
       Radians targetOrientation,
       bool activeKicker,
-      bool activeDribbler);
+      int celerityDribbler);
 
   FutureAction(
       int celerity,
       Radians targetOrientation,
       bool activeKicker,
-      bool activeDribbler);
+      int celerityDribbler);
 
   inline Vector2 target() const { return _target.value().toVector2(); }
   inline bool changeTarget() const { return _target.hasValue(); }
   inline int celerity() const { return _celerity; }
   inline Radians targetOrientation() const { return _targetOrientation; }
   inline bool activeKicker() const { return _activeKicker; }
-  inline bool activeDribbler() const { return _activeDribbler; }
+  inline int celerityDribbler() const { return _celerityDribbler; }
 
   inline static FutureAction stopRobot();
 };
