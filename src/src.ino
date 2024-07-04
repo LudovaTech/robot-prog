@@ -15,7 +15,8 @@ const FieldProperties fieldProperties = FieldProperties(
     60,   // goalWidth
     115,  // distanceYGoalFromCenter
     9,    // robotRadius
-    2     // ballRadius
+    2,    // ballRadius
+    255  // maxDribblerSpeed
 );
 
 const Motors motors(
