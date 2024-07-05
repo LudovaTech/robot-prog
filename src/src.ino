@@ -39,7 +39,7 @@ struct CamInfosGlue {
   Optional<EnemyGoalPos> enemyGoalPos;
 };
 
-uint8_t bigserialbuffer[4000];
+uint8_t camSerialBuffer[4000];
 uint8_t bigserialbufferlidar[10000];
 const int pinLED = 13;
 const int pinSwitch = 26;
@@ -49,9 +49,9 @@ void setup() {
   SerialCam.begin(115200);
   SerialLidar.begin(230400);
   SerialBlue.begin(115200);
-  setupLog(DebugLevel, 25);
+  setupLog(ErrorLevel, 25);
 
-  SerialCam.addMemoryForRead(&bigserialbuffer, sizeof(bigserialbuffer));
+  SerialCam.addMemoryForRead(&camSerialBuffer, sizeof(camSerialBuffer));
   SerialLidar.addMemoryForRead(&bigserialbufferlidar, sizeof(bigserialbufferlidar));
 
   SerialCam.setTimeout(10);
@@ -86,19 +86,30 @@ CamInfosGlue getCamInfos(Radians angleFrontGoalLidar, Radians angleRearGoalLidar
     previousEnemyGoalX = 0; 
     previousEnemyGoalY = 0;
   }
+  log_a(CriticalLevel, "debug", String(bytesAvailable));
+  if (bytesAvailable >= 60*2) {//Comme ça on a au moins une sequence complete
+    log_a(CriticalLevel, "debug", "bytesAvailable >= 120");
+    //size_t nbrBytesReceived = SerialCam.readBytes(camSerialBuffer, min(bytesAvailable, sizeof(camSerialBuffer) - 1));
+    //camSerialBuffer[nbrBytesReceived] = '\0';
 
-  if (bytesAvailable >= 26) {
-    size_t nbrBytesReceived = SerialCam.readBytes(bigserialbuffer, min(bytesAvailable, sizeof(bigserialbuffer) - 1));
-    bigserialbuffer[nbrBytesReceived] = '\0';
-
-    std::string lastCompleteSequence = extractLastCompleteSequence((char*)bigserialbuffer);
+    //std::string lastCompleteSequence = extractLastCompleteSequence((char*)camSerialBuffer);
+    String data;
+    for (unsigned int i=0; i < bytesAvailable; i++) {
+      int receive = SerialCam.read();
+      if (receive == -1) {
+        log_a(CriticalLevel, "debug", "strange, -1");
+      }
+      data += (char) receive;
+    }
+    std::string lastCompleteSequence = extractLastCompleteSequence(data.c_str());
     if (!lastCompleteSequence.empty()) {
+      log_a(CriticalLevel, "debug", "not empty");
       // exemple : b+048+019+006+065-045+027+000+000+090+015+065+070+066-059e
 
       int ballX, ballY, myGoalsY[3], myGoalsX[3], enemyGoalsX[3], enemyGoalsY[3];
 
       if (sscanf(lastCompleteSequence.c_str(), "b%d%d%d%d%d%d%d%d%d%d%d%d%d%de",
-        &ballX, &ballY, &myGoalsX[0], &myGoalsY[0], &myGoalsX[1], &myGoalsY[1], &myGoalsX[2], &myGoalsY[3],
+        &ballX, &ballY, &myGoalsX[0], &myGoalsY[0], &myGoalsX[1], &myGoalsY[1], &myGoalsX[2], &myGoalsY[2],
         &enemyGoalsX[0], &enemyGoalsY[0], &enemyGoalsX[1], &enemyGoalsY[1], &enemyGoalsX[2], &enemyGoalsY[2]) == 14) {
         
         Radians angleMargin = 0.3;
@@ -142,7 +153,7 @@ CamInfosGlue getCamInfos(Radians angleFrontGoalLidar, Radians angleRearGoalLidar
           }
         }
 
-        log_a(InfoLevel, "src.getCamInfos", "position-ball: x=" + String(ballX) + ", y=" + String(ballY) + ", my-goal x=" + String(myGoalX) + ", y=" + String(myGoalY) + ", enemy-goal x=" + String(enemyGoalX) + ", y=" + String(enemyGoalY));
+        log_a(CriticalLevel, "src.getCamInfos", "position-ball: x=" + String(ballX) + ", y=" + String(ballY) + ", my-goal x=" + String(myGoalX) + ", y=" + String(myGoalY) + ", enemy-goal x=" + String(enemyGoalX) + ", y=" + String(enemyGoalY));
         
         Optional<BallPos> bP;
         if (ballX != 0 && ballY != 0) {
@@ -167,9 +178,10 @@ CamInfosGlue getCamInfos(Radians angleFrontGoalLidar, Radians angleRearGoalLidar
       }
 
     } else {
-      log_a(ErrorLevel, "src.getCamInfos", "Aucune séquence complète trouvée, reçu: " + String((char*)bigserialbuffer));
+      log_a(ErrorLevel, "src.getCamInfos", "Aucune séquence complète trouvée, reçu: " + data);
     }
   }
+  log_a(CriticalLevel, "src.getCamInfos", "position-ball: x=0, y=0, my-goal x=0, y=0, enemy-goal x=0, y=0");
   CamInfosGlue cIG{BallPos(0, 0), 
                   MyGoalPos(previousMyGoalX, previousMyGoalY), 
                   EnemyGoalPos(previousEnemyGoalX, previousEnemyGoalY)};
@@ -182,14 +194,14 @@ bool ledCounter = true;
 MutableVector2 previousTarget;
 Optional<LidarInfosGlue> previousLidarInfosGlue;
 
-void loop() {
+void aloop() {
   if (SerialBlue.available()) {
     char incoming = SerialBlue.read();
     SerialDebug.print("OK");
   }
 }
 
-void aloop() {
+void loop() {
   unsigned long start_millis = millis();
   log_a(InfoLevel, "src.loop", "***");
 
