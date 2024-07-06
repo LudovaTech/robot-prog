@@ -77,6 +77,6 @@ FutureAction accelerateToGoal_D(FieldProperties fP, LidarDetailedInfos lDI);
 FutureAction shoot_C(FieldProperties fP, EnemyGoalPos eGP);
 FutureAction shoot_D(FieldProperties fP, LidarDetailedInfos lDI);
 
-FutureAction slalowingBackwards_D(FieldProperties fP, LidarDetailedInfos lDI);
+FutureAction slalomingBackwards_D(FieldProperties fP, LidarDetailedInfos lDI);
 
 #endif

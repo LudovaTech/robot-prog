@@ -170,7 +170,10 @@ void loop() {
   log_a(InfoLevel, "src.loop", full_log2);
 
   if (currentAction.activeKicker()) {
+    delay(400);
+    motors.fullStop();
     dribblerKicker.kick();
+    delay(100);
   }
   dribblerKicker.dribble(currentAction.celerityDribbler());
 

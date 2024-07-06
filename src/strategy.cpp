@@ -71,7 +71,7 @@ FutureAction chooseStrategy(
   if (!oBP.hasValue()) {
     // We don't know where the ball is
     if (oLDI.hasValue()) {
-      return slalowingBackwards_D(fP, oLDI.value());
+      return slalomingBackwards_D(fP, oLDI.value());
     } else {
       return FutureAction::stopRobot();
     }
