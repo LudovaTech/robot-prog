@@ -1,7 +1,7 @@
 #include "cam_reader.hpp"
 
 const Radians angleMargin = 0.3;
-const int minBytesAvailable = 60 * 2;
+const int minBytesAvailable = 57;
 const int timeCache = 50;
 
 Optional<BallPos> cacheBallPos;
