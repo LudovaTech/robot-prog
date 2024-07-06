@@ -59,6 +59,7 @@ bool ledCounter = true;
 // TODO: temporary
 MutableVector2 previousTarget;
 Optional<LidarInfosGlue> previousLidarInfosGlue;
+Optional<CamInfosGlue> previousCamInfosGlue;
 
 void aloop() {
   if (SerialBlue.available()) {
@@ -110,7 +111,13 @@ void loop() {
   }
 
   // GETTING CAM DATA
-  CamInfosGlue camInfos = getCamInfos(angleFrontGoalLidar, angleRearGoalLidar);
+  CamInfosGlue camInfos;
+  if (SerialCam.available() < 57 && previousCamInfosGlue.hasValue()) {
+    camInfos = previousCamInfosGlue.value();
+  } else {
+    camInfos = getCamInfos(angleFrontGoalLidar, angleRearGoalLidar);
+    previousCamInfosGlue = camInfos;
+  }
 
   // calculating the orientation of the robot
   Radians orientation = 0;
@@ -169,4 +176,5 @@ void loop() {
 
   unsigned long elapsed = millis() - start_millis;
   log_a(InfoLevel, "src.loop", "Temps loop : " + String(elapsed) + "ms");
+  delay(2);
 }
