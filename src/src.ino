@@ -102,8 +102,8 @@ void loop() {
   }
   log_a(StratLevel, "src.loop", full_log);
 
-  Radians angleFrontGoalLidar = 999; 
-  Radians angleRearGoalLidar = 999;
+  Optional<Radians> angleFrontGoalLidar; 
+  Optional<Radians> angleRearGoalLidar;
   if (lidarInfos.oLDI.hasValue()) {
     angleFrontGoalLidar = Vector2(lidarInfos.oLDI.value().frontGoalCoordinates().x(), lidarInfos.oLDI.value().frontGoalCoordinates().y()).angle();
     angleRearGoalLidar = Vector2(lidarInfos.oLDI.value().rearGoalCoordinates().x(), lidarInfos.oLDI.value().rearGoalCoordinates().y()).angle();
