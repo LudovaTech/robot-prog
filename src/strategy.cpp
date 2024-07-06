@@ -345,8 +345,8 @@ FutureAction accelerateToGoal_D(FieldProperties fP, LidarDetailedInfos lDI) {
   log_a(StratLevel, "strategy.accelerateToGoal_D", "Choosed strategy : accelerateToGoal_D");
   return FutureAction(
       Vector2(
-          fP.enemyGoalPos().x() - lDI.coordinates().x(),
-          fP.enemyGoalPos().y() - lDI.coordinates().y()
+          enemyGoalPosTheorical(fP).x() - lDI.coordinates().x(),
+          enemyGoalPosTheorical(fP).y() - lDI.coordinates().y()
           ).rotate(-lDI.orientation()),
       speedmotors,
       0,
@@ -368,8 +368,8 @@ FutureAction shoot_D(FieldProperties fP, LidarDetailedInfos lDI) {
   log_a(StratLevel, "strategy.shoot_D", "Choosed strategy : shoot_D");
   return FutureAction(
       Vector2(
-          fP.enemyGoalPos().x() - lDI.coordinates().x(),
-          fP.enemyGoalPos().y() - lDI.coordinates().y()
+          enemyGoalPosTheorical(fP).x() - lDI.coordinates().x(),
+          enemyGoalPosTheorical(fP).y() - lDI.coordinates().y()
           ).rotate(-lDI.orientation()),
       shootSpeed,
       0,
