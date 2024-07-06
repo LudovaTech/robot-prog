@@ -111,13 +111,7 @@ void loop() {
   }
 
   // GETTING CAM DATA
-  CamInfosGlue camInfos;
-  if (SerialCam.available() < 57 && previousCamInfosGlue.hasValue()) {
-    camInfos = previousCamInfosGlue.value();
-  } else {
-    camInfos = getCamInfos(angleFrontGoalLidar, angleRearGoalLidar);
-    previousCamInfosGlue = camInfos;
-  }
+  CamInfosGlue camInfos = getCamInfos(angleFrontGoalLidar, angleRearGoalLidar);
 
   // calculating the orientation of the robot
   Radians orientation = 0;
