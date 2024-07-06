@@ -253,7 +253,8 @@ FutureAction goToBallAvoidingBall_C(FieldProperties fP, BallPos bP) {
         false, 
         0);  
   } else {
-    Serial.println("ERROR STRANGE");
+    log_a(CriticalLevel, "goToBallAvoidingBall_C", "ERROR STRANGE");
+    return goToBall_C(fP, bP);
   }
 }
 

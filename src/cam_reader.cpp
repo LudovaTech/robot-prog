@@ -51,6 +51,7 @@ String readFromCam(int bytesAvailable) {
     }
     data += static_cast<char>(receive);
   }
+  return data;
 }
 
 bool sequenceToValues(
@@ -89,6 +90,8 @@ Optional<BallPos> readAndUpdateCache(Optional<BallPos> ballPos) {
     if (millis() <= timeCacheBallPos + timeCache) {
       // cache valide
       return cacheBallPos;
+    } else {
+      return Optional<BallPos>();
     }
   }
 }
@@ -102,6 +105,8 @@ Optional<MyGoalPos> readAndUpdateCache(Optional<MyGoalPos> myGoalPos) {
     if (millis() <= timeCacheMyGoalPos + timeCache) {
       // cache valide
       return cacheMyGoalPos;
+    } else {
+      return Optional<MyGoalPos>();
     }
   }
 }
@@ -115,6 +120,8 @@ Optional<EnemyGoalPos> readAndUpdateCache(Optional<EnemyGoalPos> enemyGoalPos) {
     if (millis() <= timeCacheEnemyGoalPos + timeCache) {
       // cache valide
       return cacheEnemyGoalPos;
+    } else {
+      return Optional<EnemyGoalPos>();
     }
   }
 }
