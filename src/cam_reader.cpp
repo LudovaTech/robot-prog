@@ -13,9 +13,7 @@ CamInfosGlue getCamInfos(Radians angleFrontGoalLidar, Radians angleRearGoalLidar
     previousEnemyGoalX = 0; 
     previousEnemyGoalY = 0;
   }
-  log_a(CriticalLevel, "debug", String(bytesAvailable));
   if (bytesAvailable >= 60*2) {//Comme ça on a au moins une sequence complete
-    log_a(CriticalLevel, "debug", "bytesAvailable >= 120");
     //size_t nbrBytesReceived = SerialCam.readBytes(camSerialBuffer, min(bytesAvailable, sizeof(camSerialBuffer) - 1));
     //camSerialBuffer[nbrBytesReceived] = '\0';
 
@@ -24,13 +22,12 @@ CamInfosGlue getCamInfos(Radians angleFrontGoalLidar, Radians angleRearGoalLidar
     for (unsigned int i=0; i < bytesAvailable; i++) {
       int receive = SerialCam.read();
       if (receive == -1) {
-        log_a(CriticalLevel, "debug", "strange, -1");
+        log_a(CriticalLevel, "getCamInfos", "strange, -1");
       }
       data += (char) receive;
     }
     std::string lastCompleteSequence = extractLastCompleteSequence(data.c_str());
     if (!lastCompleteSequence.empty()) {
-      log_a(CriticalLevel, "debug", "not empty");
       // exemple : b+048+019+006+065-045+027+000+000+090+015+065+070+066-059e
 
       int ballX, ballY, myGoalsY[3], myGoalsX[3], enemyGoalsX[3], enemyGoalsY[3];
@@ -80,7 +77,7 @@ CamInfosGlue getCamInfos(Radians angleFrontGoalLidar, Radians angleRearGoalLidar
           }
         }
 
-        log_a(CriticalLevel, "src.getCamInfos", "position-ball: x=" + String(ballX) + ", y=" + String(ballY) + ", my-goal x=" + String(myGoalX) + ", y=" + String(myGoalY) + ", enemy-goal x=" + String(enemyGoalX) + ", y=" + String(enemyGoalY));
+        log_a(InfoLevel, "src.getCamInfos", "position-ball: x=" + String(ballX) + ", y=" + String(ballY) + ", my-goal x=" + String(myGoalX) + ", y=" + String(myGoalY) + ", enemy-goal x=" + String(enemyGoalX) + ", y=" + String(enemyGoalY));
         
         Optional<BallPos> bP;
         if (ballX != 0 && ballY != 0) {
@@ -108,7 +105,7 @@ CamInfosGlue getCamInfos(Radians angleFrontGoalLidar, Radians angleRearGoalLidar
       log_a(ErrorLevel, "src.getCamInfos", "Aucune séquence complète trouvée, reçu: " + data);
     }
   }
-  log_a(CriticalLevel, "src.getCamInfos", "position-ball: x=0, y=0, my-goal x=0, y=0, enemy-goal x=0, y=0");
+  log_a(InfoLevel, "src.getCamInfos", "position-ball: x=0, y=0, my-goal x=0, y=0, enemy-goal x=0, y=0");
   CamInfosGlue cIG{BallPos(0, 0), 
                   MyGoalPos(previousMyGoalX, previousMyGoalY), 
                   EnemyGoalPos(previousEnemyGoalX, previousEnemyGoalY)};
