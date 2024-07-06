@@ -8,6 +8,10 @@
 #include "logger.hpp"
 #include "utilities.hpp"
 
+const Radians angleMargin = 0.3;
+const int minBytesAvailable = 60 * 2;
+const int timeCache = 50;
+
 class BallPos : public Vector2 {
   using Vector2::Vector2;
 };
@@ -53,5 +57,8 @@ Optional<EnemyGoalPos> readAndUpdateCache(Optional<EnemyGoalPos> enemyGoalPos);
 
 CamInfosGlue getCamInfos(Optional<Radians> angleFrontGoalLidar, Optional<Radians> angleRearGoalLidar);
 String extractLastCompleteSequence(String buffer);
+
+void _test_set_cacheEnemyGoalPos(Optional<EnemyGoalPos> _cacheEnemyGoalPos);
+void _test_set_timeCacheEnemyGoalPos(int _timeCacheEnemyGoalPos);
 
 #endif

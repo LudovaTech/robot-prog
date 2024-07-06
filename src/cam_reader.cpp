@@ -1,15 +1,19 @@
 #include "cam_reader.hpp"
 
-const Radians angleMargin = 0.3;
-const int minBytesAvailable = 60 * 2;
-const int timeCache = 50;
-
 Optional<BallPos> cacheBallPos;
 int timeCacheBallPos = millis();
 Optional<MyGoalPos> cacheMyGoalPos;
 int timeCacheMyGoalPos = millis();
 Optional<EnemyGoalPos> cacheEnemyGoalPos;
 int timeCacheEnemyGoalPos = millis();
+
+void _test_set_cacheEnemyGoalPos(Optional<EnemyGoalPos> _cacheEnemyGoalPos) {
+  cacheEnemyGoalPos = _cacheEnemyGoalPos;
+}
+
+void _test_set_timeCacheEnemyGoalPos(int _timeCacheEnemyGoalPos) {
+  timeCacheEnemyGoalPos = _timeCacheEnemyGoalPos;
+}
 
 String extractLastCompleteSequence(String str) {
   int lastE = str.lastIndexOf('e');
