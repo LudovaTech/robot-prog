@@ -33,10 +33,10 @@ FutureAction FutureAction::stopRobot() {
 
 // TODO: remove parameters
 const int criticalWallDistance = 25;
-const int goalMinDistance = 90;  // 85 pour SN10 et 95 pour SN9
+const int goalMinDistance = 95;  // 85 pour SN10 et 95 pour SN9
 const int myGoalMinDistance = 82;
-const int speedmotors = 180;
-const int shootSpeed = 180;
+const int speedmotors = 80;
+const int shootSpeed = 200;
 
 FutureAction chooseStrategy(
     FieldProperties fP,
@@ -54,9 +54,8 @@ FutureAction chooseStrategy(
     if (leavingField_B(fP, oLBI.value())) {
       return refrainLeavingField_B(fP, oLBI.value());
     }
-    // } else {
-    //   return FutureAction::stopRobot();
   }
+
   if (oMGP.hasValue()) {
     if (enterInMyGoal_C(fP, oMGP.value())) {
       return refrainEnterInMyGoal_C(fP, oMGP.value());
@@ -70,9 +69,9 @@ FutureAction chooseStrategy(
 
   // Then we choose the appropriate Strategy
   if (!oBP.hasValue()) {
-    // We don't know where is the ball
+    // We don't know where the ball is
     if (oLDI.hasValue()) {
-      return slalowingBackwards_D(fP, oLDI.value());
+      return slalomingBackwards_D(fP, oLDI.value());
     } else {
       return FutureAction::stopRobot();
     }
@@ -144,11 +143,11 @@ bool ballAtLevel(FieldProperties fP, BallPos bP) {
 }
 
 bool ballInCenter(FieldProperties fP, BallPos bP) {
-  return abs(bP.x()) <= 25;  // TODO create parameter
+  return abs(bP.x()) <= 7;  // TODO create parameter
 }
 
 bool ballIsCaught(FieldProperties fP, BallPos bP) {
-  return ballAtLevel(fP, bP) && ballInCenter(fP, bP) && bP.y() <= 60;  // TODO create parameter
+  return ballAtLevel(fP, bP) && ballInCenter(fP, bP) && bP.y() <= 30;  // TODO create parameter
 }
 
 FutureAction refrainLeavingField_D(FieldProperties fP, LidarDetailedInfos lDI) {
@@ -222,7 +221,7 @@ FutureAction goToBall_C(FieldProperties fP, BallPos bP) {
   return FutureAction(
       Vector2(
           bP.x(),
-          bP.y() - fP.robotRadius() * 4),  // TODO create parameter
+          bP.y() - fP.robotRadius() * 3),  // TODO create parameter
       speedmotors,
       0,
       false, 
@@ -369,8 +368,8 @@ FutureAction shoot_D(FieldProperties fP, LidarDetailedInfos lDI) {
       0);  
 }
 
-FutureAction slalowingBackwards_D(FieldProperties fP, LidarDetailedInfos lDI) {
-  log_a(StratLevel, "strategy.slalowingBackwards_D", "Choosed strategy : slalowingBackwards_D");
+FutureAction slalomingBackwards_D(FieldProperties fP, LidarDetailedInfos lDI) {
+  log_a(StratLevel, "strategy.slalomingBackwards_D", "Choosed strategy : slalomingBackwards_D");
   if (lDI.coordinates().y() < -50) {
     if (lDI.coordinates().x() < -5) {
       return FutureAction(

@@ -59,6 +59,7 @@ bool ledCounter = true;
 // TODO: temporary
 MutableVector2 previousTarget;
 Optional<LidarInfosGlue> previousLidarInfosGlue;
+Optional<CamInfosGlue> previousCamInfosGlue;
 
 void aloop() {
   if (SerialBlue.available()) {
@@ -110,7 +111,13 @@ void loop() {
   }
 
   // GETTING CAM DATA
-  CamInfosGlue camInfos = getCamInfos(angleFrontGoalLidar, angleRearGoalLidar);
+  CamInfosGlue camInfos;
+  if (SerialCam.available() < 57 && previousCamInfosGlue.hasValue()) {
+    camInfos = previousCamInfosGlue.value();
+  } else {
+    camInfos = getCamInfos(angleFrontGoalLidar, angleRearGoalLidar);
+    previousCamInfosGlue = camInfos;
+  }
 
   // calculating the orientation of the robot
   Radians orientation = 0;
@@ -147,10 +154,10 @@ void loop() {
       camInfos.myGoalPos,
       camInfos.enemyGoalPos);  
   if (currentAction.changeTarget()) {
-    motors.goTo(currentAction.target(), currentAction.celerity()*speedReductionRatio, orientation - currentAction.targetOrientation());
+    motors.goTo(currentAction.target(), currentAction.celerity(), orientation - currentAction.targetOrientation());
     previousTarget = currentAction.target();
   } else {
-    motors.goTo(previousTarget.toVector2(), currentAction.celerity()*speedReductionRatio, orientation - currentAction.targetOrientation());
+    motors.goTo(previousTarget.toVector2(), currentAction.celerity(), orientation - currentAction.targetOrientation());
   }
 
   String full_log2;
@@ -163,10 +170,12 @@ void loop() {
   log_a(InfoLevel, "src.loop", full_log2);
 
   if (currentAction.activeKicker()) {
+    delay(100); // A changer
     dribblerKicker.kick();
   }
   dribblerKicker.dribble(currentAction.celerityDribbler());
 
   unsigned long elapsed = millis() - start_millis;
   log_a(InfoLevel, "src.loop", "Temps loop : " + String(elapsed) + "ms");
+  delay(2);
 }
