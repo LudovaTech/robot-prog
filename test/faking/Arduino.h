@@ -48,6 +48,8 @@ class String : public std::string {
 
   float toFloat();
   String substring(size_t from, size_t to = std::string::npos);
+  int lastIndexOf(String val, int from = -1);
+  int lastIndexOf(char val, int from = -1);
 };
 
 class SerialClass {

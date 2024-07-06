@@ -27,6 +27,6 @@ struct CamInfosGlue {
 };
 
 CamInfosGlue getCamInfos(Radians angleFrontGoalLidar, Radians angleRearGoalLidar);
-std::string extractLastCompleteSequence(const char* buffer);
+String extractLastCompleteSequence(String buffer);
 
 #endif

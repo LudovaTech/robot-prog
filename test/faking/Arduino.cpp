@@ -70,6 +70,22 @@ String String::substring(size_t from, size_t to) {
   return substr(from, to - from);
 }
 
+int String::lastIndexOf(String val, int from) {
+  if (val == "" || *this == "") return -1;
+  // Determine the position to start the reverse search
+  std::size_t startPos = (from == -1) ? std::string::npos : static_cast<std::size_t>(from);
+
+  // Use rfind to find the last occurrence of val starting from startPos
+  std::size_t pos = rfind(val, startPos);
+
+  // If rfind returns npos, the value is not found, so we return -1
+  return (pos == std::string::npos) ? -1 : static_cast<int>(pos);
+}
+
+int String::lastIndexOf(char val, int from) {
+  return lastIndexOf(std::string(1, val), from);
+}
+
 SerialClass::SerialClass() {}
 
 void SerialClass::begin(int baud) {}

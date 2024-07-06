@@ -112,14 +112,12 @@ CamInfosGlue getCamInfos(Radians angleFrontGoalLidar, Radians angleRearGoalLidar
   return cIG;
 }
 
-
-std::string extractLastCompleteSequence(const char* buffer) {
-  std::string str(buffer);
-  size_t lastE = str.find_last_of('e');
-  if (lastE != std::string::npos) {
-    size_t prevB = str.rfind('b', lastE);
-    if (prevB != std::string::npos) {
-      return str.substr(prevB, lastE - prevB);
+String extractLastCompleteSequence(String str) {
+  int lastE = str.lastIndexOf('e');
+  if (lastE != -1) {
+    int prevB = str.lastIndexOf('b', lastE);
+    if (prevB != -1) {
+      return str.substring(prevB, lastE + 1);
     }
   }
   return "";
