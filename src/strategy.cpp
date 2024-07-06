@@ -31,6 +31,14 @@ FutureAction FutureAction::stopRobot() {
 
 //////// Functions
 
+EnemyGoalPos enemyGoalPosTheorical(FieldProperties fP) {
+  return EnemyGoalPos(0, fP.distanceYGoalFromCenter());
+}
+
+MyGoalPos myGoalPosTheorical(FieldProperties fP) {
+  return MyGoalPos(0, -fP.distanceYGoalFromCenter());
+}
+
 // TODO: remove parameters
 const int criticalWallDistance = 25;
 const int goalMinDistance = 95;  // 85 pour SN10 et 95 pour SN9
