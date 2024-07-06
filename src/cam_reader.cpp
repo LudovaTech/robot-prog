@@ -24,7 +24,7 @@ CamInfosGlue getCamInfos(Radians angleFrontGoalLidar, Radians angleRearGoalLidar
     previousEnemyGoalX = 0; 
     previousEnemyGoalY = 0;
   }
-  if (bytesAvailable >= 60*2) {//Comme ca on a au moins une sequence complete
+  if (bytesAvailable >= 57) {//Comme ca on a au moins une sequence complete
     String data;
     for (unsigned int i=0; i < bytesAvailable; i++) {
       int receive = SerialCam.read();

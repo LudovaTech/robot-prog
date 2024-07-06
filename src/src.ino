@@ -154,10 +154,10 @@ void loop() {
       camInfos.myGoalPos,
       camInfos.enemyGoalPos);  
   if (currentAction.changeTarget()) {
-    motors.goTo(currentAction.target(), currentAction.celerity()*speedReductionRatio, orientation - currentAction.targetOrientation());
+    motors.goTo(currentAction.target(), currentAction.celerity(), orientation - currentAction.targetOrientation());
     previousTarget = currentAction.target();
   } else {
-    motors.goTo(previousTarget.toVector2(), currentAction.celerity()*speedReductionRatio, orientation - currentAction.targetOrientation());
+    motors.goTo(previousTarget.toVector2(), currentAction.celerity(), orientation - currentAction.targetOrientation());
   }
 
   String full_log2;
@@ -170,10 +170,8 @@ void loop() {
   log_a(InfoLevel, "src.loop", full_log2);
 
   if (currentAction.activeKicker()) {
-    delay(400);
-    motors.fullStop();
+    delay(100); // A changer
     dribblerKicker.kick();
-    delay(100);
   }
   dribblerKicker.dribble(currentAction.celerityDribbler());
 

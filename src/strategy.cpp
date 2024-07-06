@@ -35,7 +35,7 @@ FutureAction FutureAction::stopRobot() {
 const int criticalWallDistance = 25;
 const int goalMinDistance = 95;  // 85 pour SN10 et 95 pour SN9
 const int myGoalMinDistance = 82;
-const int speedmotors = 120;
+const int speedmotors = 80;
 const int shootSpeed = 200;
 
 FutureAction chooseStrategy(
