@@ -2,6 +2,17 @@
 
 int previousMyGoalX, previousMyGoalY, previousEnemyGoalX, previousEnemyGoalY, timePreviousMyGoal, timePreviousEnemyGoal;
 
+String extractLastCompleteSequence(String str) {
+  int lastE = str.lastIndexOf('e');
+  if (lastE != -1) {
+    int prevB = str.lastIndexOf('b', lastE);
+    if (prevB != -1) {
+      return str.substring(prevB, lastE + 1);
+    }
+  }
+  return "";
+}
+
 CamInfosGlue getCamInfos(Radians angleFrontGoalLidar, Radians angleRearGoalLidar) {
   size_t bytesAvailable = SerialCam.available();
 
@@ -13,21 +24,17 @@ CamInfosGlue getCamInfos(Radians angleFrontGoalLidar, Radians angleRearGoalLidar
     previousEnemyGoalX = 0; 
     previousEnemyGoalY = 0;
   }
-  if (bytesAvailable >= 60*2) {//Comme ça on a au moins une sequence complete
-    //size_t nbrBytesReceived = SerialCam.readBytes(camSerialBuffer, min(bytesAvailable, sizeof(camSerialBuffer) - 1));
-    //camSerialBuffer[nbrBytesReceived] = '\0';
-
-    //std::string lastCompleteSequence = extractLastCompleteSequence((char*)camSerialBuffer);
+  if (bytesAvailable >= 60*2) {//Comme ca on a au moins une sequence complete
     String data;
     for (unsigned int i=0; i < bytesAvailable; i++) {
       int receive = SerialCam.read();
       if (receive == -1) {
         log_a(CriticalLevel, "getCamInfos", "strange, -1");
       }
-      data += (char) receive;
+      data += static_cast<char>(receive);
     }
-    std::string lastCompleteSequence = extractLastCompleteSequence(data.c_str());
-    if (!lastCompleteSequence.empty()) {
+    String lastCompleteSequence = extractLastCompleteSequence(data);
+    if (lastCompleteSequence != "") {
       // exemple : b+048+019+006+065-045+027+000+000+090+015+065+070+066-059e
 
       int ballX, ballY, myGoalsY[3], myGoalsX[3], enemyGoalsX[3], enemyGoalsY[3];
@@ -110,15 +117,4 @@ CamInfosGlue getCamInfos(Radians angleFrontGoalLidar, Radians angleRearGoalLidar
                   MyGoalPos(previousMyGoalX, previousMyGoalY), 
                   EnemyGoalPos(previousEnemyGoalX, previousEnemyGoalY)};
   return cIG;
-}
-
-String extractLastCompleteSequence(String str) {
-  int lastE = str.lastIndexOf('e');
-  if (lastE != -1) {
-    int prevB = str.lastIndexOf('b', lastE);
-    if (prevB != -1) {
-      return str.substring(prevB, lastE + 1);
-    }
-  }
-  return "";
 }
