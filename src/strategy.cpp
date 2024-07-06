@@ -31,6 +31,14 @@ FutureAction FutureAction::stopRobot() {
 
 //////// Functions
 
+EnemyGoalPos enemyGoalPosTheorical(FieldProperties fP) {
+  return EnemyGoalPos(0, fP.distanceYGoalFromCenter());
+}
+
+MyGoalPos myGoalPosTheorical(FieldProperties fP) {
+  return MyGoalPos(0, -fP.distanceYGoalFromCenter());
+}
+
 // TODO: remove parameters
 const int criticalWallDistance = 25;
 const int goalMinDistance = 95;  // 85 pour SN10 et 95 pour SN9
@@ -337,8 +345,8 @@ FutureAction accelerateToGoal_D(FieldProperties fP, LidarDetailedInfos lDI) {
   log_a(StratLevel, "strategy.accelerateToGoal_D", "Choosed strategy : accelerateToGoal_D");
   return FutureAction(
       Vector2(
-          fP.enemyGoalPos().x() - lDI.coordinates().x(),
-          fP.enemyGoalPos().y() - lDI.coordinates().y()
+          enemyGoalPosTheorical(fP).x() - lDI.coordinates().x(),
+          enemyGoalPosTheorical(fP).y() - lDI.coordinates().y()
           ).rotate(-lDI.orientation()),
       speedmotors,
       0,
@@ -360,8 +368,8 @@ FutureAction shoot_D(FieldProperties fP, LidarDetailedInfos lDI) {
   log_a(StratLevel, "strategy.shoot_D", "Choosed strategy : shoot_D");
   return FutureAction(
       Vector2(
-          fP.enemyGoalPos().x() - lDI.coordinates().x(),
-          fP.enemyGoalPos().y() - lDI.coordinates().y()
+          enemyGoalPosTheorical(fP).x() - lDI.coordinates().x(),
+          enemyGoalPosTheorical(fP).y() - lDI.coordinates().y()
           ).rotate(-lDI.orientation()),
       shootSpeed,
       0,

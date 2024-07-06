@@ -49,6 +49,9 @@ FutureAction chooseStrategy(
     Optional<MyGoalPos> oMGP,
     Optional<EnemyGoalPos> oEGP);
 
+EnemyGoalPos enemyGoalPosTheorical(FieldProperties fP);
+MyGoalPos myGoalPosTheorical(FieldProperties fP);
+
 bool enterInMyGoal_C(FieldProperties fP, MyGoalPos mGP);
 bool enterInEnnemyGoal_C(FieldProperties fP, EnemyGoalPos eGP);
 
