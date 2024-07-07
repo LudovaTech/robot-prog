@@ -7,12 +7,28 @@ int timeCacheMyGoalPos = millis();
 Optional<EnemyGoalPos> cacheEnemyGoalPos;
 int timeCacheEnemyGoalPos = millis();
 
+void _test_set_cacheBallPos(Optional<BallPos> _cacheBallPos) {
+  cacheBallPos = _cacheBallPos;
+}
+
+void _test_set_timeCacheBallPos(int _timeCacheBallPos) {
+  timeCacheBallPos = _timeCacheBallPos;
+}
+
 void _test_set_cacheEnemyGoalPos(Optional<EnemyGoalPos> _cacheEnemyGoalPos) {
   cacheEnemyGoalPos = _cacheEnemyGoalPos;
 }
 
 void _test_set_timeCacheEnemyGoalPos(int _timeCacheEnemyGoalPos) {
   timeCacheEnemyGoalPos = _timeCacheEnemyGoalPos;
+}
+
+void _test_set_cacheMyGoalPos(Optional<MyGoalPos> _cacheMyGoalPos) {
+  cacheMyGoalPos = _cacheMyGoalPos;
+}
+
+void _test_set_timeCacheMyGoalPos(int _timeCacheMyGoalPos) {
+  timeCacheMyGoalPos = _timeCacheMyGoalPos;
 }
 
 String extractLastCompleteSequence(String str) {
