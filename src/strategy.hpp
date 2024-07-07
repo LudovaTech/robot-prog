@@ -49,16 +49,22 @@ FutureAction chooseStrategy(
     Optional<MyGoalPos> oMGP,
     Optional<EnemyGoalPos> oEGP);
 
+EnemyGoalPos enemyGoalPosTheorical(FieldProperties fP);
+MyGoalPos myGoalPosTheorical(FieldProperties fP);
+
 bool enterInMyGoal_C(FieldProperties fP, MyGoalPos mGP);
 bool enterInEnnemyGoal_C(FieldProperties fP, EnemyGoalPos eGP);
 
 bool leavingField_D(FieldProperties fP, LidarDetailedInfos lDI);
 bool leavingField_B(FieldProperties fP, LidarBasicInfos lBI);
 
+bool ballInCorner(FieldProperties fP, LidarDetailedInfos lDI, BallPos bP);
 bool ballAhead(FieldProperties fP, BallPos bP);
 bool ballAtLevel(FieldProperties fP, BallPos bP);
 bool ballInCenter(FieldProperties fP, BallPos bP);
 bool ballIsCaught(FieldProperties fP, BallPos bP);
+
+Vector2 DirectionCorrectedOfOrientation(Vector2 target, LidarDetailedInfos lDI);
 
 FutureAction refrainLeavingField_D(FieldProperties fP, LidarDetailedInfos lDI);
 FutureAction refrainLeavingField_B(FieldProperties fP, LidarBasicInfos lBI);
@@ -68,6 +74,7 @@ FutureAction refrainEnterInEnnemyGoal_C(FieldProperties fP, EnemyGoalPos eGP);
 
 FutureAction goToBall_C(FieldProperties fP, BallPos bP);
 
+FutureAction goToBallChangingOrientation_CD(FieldProperties fP, BallPos bP, LidarDetailedInfos lDI);
 FutureAction goToBallAvoidingBall_C(FieldProperties fP, BallPos bP);
 FutureAction goToBallAvoidingBall_CD(FieldProperties fP, BallPos bP, LidarDetailedInfos lDI);
 
