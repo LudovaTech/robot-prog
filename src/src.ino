@@ -32,13 +32,6 @@ DribblerKicker dribblerKicker(
   28
 );
 
-// TODO: temporary
-struct CamInfosGlue {
-  Optional<BallPos> ballPos;
-  Optional<MyGoalPos> myGoalPos;
-  Optional<EnemyGoalPos> enemyGoalPos;
-};
-
 uint8_t camSerialBuffer[4000];
 uint8_t bigserialbufferlidar[10000];
 const int pinLED = 13;
@@ -61,138 +54,12 @@ void setup() {
   pinMode(pinSwitch, INPUT);
 }
 
-std::string extractLastCompleteSequence(const char* buffer) {
-  std::string str(buffer);
-  size_t lastE = str.find_last_of('e');
-  if (lastE != std::string::npos) {
-    size_t prevB = str.rfind('b', lastE);
-    if (prevB != std::string::npos) {
-      return str.substr(prevB, lastE - prevB);
-    }
-  }
-  return "";
-}
-
-int previousMyGoalX, previousMyGoalY, previousEnemyGoalX, previousEnemyGoalY, timePreviousMyGoal, timePreviousEnemyGoal; 
-
-CamInfosGlue getCamInfos(Radians angleFrontGoalLidar, Radians angleRearGoalLidar) {
-  size_t bytesAvailable = SerialCam.available();
-
-  if (millis() - timePreviousMyGoal > 100) {
-    previousMyGoalX = 0;
-    previousMyGoalY = 0;
-  } 
-  if (millis() - timePreviousEnemyGoal > 100) {
-    previousEnemyGoalX = 0; 
-    previousEnemyGoalY = 0;
-  }
-  log_a(CriticalLevel, "debug", String(bytesAvailable));
-  if (bytesAvailable >= 60*2) {//Comme ça on a au moins une sequence complete
-    log_a(CriticalLevel, "debug", "bytesAvailable >= 120");
-    //size_t nbrBytesReceived = SerialCam.readBytes(camSerialBuffer, min(bytesAvailable, sizeof(camSerialBuffer) - 1));
-    //camSerialBuffer[nbrBytesReceived] = '\0';
-
-    //std::string lastCompleteSequence = extractLastCompleteSequence((char*)camSerialBuffer);
-    String data;
-    for (unsigned int i=0; i < bytesAvailable; i++) {
-      int receive = SerialCam.read();
-      if (receive == -1) {
-        log_a(CriticalLevel, "debug", "strange, -1");
-      }
-      data += (char) receive;
-    }
-    std::string lastCompleteSequence = extractLastCompleteSequence(data.c_str());
-    if (!lastCompleteSequence.empty()) {
-      log_a(CriticalLevel, "debug", "not empty");
-      // exemple : b+048+019+006+065-045+027+000+000+090+015+065+070+066-059e
-
-      int ballX, ballY, myGoalsY[3], myGoalsX[3], enemyGoalsX[3], enemyGoalsY[3];
-
-      if (sscanf(lastCompleteSequence.c_str(), "b%d%d%d%d%d%d%d%d%d%d%d%d%d%de",
-        &ballX, &ballY, &myGoalsX[0], &myGoalsY[0], &myGoalsX[1], &myGoalsY[1], &myGoalsX[2], &myGoalsY[2],
-        &enemyGoalsX[0], &enemyGoalsY[0], &enemyGoalsX[1], &enemyGoalsY[1], &enemyGoalsX[2], &enemyGoalsY[2]) == 14) {
-        
-        Radians angleMargin = 0.3;
-        if(angleFrontGoalLidar == 999 || angleRearGoalLidar == 999) {
-          angleMargin = 10;
-        } 
-
-        int myGoalX, myGoalY, enemyGoalX, enemyGoalY;
-
-        Radians angleMyGoalsCam[3] = {Vector2(myGoalsX[0], myGoalsY[0]).angle(), 
-                                      Vector2(myGoalsX[1], myGoalsY[1]).angle(),
-                                      Vector2(myGoalsX[2], myGoalsY[2]).angle()};
-
-        Radians angleEnemyGoalsCam[3] = {Vector2(enemyGoalsX[0], enemyGoalsY[0]).angle(), 
-                                      Vector2(enemyGoalsX[1], enemyGoalsY[1]).angle(),
-                                      Vector2(enemyGoalsX[2], enemyGoalsY[2]).angle()};
-
-        for (int i=2; i>=0; i--) {
-          if (abs(angleMyGoalsCam[i] - angleFrontGoalLidar) < angleMargin || 
-              abs(angleMyGoalsCam[i] - angleRearGoalLidar) < angleMargin) {
-            previousMyGoalX = myGoalsX[i];
-            myGoalX = myGoalsX[i];
-            previousMyGoalY = myGoalsY[i];
-            myGoalY = myGoalsY[i];
-            timePreviousMyGoal = millis();
-          } else {
-            myGoalX = previousMyGoalX;
-            myGoalY = previousMyGoalY;
-          }
-        
-          if (abs(angleEnemyGoalsCam[i] - angleFrontGoalLidar) < angleMargin || 
-              abs(angleEnemyGoalsCam[i] - angleRearGoalLidar) < angleMargin) {
-            previousMyGoalY = enemyGoalsX[i];
-            enemyGoalX = enemyGoalsX[i];
-            previousMyGoalY = enemyGoalsY[i];
-            enemyGoalY = enemyGoalsY[i];
-          } else {
-            enemyGoalX = previousEnemyGoalX;
-            enemyGoalY = previousEnemyGoalY;
-            timePreviousEnemyGoal = millis();
-          }
-        }
-
-        log_a(CriticalLevel, "src.getCamInfos", "position-ball: x=" + String(ballX) + ", y=" + String(ballY) + ", my-goal x=" + String(myGoalX) + ", y=" + String(myGoalY) + ", enemy-goal x=" + String(enemyGoalX) + ", y=" + String(enemyGoalY));
-        
-        Optional<BallPos> bP;
-        if (ballX != 0 && ballY != 0) {
-          bP = BallPos(ballX, ballY);
-        }
-        Optional<MyGoalPos> mGP;
-        if (myGoalX != 0 && myGoalY != 0) {
-          mGP = MyGoalPos(myGoalX, myGoalY);
-        }
-        Optional<EnemyGoalPos> eGP;
-        if (enemyGoalX != 0 && enemyGoalY != 0) {
-          eGP = EnemyGoalPos(enemyGoalX, enemyGoalY);
-        }
-        CamInfosGlue cIG{
-            bP,
-            mGP,
-            eGP};
-
-        return cIG;
-      } else {
-        log_a(ErrorLevel, "src.getCamInfos", "Erreur lors de l'extraction des donnees de la camera: " + String(lastCompleteSequence.c_str()));
-      }
-
-    } else {
-      log_a(ErrorLevel, "src.getCamInfos", "Aucune séquence complète trouvée, reçu: " + data);
-    }
-  }
-  log_a(CriticalLevel, "src.getCamInfos", "position-ball: x=0, y=0, my-goal x=0, y=0, enemy-goal x=0, y=0");
-  CamInfosGlue cIG{BallPos(0, 0), 
-                  MyGoalPos(previousMyGoalX, previousMyGoalY), 
-                  EnemyGoalPos(previousEnemyGoalX, previousEnemyGoalY)};
-  return cIG;
-}
-
 bool ledCounter = true;
 
 // TODO: temporary
 MutableVector2 previousTarget;
 Optional<LidarInfosGlue> previousLidarInfosGlue;
+Optional<CamInfosGlue> previousCamInfosGlue;
 
 void aloop() {
   if (SerialBlue.available()) {
@@ -236,8 +103,8 @@ void loop() {
   }
   log_a(StratLevel, "src.loop", full_log);
 
-  Radians angleFrontGoalLidar = 999; 
-  Radians angleRearGoalLidar = 999;
+  Optional<Radians> angleFrontGoalLidar; 
+  Optional<Radians> angleRearGoalLidar;
   if (lidarInfos.oLDI.hasValue()) {
     angleFrontGoalLidar = Vector2(lidarInfos.oLDI.value().frontGoalCoordinates().x(), lidarInfos.oLDI.value().frontGoalCoordinates().y()).angle();
     angleRearGoalLidar = Vector2(lidarInfos.oLDI.value().rearGoalCoordinates().x(), lidarInfos.oLDI.value().rearGoalCoordinates().y()).angle();
@@ -281,10 +148,10 @@ void loop() {
       camInfos.myGoalPos,
       camInfos.enemyGoalPos);  
   if (currentAction.changeTarget()) {
-    motors.goTo(currentAction.target(), currentAction.celerity()*speedReductionRatio, orientation - currentAction.targetOrientation());
+    motors.goTo(currentAction.target(), currentAction.celerity(), orientation - currentAction.targetOrientation());
     previousTarget = currentAction.target();
   } else {
-    motors.goTo(previousTarget.toVector2(), currentAction.celerity()*speedReductionRatio, orientation - currentAction.targetOrientation());
+    motors.goTo(previousTarget.toVector2(), currentAction.celerity(), orientation - currentAction.targetOrientation());
   }
 
   String full_log2;
@@ -297,10 +164,12 @@ void loop() {
   log_a(InfoLevel, "src.loop", full_log2);
 
   if (currentAction.activeKicker()) {
+    delay(100); // A changer
     dribblerKicker.kick();
   }
   dribblerKicker.dribble(currentAction.celerityDribbler());
 
   unsigned long elapsed = millis() - start_millis;
   log_a(InfoLevel, "src.loop", "Temps loop : " + String(elapsed) + "ms");
+  delay(2);
 }

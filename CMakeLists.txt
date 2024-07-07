@@ -21,7 +21,7 @@ target_include_directories(Arduino PUBLIC ./test/faking)
 
 # include own test files
 # file(GLOB TEST_SOURCES "test/*_unit.cpp")
-set(TEST_SOURCES "test/fake_arduino_unit.cpp" "test/lidar_unit.cpp" "test/movements_unit.cpp" "test/utilities_unit.cpp")
+set(TEST_SOURCES "test/fake_arduino_unit.cpp" "test/lidar_unit.cpp" "test/movements_unit.cpp" "test/utilities_unit.cpp" "test/cam_reader_unit.cpp")
 # file(GLOB SRC_SOURCES "src/*.cpp")
 # add_executable(unitTest ${TEST_SOURCES} ${SRC_SOURCES})
 add_executable(unitTest ${TEST_SOURCES} ./src/utilities.cpp ./src/cam_reader.cpp ./src/strategy.cpp ./src/movements.cpp ./src/lidar_reader.cpp ./src/logger.cpp)

@@ -64,6 +64,56 @@ TEST(fakeArduino, removeZerosFloatZero) {
   ASSERT_EQ(_removeZeros("0.000"), "0.0");
 }
 
+// Test suite for char search
+TEST(fakeArduino, LastIndexOfChar) {
+    String str("hello world");
+
+    EXPECT_EQ(str.lastIndexOf('o'), 7);
+    EXPECT_EQ(str.lastIndexOf('o', 6), 4);
+    EXPECT_EQ(str.lastIndexOf('l'), 9);
+    EXPECT_EQ(str.lastIndexOf('l', 7), 3);
+    EXPECT_EQ(str.lastIndexOf('z'), -1);
+    EXPECT_EQ(str.lastIndexOf('h'), 0);
+}
+
+// Test suite for string search
+TEST(fakeArduino, LastIndexOfString) {
+    String str("hello world");
+
+    EXPECT_EQ(str.lastIndexOf("world"), 6);
+    EXPECT_EQ(str.lastIndexOf("hello"), 0);
+    EXPECT_EQ(str.lastIndexOf("l"), 9);
+    EXPECT_EQ(str.lastIndexOf("l", 8), 3);
+    EXPECT_EQ(str.lastIndexOf("z"), -1);
+    EXPECT_EQ(str.lastIndexOf("h"), 0);
+    EXPECT_EQ(str.lastIndexOf("world", 5), -1);
+    EXPECT_EQ(str.lastIndexOf(""), -1);  // edge case for empty string
+}
+
+TEST(fakeArduino, LastIndexOfStringRealCase) {
+    EXPECT_EQ(String("abcde").lastIndexOf("b"), 1);
+    EXPECT_EQ(String("abcde").lastIndexOf("e"), 4);
+    EXPECT_EQ(String("abcde fghbijklmne").lastIndexOf("e"), 16);
+    EXPECT_EQ(String("abcde fghbijklmne").lastIndexOf("b"), 9);
+    EXPECT_EQ(String("acde").lastIndexOf("b"), -1);
+    EXPECT_EQ(String("acde").lastIndexOf("e"), 3);
+    EXPECT_EQ(String("abcdeb").lastIndexOf("e"), 4);
+    EXPECT_EQ(String("abcdeb").lastIndexOf("b"), 5);
+    EXPECT_EQ(String("b...e").lastIndexOf("b"), 0);
+    EXPECT_EQ(String("b...e").lastIndexOf("e"), 4);
+}
+
+TEST(fakeArduino, LastIndexOfStringRealCaseWithIndex) {
+    EXPECT_EQ(String("abcde").lastIndexOf("b", 0), -1);
+    EXPECT_EQ(String("abcde").lastIndexOf("b", 1), 1);
+    EXPECT_EQ(String("abcde").lastIndexOf("b", 4), 1);
+    EXPECT_EQ(String("abcde").lastIndexOf("e"), 4);
+    EXPECT_EQ(String("abcde fghbijklmne").lastIndexOf("e", 8), 4);
+    EXPECT_EQ(String("abcde fghbijklmne").lastIndexOf("b", 8), 1);
+    EXPECT_EQ(String("abcdeb").lastIndexOf("e"), 4);
+    EXPECT_EQ(String("abcdeb").lastIndexOf("b", 4), 1);
+}
+
 TEST(fakeArduino, serialClassReadOnly) {
   SerialClass serial = SerialClass();
   serial.debugWrite('t');

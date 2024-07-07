@@ -45,8 +45,8 @@ const int criticalGoalDistance = 25;  //changer avec la bonne valeur
 const int goalWidth = 80; //changer avec la bonne valeur
 const int goalMinDistance = 90;  // 85 pour SN10 et 95 pour SN9
 const int myGoalMinDistance = 82;
-const int speedmotors = 180;
-const int shootSpeed = 180;
+const int speedmotors = 80;
+const int shootSpeed = 200;
 
 FutureAction chooseStrategy(
     FieldProperties fP,
@@ -77,15 +77,14 @@ FutureAction chooseStrategy(
     if (oEGP.hasValue()) {
       if (enterInEnnemyGoal_C(fP, oEGP.value())) {
         return refrainEnterInEnnemyGoal_C(fP, oEGP.value());
+      }
     }
-  }
-
   }
   // Then we choose the appropriate Strategy
   if (!oBP.hasValue()) {
-    // We don't know where is the ball
+    // We don't know where the ball is
     if (oLDI.hasValue()) {
-      return slalowingBackwards_D(fP, oLDI.value());
+      return slalomingBackwards_D(fP, oLDI.value());
     } else {
       return FutureAction::stopRobot();
     }
@@ -169,11 +168,11 @@ bool ballAtLevel(FieldProperties fP, BallPos bP) {
 }
 
 bool ballInCenter(FieldProperties fP, BallPos bP) {
-  return abs(bP.x()) <= 25;  // TODO create parameter
+  return abs(bP.x()) <= 7;  // TODO create parameter
 }
 
 bool goalInCenter(FieldProperties fP, EnemyGoalPos eGP) {
-  return abs(eGP.x()) <= 25;  // TODO create parameter
+  return abs(eGP.x()) <= 7;  // TODO create parameter
 }
 
 bool robotInCenter(FieldProperties fP, LidarDetailedInfos lDI) {
@@ -181,7 +180,7 @@ bool robotInCenter(FieldProperties fP, LidarDetailedInfos lDI) {
 }
 
 bool ballIsCaught(FieldProperties fP, BallPos bP) {
-  return ballAtLevel(fP, bP) && ballInCenter(fP, bP) && bP.y() <= 60;  // TODO create parameter
+  return ballAtLevel(fP, bP) && ballInCenter(fP, bP) && bP.y() <= 30;  // TODO create parameter
 }
 
 Vector2 DirectionCorrectedOfOrientation(Vector2 target, LidarDetailedInfos lDI) {
@@ -271,7 +270,7 @@ FutureAction goToBall_C(FieldProperties fP, BallPos bP) {
   return FutureAction(
       Vector2(
           bP.x(),
-          bP.y() - fP.robotRadius() * 4),  // TODO create parameter
+          bP.y() - fP.robotRadius() * 3),  // TODO create parameter
       speedmotors,
       0,
       false, 
@@ -303,7 +302,8 @@ FutureAction goToBallAvoidingBall_C(FieldProperties fP, BallPos bP) {
         false, 
         0);  
   } else {
-    Serial.println("ERROR STRANGE");
+    log_a(CriticalLevel, "goToBallAvoidingBall_C", "ERROR STRANGE");
+    return goToBall_C(fP, bP);
   }
 }
 
@@ -385,7 +385,7 @@ FutureAction accelerateToGoal_C(FieldProperties fP, EnemyGoalPos eGP) {
 FutureAction accelerateToGoal_D(FieldProperties fP, LidarDetailedInfos lDI) {
   log_a(StratLevel, "strategy.accelerateToGoal_D", "Choosed strategy : accelerateToGoal_D");
   return FutureAction(
-      DirectionCorrectedOfOrientation(fP.enemyGoalPos(), lDI),
+      DirectionCorrectedOfOrientation(Vector2(0, fP.distanceYGoalFromCenter()), lDI),
       speedmotors,
       PI,
       false,
@@ -415,7 +415,7 @@ FutureAction shoot_D(FieldProperties fP, LidarDetailedInfos lDI) {
   log_a(StratLevel, "strategy.shoot_D", "Choosed strategy : shoot_D");
   if (lDI.coordinates().x() > 90 && abs(Degree(lDI.orientation())) <= 10) {
     return FutureAction(
-      DirectionCorrectedOfOrientation(fP.enemyGoalPos(), lDI),
+      DirectionCorrectedOfOrientation(Vector2(0, fP.distanceYGoalFromCenter()), lDI),
       shootSpeed,
       0,
       true,
@@ -423,7 +423,7 @@ FutureAction shoot_D(FieldProperties fP, LidarDetailedInfos lDI) {
       
   } else if (abs(Degree(lDI.orientation())) <= 10) {
     return FutureAction(
-      DirectionCorrectedOfOrientation(fP.enemyGoalPos(), lDI),
+      DirectionCorrectedOfOrientation(Vector2(0, fP.distanceYGoalFromCenter()), lDI),
       shootSpeed,
       PI,
       false,
@@ -431,7 +431,7 @@ FutureAction shoot_D(FieldProperties fP, LidarDetailedInfos lDI) {
 
   } else {
     return FutureAction(
-      DirectionCorrectedOfOrientation(fP.enemyGoalPos(), lDI),
+      DirectionCorrectedOfOrientation(Vector2(0, fP.distanceYGoalFromCenter()), lDI),
       speedmotors,
       PI,
       false,
@@ -439,8 +439,8 @@ FutureAction shoot_D(FieldProperties fP, LidarDetailedInfos lDI) {
   }
 }
 
-FutureAction slalowingBackwards_D(FieldProperties fP, LidarDetailedInfos lDI) {
-  log_a(StratLevel, "strategy.slalowingBackwards_D", "Choosed strategy : slalowingBackwards_D");
+FutureAction slalomingBackwards_D(FieldProperties fP, LidarDetailedInfos lDI) {
+  log_a(StratLevel, "strategy.slalomingBackwards_D", "Choosed strategy : slalomingBackwards_D");
   if (lDI.coordinates().y() < -50) {
     if (lDI.coordinates().x() < -5) {
       return FutureAction(
