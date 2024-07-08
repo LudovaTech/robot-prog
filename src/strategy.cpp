@@ -55,29 +55,22 @@ FutureAction chooseStrategy(
     Optional<BallPos> oBP,
     Optional<MyGoalPos> oMGP,
     Optional<EnemyGoalPos> oEGP) {
-  //    First we look to see if there's a risk of leaving the field
+  // First we look to see if there's a risk of leaving the field
   if (oLDI.hasValue()) {
     if (leavingField_D(fP, oLDI.value())) {
       return refrainLeavingField_D(fP, oLDI.value());
     }
-
-  } else {
-    if (oLBI.hasValue()) {
-      if (leavingField_B(fP, oLBI.value())) {
-        return refrainLeavingField_B(fP, oLBI.value());
-      }
+  } else if (oLBI.hasValue()) {
+    if (leavingField_B(fP, oLBI.value())) {
+      return refrainLeavingField_B(fP, oLBI.value());
     }
-
-    if (oMGP.hasValue()) {
-      if (enterInMyGoal_C(fP, oMGP.value())) {
-        return refrainEnterInMyGoal_C(fP, oMGP.value());
-      }
+  } else if (oMGP.hasValue()) {
+    if (enterInMyGoal_C(fP, oMGP.value())) {
+      return refrainEnterInMyGoal_C(fP, oMGP.value());
     }
-
-    if (oEGP.hasValue()) {
-      if (enterInEnnemyGoal_C(fP, oEGP.value())) {
-        return refrainEnterInEnnemyGoal_C(fP, oEGP.value());
-      }
+  } else if (oEGP.hasValue()) {
+    if (enterInEnnemyGoal_C(fP, oEGP.value())) {
+      return refrainEnterInEnnemyGoal_C(fP, oEGP.value());
     }
   }
   // Then we choose the appropriate Strategy
@@ -94,7 +87,7 @@ FutureAction chooseStrategy(
       // The ball is caught
       if (oLDI.hasValue()) {
         if (robotOnSide(fP, oLDI.value())) {
-          return spinToWin(fP, oLDI.value());
+          return spinToWin_D(fP, oLDI.value());
         } else if (robotInCenter(fP, oLDI.value())) {
           return shoot_D(fP, oLDI.value());
         } else {
@@ -189,7 +182,7 @@ bool robotInCenter(FieldProperties fP, LidarDetailedInfos lDI) {
   return abs(lDI.coordinates().x()) <= 9;  // TODO create parameter
 }
 
-Vector2 DirectionCorrectedOfOrientation(Vector2 target, LidarDetailedInfos lDI) {
+Vector2 directionCorrectedOfOrientation(Vector2 target, LidarDetailedInfos lDI) {
   return Vector2(
              target.x() - lDI.coordinates().x(),
              target.y() - lDI.coordinates().y())
@@ -394,14 +387,14 @@ FutureAction accelerateToGoal_C(FieldProperties fP, EnemyGoalPos eGP) {
 FutureAction accelerateToGoal_D(FieldProperties fP, LidarDetailedInfos lDI) {
   log_a(StratLevel, "strategy.accelerateToGoal_D", "Choosed strategy : accelerateToGoal_D");
   return FutureAction(
-      DirectionCorrectedOfOrientation(Vector2(0, fP.distanceYGoalFromCenter()), lDI),
+      directionCorrectedOfOrientation(Vector2(0, fP.distanceYGoalFromCenter()), lDI),
       speedmotors,
       PI,
       false,
       dribblerSpeed);
 }
 
-FutureAction spinToWin(FieldProperties fP, LidarDetailedInfos lDI) {
+FutureAction spinToWin_D(FieldProperties fP, LidarDetailedInfos lDI) {
   Vector2 eGP = Vector2(0 - lDI.coordinates().x(),
                         fP.distanceYGoalFromCenter() - lDI.coordinates().y());
   if (eGP.angle() - lDI.orientation() < PI / 6) {
@@ -455,7 +448,7 @@ FutureAction shoot_D(FieldProperties fP, LidarDetailedInfos lDI) {
 
     } else {
       return FutureAction(
-          DirectionCorrectedOfOrientation(Vector2(0, fP.distanceYGoalFromCenter() - fP.robotRadius() * 4), lDI),
+          directionCorrectedOfOrientation(Vector2(0, fP.distanceYGoalFromCenter() - fP.robotRadius() * 4), lDI),
           shootSpeed,
           0,
           false,
@@ -464,7 +457,7 @@ FutureAction shoot_D(FieldProperties fP, LidarDetailedInfos lDI) {
 
   } else if (abs(abs(Degree(lDI.orientation())) - 180) <= 10) {
     return FutureAction(
-        DirectionCorrectedOfOrientation(Vector2(0, fP.distanceYGoalFromCenter() - fP.robotRadius() * 4), lDI),
+        directionCorrectedOfOrientation(Vector2(0, fP.distanceYGoalFromCenter() - fP.robotRadius() * 4), lDI),
         shootSpeed,
         PI,
         false,
@@ -472,7 +465,7 @@ FutureAction shoot_D(FieldProperties fP, LidarDetailedInfos lDI) {
 
   } else {
     return FutureAction(
-        DirectionCorrectedOfOrientation(Vector2(0, fP.distanceYGoalFromCenter() - fP.robotRadius() * 4), lDI),
+        directionCorrectedOfOrientation(Vector2(0, fP.distanceYGoalFromCenter() - fP.robotRadius() * 4), lDI),
         speedmotors,
         PI,
         false,

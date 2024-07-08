@@ -69,7 +69,7 @@ bool goalInCenter(FieldProperties fP, EnemyGoalPos eGP);
 bool robotOnSide(FieldProperties fP, LidarDetailedInfos lDI);
 bool robotInCenter(FieldProperties fP, LidarDetailedInfos lDI);
 
-Vector2 DirectionCorrectedOfOrientation(Vector2 target, LidarDetailedInfos lDI);
+Vector2 directionCorrectedOfOrientation(Vector2 target, LidarDetailedInfos lDI);
 
 FutureAction refrainLeavingField_D(FieldProperties fP, LidarDetailedInfos lDI);
 FutureAction refrainLeavingField_B(FieldProperties fP, LidarBasicInfos lBI);
@@ -86,7 +86,7 @@ FutureAction goToBallAvoidingBall_CD(FieldProperties fP, BallPos bP, LidarDetail
 FutureAction accelerateToGoal_C(FieldProperties fP, EnemyGoalPos eGP);
 FutureAction accelerateToGoal_D(FieldProperties fP, LidarDetailedInfos lDI);
 
-FutureAction spinToWin(FieldProperties fP, LidarDetailedInfos lDI);
+FutureAction spinToWin_D(FieldProperties fP, LidarDetailedInfos lDI);
 FutureAction shoot_C(FieldProperties fP, EnemyGoalPos eGP);
 FutureAction shoot_D(FieldProperties fP, LidarDetailedInfos lDI);
 
