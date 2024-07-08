@@ -53,6 +53,7 @@ const int goalMinDistance = 90;       // 85 pour SN10 et 95 pour SN9
 const int myGoalMinDistance = 82;
 const int speedmotors = 80;
 const int shootSpeed = 200;
+const int distanceKickOK = 60;
 
 FutureAction chooseStrategy(
     FieldProperties fP,
@@ -193,7 +194,11 @@ bool ballIsCaught(FieldProperties fP, BallPos bP) {
 }
 
 bool closeEnoughToKick_D(FieldProperties fP, LidarDetailedInfos lDI) {
-  return lDI.coordinates().y() > 90;  // TODO create parameter
+  return lDI.coordinates().y() >= fP.distanceYGoalFromCenter() - distanceKickOK;
+}
+
+bool closeEnoughToKick_C(FieldProperties fP, EnemyGoalPos eGP) {
+  return eGP.y() <= distanceKickOK;
 }
 
 bool orientedTowardsEnemyGoal_D(FieldProperties fP, LidarDetailedInfos lDI) {
@@ -438,7 +443,7 @@ FutureAction spinToWin_D(FieldProperties fP, LidarDetailedInfos lDI) {
   }
 }
 
-FutureAction shoot_C(FieldProperties fP, EnemyGoalPos eGP) {
+FutureAction shoot_C(FieldProperties fP, EnemyGoalPos eGP) {// TODO refactor
   log_a(StratLevel, "strategy.shoot_C", "Choosed strategy : shoot_C");
   return FutureAction(
       eGP,
