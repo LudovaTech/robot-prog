@@ -423,21 +423,20 @@ FutureAction accelerateToGoal_D(FieldProperties fP, LidarDetailedInfos lDI) {
 }
 
 FutureAction spinToWin_D(FieldProperties fP, LidarDetailedInfos lDI) {
-  Vector2 eGP = Vector2(0 - lDI.coordinates().x(),
-                        fP.distanceYGoalFromCenter() - lDI.coordinates().y());
-  if (eGP.angle() - lDI.orientation() < PI / 6) {
+  Vector2 theoricalEGP = globalToLocalCoordinates(lDI, enemyGoalPosTheorical(fP));
+  if (theoricalEGP.angle() - lDI.orientation() < PI / 6) {
     return FutureAction(
         Vector2(0, 10),
         shootSpeed,
-        eGP.angle() + lDI.orientation(),
+        theoricalEGP.angle() + lDI.orientation(),
         true,
-        0);
+        fP.maxDribblerSpeed());
 
   } else {
     return FutureAction(
         Vector2(0, 0),
         speedmotors,
-        eGP.angle() + lDI.orientation(),
+        theoricalEGP.angle() + lDI.orientation(),
         false,
         fP.maxDribblerSpeed());
   }
@@ -449,7 +448,7 @@ FutureAction shoot_C(FieldProperties fP, EnemyGoalPos eGP) {// TODO refactor
       eGP,
       shootSpeed,
       0,
-      eGP.norm() < 20,
+      closeEnoughToKick_C(fP, eGP),
       fP.maxDribblerSpeed());
 }
 

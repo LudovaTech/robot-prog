@@ -70,7 +70,6 @@ bool ballIsCaught(FieldProperties fP, BallPos bP);
 bool closeEnoughToKick_D(FieldProperties fP, LidarDetailedInfos lDI);
 bool closeEnoughToKick_C(FieldProperties fP, EnemyGoalPos eGP);
 bool orientedTowardsEnemyGoal_D(FieldProperties fP, LidarDetailedInfos lDI);
-bool orientedTowardsEnemyGoal_C(FieldProperties fP, EnemyGoalPos eGP);
 
 bool enemyGoalInCenter(FieldProperties fP, EnemyGoalPos eGP);
 
