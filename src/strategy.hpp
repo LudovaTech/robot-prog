@@ -51,6 +51,7 @@ FutureAction chooseStrategy(
 
 EnemyGoalPos enemyGoalPosTheorical(FieldProperties fP);
 MyGoalPos myGoalPosTheorical(FieldProperties fP);
+Vector2 localToGlobalCoordinates(LidarDetailedInfos lDI, Vector2 target);
 
 bool enterInMyGoal_C(FieldProperties fP, MyGoalPos mGP);
 bool enterInMyGoal_D(FieldProperties fP, LidarDetailedInfos lDI);
@@ -66,12 +67,13 @@ bool ballAtLevel(FieldProperties fP, BallPos bP);
 bool ballInCenter(FieldProperties fP, BallPos bP);
 bool ballIsCaught(FieldProperties fP, BallPos bP);
 
+bool closeEnoughToKick_D(FieldProperties fP, LidarDetailedInfos lDI);
+bool orientedTowardsEnemyGoal_D(FieldProperties fP, LidarDetailedInfos lDI);
+
 bool enemyGoalInCenter(FieldProperties fP, EnemyGoalPos eGP);
 
 bool robotOnSide(FieldProperties fP, LidarDetailedInfos lDI);
 bool robotInCenter(FieldProperties fP, LidarDetailedInfos lDI);
-
-Vector2 directionCorrectedOfOrientation(Vector2 target, LidarDetailedInfos lDI);
 
 FutureAction refrainLeavingField_D(FieldProperties fP, LidarDetailedInfos lDI);
 FutureAction refrainLeavingField_B(FieldProperties fP, LidarBasicInfos lBI);
