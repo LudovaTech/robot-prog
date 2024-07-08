@@ -39,7 +39,7 @@ MyGoalPos myGoalPosTheorical(FieldProperties fP) {
   return MyGoalPos(0, -fP.distanceYGoalFromCenter());
 }
 
-Vector2 localToGlobalCoordinates(LidarDetailedInfos lDI, Vector2 target) {
+Vector2 globalToLocalCoordinates(LidarDetailedInfos lDI, Vector2 target) {
   return Vector2(
              target.x() - lDI.coordinates().x(),
              target.y() - lDI.coordinates().y())
@@ -193,11 +193,11 @@ bool ballIsCaught(FieldProperties fP, BallPos bP) {
 }
 
 bool closeEnoughToKick_D(FieldProperties fP, LidarDetailedInfos lDI) {
-  return lDI.coordinates().y() > 90; // TODO create parameter
+  return lDI.coordinates().y() > 90;  // TODO create parameter
 }
 
 bool orientedTowardsEnemyGoal_D(FieldProperties fP, LidarDetailedInfos lDI) {
-  return abs(Degree(lDI.orientation())) <= 10; // TODO create parameter
+  return abs(Degree(lDI.orientation())) <= 10;  // TODO create parameter
 }
 
 bool enemyGoalInCenter(FieldProperties fP, EnemyGoalPos eGP) {
@@ -410,7 +410,7 @@ FutureAction accelerateToGoal_C(FieldProperties fP, EnemyGoalPos eGP) {
 FutureAction accelerateToGoal_D(FieldProperties fP, LidarDetailedInfos lDI) {
   log_a(StratLevel, "strategy.accelerateToGoal_D", "Choosed strategy : accelerateToGoal_D");
   return FutureAction(
-      localToGlobalCoordinates(lDI, enemyGoalPosTheorical(fP)),
+      globalToLocalCoordinates(lDI, enemyGoalPosTheorical(fP)),
       speedmotors,
       PI,
       false,
@@ -440,30 +440,20 @@ FutureAction spinToWin_D(FieldProperties fP, LidarDetailedInfos lDI) {
 
 FutureAction shoot_C(FieldProperties fP, EnemyGoalPos eGP) {
   log_a(StratLevel, "strategy.shoot_C", "Choosed strategy : shoot_C");
-  if (eGP.norm() < 20) {
-    return FutureAction(
-        eGP,
-        shootSpeed,
-        0,
-        true,
-        0);
-
-  } else {
-    return FutureAction(
-        eGP,
-        shootSpeed,
-        0,
-        false,
-        fP.maxDribblerSpeed());
-  }
+  return FutureAction(
+      eGP,
+      shootSpeed,
+      0,
+      eGP.norm() < 20,
+      fP.maxDribblerSpeed());
 }
 
 FutureAction shoot_D(FieldProperties fP, LidarDetailedInfos lDI) {
   log_a(StratLevel, "strategy.shoot_D", "Choosed strategy : shoot_D");
   return FutureAction(
-      localToGlobalCoordinates(lDI, enemyGoalPosTheorical(fP)),
+      globalToLocalCoordinates(lDI, enemyGoalPosTheorical(fP)),
       orientedTowardsEnemyGoal_D(fP, lDI) ? shootSpeed : speedmotors,
-      0,  
+      0,
       closeEnoughToKick_D(fP, lDI) && orientedTowardsEnemyGoal_D(fP, lDI),
       fP.maxDribblerSpeed());
 }

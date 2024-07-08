@@ -51,7 +51,7 @@ FutureAction chooseStrategy(
 
 EnemyGoalPos enemyGoalPosTheorical(FieldProperties fP);
 MyGoalPos myGoalPosTheorical(FieldProperties fP);
-Vector2 localToGlobalCoordinates(LidarDetailedInfos lDI, Vector2 target);
+Vector2 globalToLocalCoordinates(LidarDetailedInfos lDI, Vector2 target);
 
 bool enterInMyGoal_C(FieldProperties fP, MyGoalPos mGP);
 bool enterInMyGoal_D(FieldProperties fP, LidarDetailedInfos lDI);
