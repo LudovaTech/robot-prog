@@ -146,12 +146,18 @@ void loop() {
       lidarInfos.oLBI,
       camInfos.ballPos,
       camInfos.myGoalPos,
-      camInfos.enemyGoalPos);  
+      camInfos.enemyGoalPos);
+  Radians futureOrientation = 0;
+  if (currentAction.targetOrientation().hasValue()) {
+    futureOrientation = orientation - currentAction.targetOrientation().value();
+  } else {
+    futureOrientation = orientation;
+  }
   if (currentAction.changeTarget()) {
-    motors.goTo(currentAction.target(), currentAction.celerity(), orientation - currentAction.targetOrientation());
+    motors.goTo(currentAction.target(), currentAction.celerity(), futureOrientation);
     previousTarget = currentAction.target();
   } else {
-    motors.goTo(previousTarget.toVector2(), currentAction.celerity(), orientation - currentAction.targetOrientation());
+    motors.goTo(previousTarget.toVector2(), currentAction.celerity(), futureOrientation);
   }
 
   String full_log2;
