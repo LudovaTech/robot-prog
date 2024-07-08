@@ -46,7 +46,6 @@ const int goalMinDistance = 90;       // 85 pour SN10 et 95 pour SN9
 const int myGoalMinDistance = 82;
 const int speedmotors = 80;
 const int shootSpeed = 200;
-const int dribblerSpeed = 255;
 
 FutureAction chooseStrategy(
     FieldProperties fP,
@@ -216,7 +215,7 @@ FutureAction refrainLeavingField_D(FieldProperties fP, LidarDetailedInfos lDI) {
       speedmotors,
       0,
       false,
-      dribblerSpeed);
+      fP.maxDribblerSpeed());
 }
 
 FutureAction refrainLeavingField_B(FieldProperties fP, LidarBasicInfos lBI) {
@@ -228,7 +227,7 @@ FutureAction refrainLeavingField_B(FieldProperties fP, LidarBasicInfos lBI) {
       speedmotors,
       0,
       false,
-      dribblerSpeed);
+      fP.maxDribblerSpeed());
 }
 
 FutureAction refrainEnterInMyGoal_C(FieldProperties fP, MyGoalPos mGP) {
@@ -240,7 +239,7 @@ FutureAction refrainEnterInMyGoal_C(FieldProperties fP, MyGoalPos mGP) {
       speedmotors,
       0,
       false,
-      dribblerSpeed);
+      fP.maxDribblerSpeed());
 }
 
 FutureAction refrainEnterInEnnemyGoal_C(FieldProperties fP, EnemyGoalPos eGP) {
@@ -252,7 +251,7 @@ FutureAction refrainEnterInEnnemyGoal_C(FieldProperties fP, EnemyGoalPos eGP) {
       speedmotors,
       0,
       false,
-      dribblerSpeed);
+      fP.maxDribblerSpeed());
 }
 
 FutureAction goToBallChangingOrientation_CD(FieldProperties fP, BallPos bP, LidarDetailedInfos lDI) {
@@ -261,7 +260,7 @@ FutureAction goToBallChangingOrientation_CD(FieldProperties fP, BallPos bP, Lida
       speedmotors,
       bP.angle() + lDI.orientation(),
       false,
-      dribblerSpeed);
+      fP.maxDribblerSpeed());
 }
 
 FutureAction goToBall_C(FieldProperties fP, BallPos bP) {
@@ -273,7 +272,7 @@ FutureAction goToBall_C(FieldProperties fP, BallPos bP) {
       speedmotors,
       0,
       false,
-      dribblerSpeed);
+      fP.maxDribblerSpeed());
 }
 
 FutureAction goToBallAvoidingBall_C(FieldProperties fP, BallPos bP) {
@@ -284,7 +283,7 @@ FutureAction goToBallAvoidingBall_C(FieldProperties fP, BallPos bP) {
         speedmotors,
         0,
         false,
-        dribblerSpeed);
+        fP.maxDribblerSpeed());
 
   } else if (bP.x() <= 0) {
     return FutureAction(
@@ -292,7 +291,7 @@ FutureAction goToBallAvoidingBall_C(FieldProperties fP, BallPos bP) {
         speedmotors,
         0,
         false,
-        dribblerSpeed);
+        fP.maxDribblerSpeed());
 
   } else if (bP.x() > 0) {
     return FutureAction(
@@ -300,7 +299,7 @@ FutureAction goToBallAvoidingBall_C(FieldProperties fP, BallPos bP) {
         speedmotors,
         0,
         false,
-        dribblerSpeed);
+        fP.maxDribblerSpeed());
 
   } else {
     log_a(CriticalLevel, "goToBallAvoidingBall_C", "ERROR STRANGE");
@@ -318,7 +317,7 @@ FutureAction goToBallAvoidingBall_CD(FieldProperties fP, BallPos bP, LidarDetail
             speedmotors,
             0,
             false,
-            dribblerSpeed);
+            fP.maxDribblerSpeed());
 
       } else {
         return FutureAction(
@@ -326,7 +325,7 @@ FutureAction goToBallAvoidingBall_CD(FieldProperties fP, BallPos bP, LidarDetail
             speedmotors,
             0,
             false,
-            dribblerSpeed);
+            fP.maxDribblerSpeed());
       }
 
     } else {
@@ -336,7 +335,7 @@ FutureAction goToBallAvoidingBall_CD(FieldProperties fP, BallPos bP, LidarDetail
             speedmotors,
             0,
             false,
-            dribblerSpeed);
+            fP.maxDribblerSpeed());
 
       } else {
         return FutureAction(
@@ -344,7 +343,7 @@ FutureAction goToBallAvoidingBall_CD(FieldProperties fP, BallPos bP, LidarDetail
             speedmotors,
             0,
             false,
-            dribblerSpeed);
+            fP.maxDribblerSpeed());
       }
     }
 
@@ -354,7 +353,7 @@ FutureAction goToBallAvoidingBall_CD(FieldProperties fP, BallPos bP, LidarDetail
         speedmotors,
         0,
         false,
-        dribblerSpeed);
+        fP.maxDribblerSpeed());
 
   } else if (bP.x() > 0 && bP.x() < 40) {
     return FutureAction(
@@ -362,7 +361,7 @@ FutureAction goToBallAvoidingBall_CD(FieldProperties fP, BallPos bP, LidarDetail
         speedmotors,
         0,
         false,
-        dribblerSpeed);
+        fP.maxDribblerSpeed());
 
   } else {
     return FutureAction(
@@ -370,7 +369,7 @@ FutureAction goToBallAvoidingBall_CD(FieldProperties fP, BallPos bP, LidarDetail
         speedmotors,
         0,
         false,
-        dribblerSpeed);
+        fP.maxDribblerSpeed());
   }
 }
 
@@ -381,7 +380,7 @@ FutureAction accelerateToGoal_C(FieldProperties fP, EnemyGoalPos eGP) {
       speedmotors,
       0,
       false,
-      dribblerSpeed);
+      fP.maxDribblerSpeed());
 }
 
 FutureAction accelerateToGoal_D(FieldProperties fP, LidarDetailedInfos lDI) {
@@ -391,7 +390,7 @@ FutureAction accelerateToGoal_D(FieldProperties fP, LidarDetailedInfos lDI) {
       speedmotors,
       PI,
       false,
-      dribblerSpeed);
+      fP.maxDribblerSpeed());
 }
 
 FutureAction spinToWin_D(FieldProperties fP, LidarDetailedInfos lDI) {
@@ -411,7 +410,7 @@ FutureAction spinToWin_D(FieldProperties fP, LidarDetailedInfos lDI) {
         speedmotors,
         eGP.angle() + lDI.orientation(),
         false,
-        dribblerSpeed);
+        fP.maxDribblerSpeed());
   }
 }
 
@@ -431,7 +430,7 @@ FutureAction shoot_C(FieldProperties fP, EnemyGoalPos eGP) {
         shootSpeed,
         0,
         false,
-        dribblerSpeed);
+        fP.maxDribblerSpeed());
   }
 }
 
@@ -452,7 +451,7 @@ FutureAction shoot_D(FieldProperties fP, LidarDetailedInfos lDI) {
           shootSpeed,
           0,
           false,
-          dribblerSpeed);
+          fP.maxDribblerSpeed());
     }
 
   } else if (abs(abs(Degree(lDI.orientation())) - 180) <= 10) {
@@ -461,7 +460,7 @@ FutureAction shoot_D(FieldProperties fP, LidarDetailedInfos lDI) {
         shootSpeed,
         PI,
         false,
-        dribblerSpeed);
+        fP.maxDribblerSpeed());
 
   } else {
     return FutureAction(
@@ -469,7 +468,7 @@ FutureAction shoot_D(FieldProperties fP, LidarDetailedInfos lDI) {
         speedmotors,
         PI,
         false,
-        dribblerSpeed);
+        fP.maxDribblerSpeed());
   }
 }
 
