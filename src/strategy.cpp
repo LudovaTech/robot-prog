@@ -99,7 +99,7 @@ FutureAction chooseStrategy(
           return accelerateToGoal_D(fP, oLDI.value());
         }
       } else if (oEGP.hasValue()) {
-        if (goalInCenter(fP, oEGP.value())) {
+        if (enemyGoalInCenter(fP, oEGP.value())) {
           return shoot_C(fP, oEGP.value());
         } else {
           return accelerateToGoal_C(fP, oEGP.value());
@@ -110,7 +110,7 @@ FutureAction chooseStrategy(
     } else {
       // The ball is not caught
       if (oLDI.hasValue()) {
-        if (ballInCorner(fP, oLDI.value(), bP)) {
+        if (ballInCorner_CD(fP, oLDI.value(), bP)) {
           return goToBallChangingOrientation_CD(fP, bP, oLDI.value());
         } else if (ballAhead(fP, bP)) {
           return goToBall_C(fP, bP);
@@ -164,7 +164,7 @@ bool leavingField_B(FieldProperties fP, LidarBasicInfos lBI) {
   return approachingNearestWall;
 }
 
-bool ballInCorner(FieldProperties fP, LidarDetailedInfos lDI, BallPos bP) {
+bool ballInCorner_CD(FieldProperties fP, LidarDetailedInfos lDI, BallPos bP) {
   return (abs(lDI.coordinates().x() + bP.x()) > fP.goalWidth() / 2) && (abs(lDI.coordinates().y() + bP.y()) > fP.fieldLength() / 2 - criticalWallDistance - criticalGoalDistance);
 }
 
@@ -185,7 +185,7 @@ bool ballIsCaught(FieldProperties fP, BallPos bP) {
   return ballAtLevel(fP, bP) && ballInCenter(fP, bP) && bP.y() <= 30;  // TODO create parameter
 }
 
-bool goalInCenter(FieldProperties fP, EnemyGoalPos eGP) {
+bool enemyGoalInCenter(FieldProperties fP, EnemyGoalPos eGP) {
   return abs(eGP.x()) <= 7;  // TODO create parameter
 }
 

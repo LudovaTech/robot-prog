@@ -60,13 +60,13 @@ bool enterInEnemyGoal_D(FieldProperties fP, LidarDetailedInfos lDI);
 bool leavingField_D(FieldProperties fP, LidarDetailedInfos lDI);
 bool leavingField_B(FieldProperties fP, LidarBasicInfos lBI);
 
-bool ballInCorner(FieldProperties fP, LidarDetailedInfos lDI, BallPos bP);
+bool ballInCorner_CD(FieldProperties fP, LidarDetailedInfos lDI, BallPos bP);
 bool ballAhead(FieldProperties fP, BallPos bP);
 bool ballAtLevel(FieldProperties fP, BallPos bP);
 bool ballInCenter(FieldProperties fP, BallPos bP);
 bool ballIsCaught(FieldProperties fP, BallPos bP);
 
-bool goalInCenter(FieldProperties fP, EnemyGoalPos eGP);
+bool enemyGoalInCenter(FieldProperties fP, EnemyGoalPos eGP);
 
 bool robotOnSide(FieldProperties fP, LidarDetailedInfos lDI);
 bool robotInCenter(FieldProperties fP, LidarDetailedInfos lDI);
