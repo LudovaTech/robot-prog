@@ -118,7 +118,7 @@ FutureAction chooseStrategy(
     } else {
       // The ball is not caught
       if (oLDI.hasValue()) {
-        if (ballInCorner_CD(fP, oLDI.value(), bP)) {
+        if (ballInCorner_CD(fP, bP, oLDI.value())) {
           return goToBallChangingOrientation_CD(fP, bP, oLDI.value());
         } else if (ballAhead(fP, bP)) {
           return goToBall_C(fP, bP);
@@ -172,7 +172,7 @@ bool leavingField_B(FieldProperties fP, LidarBasicInfos lBI) {
   return approachingNearestWall;
 }
 
-bool ballInCorner_CD(FieldProperties fP, LidarDetailedInfos lDI, BallPos bP) {
+bool ballInCorner_CD(FieldProperties fP, BallPos bP, LidarDetailedInfos lDI) {
   return (abs(lDI.coordinates().x() + bP.x()) > fP.goalWidth() / 2) && (abs(lDI.coordinates().y() + bP.y()) > fP.fieldLength() / 2 - criticalWallDistance - criticalGoalDistance);
 }
 
@@ -274,7 +274,7 @@ FutureAction refrainEnterInMyGoal_C(FieldProperties fP, MyGoalPos mGP) {
 FutureAction refrainEnterInEnemyGoal_C(FieldProperties fP, EnemyGoalPos eGP) {
   log_a(StratLevel, "strategy.refrainEnterInEnemyGoal_C", "Choosed strategy : refrainEnterInEnemyGoal_C");
   return FutureAction(
-      Vector2(
+      Vector2(// TODO on ne retourne pas en arriere ?
           -eGP.x(),
           -eGP.y()),
       speedmotors,
@@ -417,7 +417,7 @@ FutureAction accelerateToGoal_D(FieldProperties fP, LidarDetailedInfos lDI) {
   return FutureAction(
       globalToLocalCoordinates(lDI, enemyGoalPosTheorical(fP)),
       speedmotors,
-      PI,
+      0,
       false,
       fP.maxDribblerSpeed());
 }
