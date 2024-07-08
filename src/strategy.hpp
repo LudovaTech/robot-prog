@@ -53,7 +53,9 @@ EnemyGoalPos enemyGoalPosTheorical(FieldProperties fP);
 MyGoalPos myGoalPosTheorical(FieldProperties fP);
 
 bool enterInMyGoal_C(FieldProperties fP, MyGoalPos mGP);
-bool enterInEnnemyGoal_C(FieldProperties fP, EnemyGoalPos eGP);
+bool enterInMyGoal_D(FieldProperties fP, LidarDetailedInfos lDI);
+bool enterInEnemyGoal_C(FieldProperties fP, EnemyGoalPos eGP);
+bool enterInEnemyGoal_D(FieldProperties fP, LidarDetailedInfos lDI);
 
 bool leavingField_D(FieldProperties fP, LidarDetailedInfos lDI);
 bool leavingField_B(FieldProperties fP, LidarBasicInfos lBI);
@@ -75,7 +77,7 @@ FutureAction refrainLeavingField_D(FieldProperties fP, LidarDetailedInfos lDI);
 FutureAction refrainLeavingField_B(FieldProperties fP, LidarBasicInfos lBI);
 
 FutureAction refrainEnterInMyGoal_C(FieldProperties fP, MyGoalPos mGP);
-FutureAction refrainEnterInEnnemyGoal_C(FieldProperties fP, EnemyGoalPos eGP);
+FutureAction refrainEnterInEnemyGoal_C(FieldProperties fP, EnemyGoalPos eGP);
 
 FutureAction goToBall_C(FieldProperties fP, BallPos bP);
 

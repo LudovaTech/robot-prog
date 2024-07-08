@@ -58,6 +58,12 @@ FutureAction chooseStrategy(
   if (oLDI.hasValue()) {
     if (leavingField_D(fP, oLDI.value())) {
       return refrainLeavingField_D(fP, oLDI.value());
+    } else if (enterInMyGoal_D(fP, oLDI.value())) {
+      // TODO
+      return refrainLeavingField_D(fP, oLDI.value());
+    } else if (enterInEnemyGoal_D(fP, oLDI.value())) {
+      // TODO
+      return refrainLeavingField_D(fP, oLDI.value());
     }
   } else if (oLBI.hasValue()) {
     if (leavingField_B(fP, oLBI.value())) {
@@ -68,8 +74,8 @@ FutureAction chooseStrategy(
       return refrainEnterInMyGoal_C(fP, oMGP.value());
     }
   } else if (oEGP.hasValue()) {
-    if (enterInEnnemyGoal_C(fP, oEGP.value())) {
-      return refrainEnterInEnnemyGoal_C(fP, oEGP.value());
+    if (enterInEnemyGoal_C(fP, oEGP.value())) {
+      return refrainEnterInEnemyGoal_C(fP, oEGP.value());
     }
   }
   // Then we choose the appropriate Strategy
@@ -126,8 +132,20 @@ bool enterInMyGoal_C(FieldProperties fP, MyGoalPos mGP) {
   return mGP.norm() < myGoalMinDistance && mGP.norm() > 1;
 }
 
-bool enterInEnnemyGoal_C(FieldProperties fP, EnemyGoalPos eGP) {
+bool enterInMyGoal_D(FieldProperties fP, LidarDetailedInfos lDI) {
+  bool myGoal = (lDI.coordinates().y() < -fP.fieldLength() / 2 + criticalWallDistance + criticalGoalDistance) && (abs(lDI.coordinates().x()) < fP.goalWidth() / 2);
+  log_a(StratLevel, "strategy.enterInMyGoal_D", "My Goal : " + String(myGoal));
+  return myGoal;
+}
+
+bool enterInEnemyGoal_C(FieldProperties fP, EnemyGoalPos eGP) {
   return (eGP.norm() < goalMinDistance && eGP.norm() > 1);
+}
+
+bool enterInEnemyGoal_D(FieldProperties fP, LidarDetailedInfos lDI) {
+  bool enemyGoal = (lDI.coordinates().y() > fP.fieldLength() / 2 - criticalWallDistance - criticalGoalDistance) && (abs(lDI.coordinates().x()) < fP.goalWidth() / 2);
+  log_a(StratLevel, "strategy.enterInEnemy_D", "Enemy Goal : " + String(enemyGoal));
+  return enemyGoal;
 }
 
 bool leavingField_D(FieldProperties fP, LidarDetailedInfos lDI) {
@@ -135,11 +153,9 @@ bool leavingField_D(FieldProperties fP, LidarDetailedInfos lDI) {
   bool rightWall = fP.fieldWidth() / 2 - criticalWallDistance < lDI.coordinates().x();
   bool backWall = lDI.coordinates().y() < -fP.fieldLength() / 2 + criticalWallDistance;
   bool frontWall = fP.fieldLength() / 2 - criticalWallDistance < lDI.coordinates().y();
-  bool myGoal = (lDI.coordinates().y() < -fP.fieldLength() / 2 + criticalWallDistance + criticalGoalDistance) && (abs(lDI.coordinates().x()) < fP.goalWidth() / 2);
-  bool enemyGoal = (lDI.coordinates().y() > fP.fieldLength() / 2 - criticalWallDistance - criticalGoalDistance) && (abs(lDI.coordinates().x()) < fP.goalWidth() / 2);
 
   log_a(StratLevel, "strategy.leavingField_D", "Left Wall : " + String(leftWall) + " Right Wall : " + String(rightWall) + " Back Wall : " + String(backWall) + " Front Wall : " + String(frontWall));
-  return leftWall || rightWall || backWall || frontWall || myGoal || enemyGoal;
+  return leftWall || rightWall || backWall || frontWall;
 }
 
 bool leavingField_B(FieldProperties fP, LidarBasicInfos lBI) {
@@ -242,8 +258,8 @@ FutureAction refrainEnterInMyGoal_C(FieldProperties fP, MyGoalPos mGP) {
       fP.maxDribblerSpeed());
 }
 
-FutureAction refrainEnterInEnnemyGoal_C(FieldProperties fP, EnemyGoalPos eGP) {
-  log_a(StratLevel, "strategy.refrainEnterInEnnemyGoal_C", "Choosed strategy : refrainEnterInEnnemyGoal_C");
+FutureAction refrainEnterInEnemyGoal_C(FieldProperties fP, EnemyGoalPos eGP) {
+  log_a(StratLevel, "strategy.refrainEnterInEnemyGoal_C", "Choosed strategy : refrainEnterInEnemyGoal_C");
   return FutureAction(
       Vector2(
           -eGP.x(),
