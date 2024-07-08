@@ -46,6 +46,7 @@ const int goalMinDistance = 90;  // 85 pour SN10 et 95 pour SN9
 const int myGoalMinDistance = 82;
 const int speedmotors = 80;
 const int shootSpeed = 200;
+const int dribblerSpeed = 255;
 
 FutureAction chooseStrategy(
     FieldProperties fP,
@@ -181,7 +182,7 @@ bool goalInCenter(FieldProperties fP, EnemyGoalPos eGP) {
 }
 
 bool robotOnSide(FieldProperties fP, LidarDetailedInfos lDI) {
-  return (lDI.coordinates().y() > fP.fieldLength()/2 - criticalWallDistance - criticalGoalDistance - fP.robotRadius()*2) && (abs(lDI.coordinates().x()) > fP.goalWidth()/2);
+  return (lDI.coordinates().y() > fP.fieldLength()/2 - criticalWallDistance - criticalGoalDistance - fP.robotRadius()*3) && (abs(lDI.coordinates().x()) > fP.goalWidth()/2);
 }
 
 bool robotInCenter(FieldProperties fP, LidarDetailedInfos lDI) {
@@ -222,7 +223,7 @@ FutureAction refrainLeavingField_D(FieldProperties fP, LidarDetailedInfos lDI) {
       speedmotors,
       0,
       false, 
-      0);
+      dribblerSpeed);
 }
 
 FutureAction refrainLeavingField_B(FieldProperties fP, LidarBasicInfos lBI) {
@@ -234,7 +235,7 @@ FutureAction refrainLeavingField_B(FieldProperties fP, LidarBasicInfos lBI) {
       speedmotors,
       0,
       false, 
-      0);
+      dribblerSpeed);
 }
 
 FutureAction refrainEnterInMyGoal_C(FieldProperties fP, MyGoalPos mGP) {
@@ -246,7 +247,7 @@ FutureAction refrainEnterInMyGoal_C(FieldProperties fP, MyGoalPos mGP) {
       speedmotors,
       0,
       false, 
-      0);  
+      dribblerSpeed);  
 }
 
 FutureAction refrainEnterInEnnemyGoal_C(FieldProperties fP, EnemyGoalPos eGP) {
@@ -258,7 +259,7 @@ FutureAction refrainEnterInEnnemyGoal_C(FieldProperties fP, EnemyGoalPos eGP) {
       speedmotors,
       0,
       false, 
-      0);  
+      dribblerSpeed);  
 }
 
 FutureAction goToBallChangingOrientation_CD(FieldProperties fP, BallPos bP, LidarDetailedInfos lDI) {
@@ -267,7 +268,7 @@ FutureAction goToBallChangingOrientation_CD(FieldProperties fP, BallPos bP, Lida
       speedmotors,
       bP.angle() + lDI.orientation(),
       false,
-      0);
+      dribblerSpeed);
 }
 
 FutureAction goToBall_C(FieldProperties fP, BallPos bP) {
@@ -279,7 +280,7 @@ FutureAction goToBall_C(FieldProperties fP, BallPos bP) {
       speedmotors,
       0,
       false, 
-      0);  
+      dribblerSpeed);  
 }
 
 FutureAction goToBallAvoidingBall_C(FieldProperties fP, BallPos bP) {
@@ -290,7 +291,7 @@ FutureAction goToBallAvoidingBall_C(FieldProperties fP, BallPos bP) {
         speedmotors,
         0,
         false, 
-        0);  
+        dribblerSpeed);  
 
   } else if (bP.x() <= 0) {
     return FutureAction(
@@ -298,14 +299,16 @@ FutureAction goToBallAvoidingBall_C(FieldProperties fP, BallPos bP) {
         speedmotors,
         0,
         false, 
-        0);  
+        dribblerSpeed);
+
   } else if (bP.x() > 0) {
     return FutureAction(
         Vector2(-2, -10),
         speedmotors,
         0,
         false, 
-        0);  
+        dribblerSpeed);
+
   } else {
     log_a(CriticalLevel, "goToBallAvoidingBall_C", "ERROR STRANGE");
     return goToBall_C(fP, bP);
@@ -322,14 +325,15 @@ FutureAction goToBallAvoidingBall_CD(FieldProperties fP, BallPos bP, LidarDetail
             speedmotors,
             0,
             false, 
-            0);  
+            dribblerSpeed);
+
       } else {
         return FutureAction(
             Vector2(10, -10),
             speedmotors,
             0,
             false, 
-            0);  
+            dribblerSpeed);  
       }
 
     } else {
@@ -339,7 +343,7 @@ FutureAction goToBallAvoidingBall_CD(FieldProperties fP, BallPos bP, LidarDetail
             speedmotors,
             0,
             false, 
-            0);  
+            dribblerSpeed);  
 
       } else {
         return FutureAction(
@@ -347,7 +351,7 @@ FutureAction goToBallAvoidingBall_CD(FieldProperties fP, BallPos bP, LidarDetail
             speedmotors,
             0,
             false, 
-            0);  
+            dribblerSpeed);  
       }
     }
 
@@ -357,7 +361,7 @@ FutureAction goToBallAvoidingBall_CD(FieldProperties fP, BallPos bP, LidarDetail
         speedmotors,
         0,
         false, 
-        0);  
+        dribblerSpeed);  
 
   } else if (bP.x() > 0 && bP.x() < 40) {
     return FutureAction(
@@ -365,7 +369,7 @@ FutureAction goToBallAvoidingBall_CD(FieldProperties fP, BallPos bP, LidarDetail
         speedmotors,
         0,
         false, 
-        0);  
+        dribblerSpeed);  
 
   } else {
     return FutureAction(
@@ -373,7 +377,7 @@ FutureAction goToBallAvoidingBall_CD(FieldProperties fP, BallPos bP, LidarDetail
         speedmotors,
         0,
         false, 
-        0);
+        dribblerSpeed);
   }
 }
 
@@ -384,7 +388,7 @@ FutureAction accelerateToGoal_C(FieldProperties fP, EnemyGoalPos eGP) {
       speedmotors,
       0,
       false, 
-      0);  
+      dribblerSpeed);  
 }
 
 FutureAction accelerateToGoal_D(FieldProperties fP, LidarDetailedInfos lDI) {
@@ -394,7 +398,7 @@ FutureAction accelerateToGoal_D(FieldProperties fP, LidarDetailedInfos lDI) {
       speedmotors,
       PI,
       false,
-      0);  
+      dribblerSpeed);  
 }
 
 FutureAction spinToWin(FieldProperties fP, LidarDetailedInfos lDI) {
@@ -414,7 +418,7 @@ FutureAction spinToWin(FieldProperties fP, LidarDetailedInfos lDI) {
       speedmotors,
       eGP.angle() + lDI.orientation(),
       false,
-      0);
+      dribblerSpeed);
   }
 }
 
@@ -427,41 +431,52 @@ FutureAction shoot_C(FieldProperties fP, EnemyGoalPos eGP) {
       0,
       true,
       0);
+
   } else {
     return FutureAction(
       eGP,
       shootSpeed,
       0,
       false,
-      0);
+      dribblerSpeed);
   }
 }
 
 FutureAction shoot_D(FieldProperties fP, LidarDetailedInfos lDI) {
   log_a(StratLevel, "strategy.shoot_D", "Choosed strategy : shoot_D");
-  if (lDI.coordinates().x() > 90 && abs(Degree(lDI.orientation())) <= 10) {
-    return FutureAction(
-      DirectionCorrectedOfOrientation(Vector2(0, fP.distanceYGoalFromCenter()), lDI),
-      shootSpeed,
-      0,
-      true,
-      0);
+  if (lDI.coordinates().x() > 90) {
+    if (abs(Degree(lDI.orientation())) <= 10) {
+      return FutureAction(
+        Vector2(0,10),
+        shootSpeed,
+        0,
+        true,
+        0);
+        
+    } else {
+      return FutureAction(
+        DirectionCorrectedOfOrientation(Vector2(0, fP.distanceYGoalFromCenter() - fP.robotRadius()*4), lDI),
+        shootSpeed,
+        0,
+        false,
+        dribblerSpeed);
+    }
       
-  } else if (abs(Degree(lDI.orientation())) <= 10) {
+  } else if (abs(abs(Degree(lDI.orientation()))-180) <= 10) {
     return FutureAction(
-      DirectionCorrectedOfOrientation(Vector2(0, fP.distanceYGoalFromCenter()), lDI),
+      DirectionCorrectedOfOrientation(Vector2(0, fP.distanceYGoalFromCenter() - fP.robotRadius()*4), lDI),
       shootSpeed,
       PI,
       false,
-      0);
+      dribblerSpeed);
 
   } else {
     return FutureAction(
-      DirectionCorrectedOfOrientation(Vector2(0, fP.distanceYGoalFromCenter()), lDI),
+      DirectionCorrectedOfOrientation(Vector2(0, fP.distanceYGoalFromCenter() - fP.robotRadius()*4), lDI),
       speedmotors,
       PI,
       false,
-      0);
+      dribblerSpeed);
   }
 }
 
