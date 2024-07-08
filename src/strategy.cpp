@@ -287,7 +287,7 @@ FutureAction goToBallChangingOrientation_CD(FieldProperties fP, BallPos bP, Lida
   return FutureAction(
       bP,
       speedmotors,
-      bP.angle() + lDI.orientation(),
+      bP.angle() + lDI.orientation(), // STRANGE
       false,
       fP.maxDribblerSpeed());
 }
