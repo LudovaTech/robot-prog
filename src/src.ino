@@ -54,6 +54,8 @@ void setup() {
   pinMode(pinSwitch, INPUT);
 }
 
+
+
 bool ledCounter = true;
 
 // TODO: temporary
@@ -62,13 +64,6 @@ Optional<LidarInfosGlue> previousLidarInfosGlue;
 Optional<CamInfosGlue> previousCamInfosGlue;
 
 void aloop() {
-  if (SerialBlue.available()) {
-    char incoming = SerialBlue.read();
-    SerialDebug.print("OK");
-  }
-}
-
-void loop() {
   unsigned long start_millis = millis();
   log_a(InfoLevel, "src.loop", "***");
 
@@ -112,6 +107,17 @@ void loop() {
 
   // GETTING CAM DATA
   CamInfosGlue camInfos = getCamInfos(angleFrontGoalLidar, angleRearGoalLidar);
+
+  // BLUETOOTH
+  if (SerialBlue.available() > 20) {
+    //SerialBlue.readBytes()
+  }
+
+  if (camInfos.ballPos.hasValue() && lidarInfos.oLDI.hasValue()) {
+    SerialBlue.println("b(" + String(camInfos.ballPos.value().x()) + "," + String(camInfos.ballPos.value().y()) + "),(" + String(lidarInfos.oLDI.value().coordinates().x()) + "," + String(lidarInfos.oLDI.value().coordinates().y()) + ")e");
+  } else {
+
+  }
 
   // calculating the orientation of the robot
   Radians orientation = 0;
