@@ -129,13 +129,13 @@ void loop() {
 
   if (camInfos.enemyGoalPos.hasValue()) {
     if (camInfos.enemyGoalPos.value().y() < 0) {
-      orientation = -abs(camInfos.enemyGoalPos.value().x())/camInfos.enemyGoalPos.value().x() * PI/2;
+      // orientation = -abs(camInfos.enemyGoalPos.value().x())/camInfos.enemyGoalPos.value().x() * PI/2;
     }
   }
 
   if (camInfos.myGoalPos.hasValue()) {
     if (camInfos.myGoalPos.value().y() > 0) {
-      orientation = abs(camInfos.myGoalPos.value().x())/camInfos.myGoalPos.value().x() * PI/2;
+      // orientation = abs(camInfos.myGoalPos.value().x())/camInfos.myGoalPos.value().x() * PI/2;
     }
   }
 
@@ -146,12 +146,18 @@ void loop() {
       lidarInfos.oLBI,
       camInfos.ballPos,
       camInfos.myGoalPos,
-      camInfos.enemyGoalPos);  
+      camInfos.enemyGoalPos);
+  Radians futureOrientation = 0;
+  if (lidarInfos.oLDI.hasValue()) {
+    futureOrientation = orientation - currentAction.targetOrientation();
+  } else {
+    futureOrientation = orientation;
+  }
   if (currentAction.changeTarget()) {
-    motors.goTo(currentAction.target(), currentAction.celerity(), orientation - currentAction.targetOrientation());
+    motors.goTo(currentAction.target(), currentAction.celerity(), futureOrientation);
     previousTarget = currentAction.target();
   } else {
-    motors.goTo(previousTarget.toVector2(), currentAction.celerity(), orientation - currentAction.targetOrientation());
+    motors.goTo(previousTarget.toVector2(), currentAction.celerity(), futureOrientation);
   }
 
   String full_log2;

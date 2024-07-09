@@ -51,31 +51,36 @@ FutureAction chooseStrategy(
 
 EnemyGoalPos enemyGoalPosTheorical(FieldProperties fP);
 MyGoalPos myGoalPosTheorical(FieldProperties fP);
+Vector2 globalToLocalCoordinates(LidarDetailedInfos lDI, Vector2 target);
 
 bool enterInMyGoal_C(FieldProperties fP, MyGoalPos mGP);
-bool enterInEnnemyGoal_C(FieldProperties fP, EnemyGoalPos eGP);
+bool enterInMyGoal_D(FieldProperties fP, LidarDetailedInfos lDI);
+bool enterInEnemyGoal_C(FieldProperties fP, EnemyGoalPos eGP);
+bool enterInEnemyGoal_D(FieldProperties fP, LidarDetailedInfos lDI);
 
 bool leavingField_D(FieldProperties fP, LidarDetailedInfos lDI);
 bool leavingField_B(FieldProperties fP, LidarBasicInfos lBI);
 
-bool ballInCorner(FieldProperties fP, LidarDetailedInfos lDI, BallPos bP);
+bool ballInCorner_CD(FieldProperties fP, BallPos bP, LidarDetailedInfos lDI);
 bool ballAhead(FieldProperties fP, BallPos bP);
 bool ballAtLevel(FieldProperties fP, BallPos bP);
 bool ballInCenter(FieldProperties fP, BallPos bP);
 bool ballIsCaught(FieldProperties fP, BallPos bP);
 
-bool goalInCenter(FieldProperties fP, EnemyGoalPos eGP);
+bool closeEnoughToKick_D(FieldProperties fP, LidarDetailedInfos lDI);
+bool closeEnoughToKick_C(FieldProperties fP, EnemyGoalPos eGP);
+bool orientedTowardsEnemyGoal_D(FieldProperties fP, LidarDetailedInfos lDI);
+
+bool enemyGoalInCenter(FieldProperties fP, EnemyGoalPos eGP);
 
 bool robotOnSide(FieldProperties fP, LidarDetailedInfos lDI);
 bool robotInCenter(FieldProperties fP, LidarDetailedInfos lDI);
-
-Vector2 directionCorrectedOfOrientation(Vector2 target, LidarDetailedInfos lDI);
 
 FutureAction refrainLeavingField_D(FieldProperties fP, LidarDetailedInfos lDI);
 FutureAction refrainLeavingField_B(FieldProperties fP, LidarBasicInfos lBI);
 
 FutureAction refrainEnterInMyGoal_C(FieldProperties fP, MyGoalPos mGP);
-FutureAction refrainEnterInEnnemyGoal_C(FieldProperties fP, EnemyGoalPos eGP);
+FutureAction refrainEnterInEnemyGoal_C(FieldProperties fP, EnemyGoalPos eGP);
 
 FutureAction goToBall_C(FieldProperties fP, BallPos bP);
 
