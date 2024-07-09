@@ -129,13 +129,13 @@ void loop() {
 
   if (camInfos.enemyGoalPos.hasValue()) {
     if (camInfos.enemyGoalPos.value().y() < 0) {
-      orientation = -abs(camInfos.enemyGoalPos.value().x())/camInfos.enemyGoalPos.value().x() * PI/2;
+      // orientation = -abs(camInfos.enemyGoalPos.value().x())/camInfos.enemyGoalPos.value().x() * PI/2;
     }
   }
 
   if (camInfos.myGoalPos.hasValue()) {
     if (camInfos.myGoalPos.value().y() > 0) {
-      orientation = abs(camInfos.myGoalPos.value().x())/camInfos.myGoalPos.value().x() * PI/2;
+      // orientation = abs(camInfos.myGoalPos.value().x())/camInfos.myGoalPos.value().x() * PI/2;
     }
   }
 
@@ -148,8 +148,8 @@ void loop() {
       camInfos.myGoalPos,
       camInfos.enemyGoalPos);
   Radians futureOrientation = 0;
-  if (currentAction.targetOrientation().hasValue()) {
-    futureOrientation = orientation - currentAction.targetOrientation().value();
+  if (lidarInfos.oLDI.hasValue()) {
+    futureOrientation = orientation - currentAction.targetOrientation();
   } else {
     futureOrientation = orientation;
   }
