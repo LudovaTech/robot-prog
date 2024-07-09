@@ -224,7 +224,7 @@ bool robotOnSide(FieldProperties fP, LidarDetailedInfos lDI) {
 }
 
 bool robotInCenter(FieldProperties fP, LidarDetailedInfos lDI) {
-  return abs(lDI.coordinates().x()) <= 9;  // TODO create parameter
+  return abs(lDI.coordinates().x()) <= 9;  // TODO create parameter
 }
 
 FutureAction refrainLeavingField_D(FieldProperties fP, LidarDetailedInfos lDI) {
@@ -424,8 +424,28 @@ FutureAction accelerateToGoal_C(FieldProperties fP, EnemyGoalPos eGP) {
 
 FutureAction accelerateToGoal_D(FieldProperties fP, LidarDetailedInfos lDI) {
   log_a(StratLevel, "strategy.accelerateToGoal_D", "Choosed strategy : accelerateToGoal_D");
+  
+  /* TEST EVITEMENT OBSTACLES */
+  std::vector<Vector2> obstacles;
+  Vector2 directionGoal = globalToLocalCoordinates(lDI, enemyGoalPosTheorical(fP));
+  Vector2 direction = directionGoal;
+  for (const auto& obstacle : obstacles) {
+    
+    Radians angle = directionGoal.angle() - obstacle.angle();
+    float distance = obstacle.norm();
+
+    if (abs(angle) < 0.5 && distance <= directionGoal.norm() - 10) { // Paramètre (0.5) à modifier en fonction de la distance 
+      if (angle >= 0) {
+        direction.rotate(1); // Paramètre à modifier en fonction de la distance 
+      } else {
+        direction.rotate(-1); // Paramètre à modifier en fonction de la distance 
+      }
+    }
+  } 
+  /******* *******/
+  
   return FutureAction(
-      globalToLocalCoordinates(lDI, enemyGoalPosTheorical(fP)),
+      directionGoal, // A changer avec direction
       speedmotors,
       0,
       false,
