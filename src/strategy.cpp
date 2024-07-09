@@ -386,8 +386,28 @@ FutureAction accelerateToGoal_C(FieldProperties fP, EnemyGoalPos eGP) {
 
 FutureAction accelerateToGoal_D(FieldProperties fP, LidarDetailedInfos lDI) {
   log_a(StratLevel, "strategy.accelerateToGoal_D", "Choosed strategy : accelerateToGoal_D");
+  
+  /* TEST EVITEMENT OBSTACLES */
+  std::vector<Vector2> obstacles;
+  Vector2 directionGoal = directionCorrectedOfOrientation(Vector2(0, fP.distanceYGoalFromCenter()), lDI);
+  Vector2 direction = directionGoal;
+  for (const auto& obstacle : obstacles) {
+    
+    Radians angle = directionGoal.angle() - obstacle.angle();
+    float distance = obstacle.norm();
+
+    if (abs(angle) < 0.5 && distance <= directionGoal.norm() - 10) { // Paramètre (0.5) à modifier en fonction de la distance 
+      if (angle >= 0) {
+        direction.rotate(1); // Paramètre à modifier en fonction de la distance 
+      } else {
+        direction.rotate(-1); // Paramètre à modifier en fonction de la distance 
+      }
+    }
+  } 
+  /******* *******/
+  
   return FutureAction(
-      directionCorrectedOfOrientation(Vector2(0, fP.distanceYGoalFromCenter()), lDI),
+      directionGoal, // A changer avec direction
       speedmotors,
       PI,
       false,
