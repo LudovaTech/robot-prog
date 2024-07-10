@@ -37,9 +37,10 @@ BlueInfosGlue getBlueInfos() {
   size_t bytesAvailable = SerialBlue.available();
   Optional<Vector2> partnerPos;
   Optional<Vector2> ballPos;
-  if (bytesAvailable >= minBytesAvailable) {
+  if (bytesAvailable >= minBytesAvailableBlue) {
     String data = readFromBlue(bytesAvailable);
     String lastCompleteSequence = extractLastCompleteSequenceBlue(data);
+    SerialDebug.println(data);
     if (lastCompleteSequence != "") {
       int partnerX, partnerY, ballX, ballY;
       if (sequenceToValuesBlue(lastCompleteSequence, &partnerX, &partnerY, &ballX, &ballY)) {
@@ -60,6 +61,6 @@ BlueInfosGlue getBlueInfos() {
   };
 }
 
-void sendBlueData(Vector2 partnerPos, Vector2 ballPos) {
-  SerialDebug.printf("b%+04d%+04d%+04d%+04de", partnerPos.x(), partnerPos.y(), ballPos.x(), ballPos.y());
+void sendBlueData(Vector2 myPos, Vector2 ballPos) {
+  SerialBlue.printf("b%+04d%+04d%+04d%+04de", myPos.x(), myPos.y(), ballPos.x(), ballPos.y());
 }

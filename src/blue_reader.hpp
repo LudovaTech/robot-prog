@@ -4,7 +4,7 @@
 #include "utilities.hpp"
 #include "logger.hpp"
 
-const int minBytesAvailable = 57;
+const int minBytesAvailableBlue = 17; 
 
 struct BlueInfosGlue {
   Optional<Vector2> partnerPos;

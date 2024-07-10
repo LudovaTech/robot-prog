@@ -64,7 +64,7 @@ Optional<CamInfosGlue> previousCamInfosGlue;
 
 void loop() {
   unsigned long start_millis = millis();
-  log_a(InfoLevel, "src.loop", "***");
+  log_a(NoteLevel, "src.loop", "***");
 
   // Flash the LED to make sure the code is running correctly
   if (ledCounter) {
@@ -109,7 +109,7 @@ void loop() {
 
   // GETTING/SENDING BLUE DATA
   BlueInfosGlue blueInfos = getBlueInfos();
-  if (!camInfos.ballPos.hasValue()) {
+  if (!camInfos.ballPos.hasValue() && blueInfos.ballPos.hasValue()) {
     camInfos.ballPos = BallPos(
       blueInfos.ballPos.value().x(),
       blueInfos.ballPos.value().y()
@@ -119,6 +119,7 @@ void loop() {
     lidarInfos.oLDI.hasValue() ? lidarInfos.oLDI.value().coordinates() : Vector2(0, 0),
     camInfos.ballPos.hasValue() ? camInfos.ballPos.value() : Vector2(0, 0)
   );
+  
 
   // calculating the orientation of the robot
   Radians orientation = 0;
