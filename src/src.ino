@@ -55,7 +55,6 @@ void setup() {
 }
 
 
-
 bool ledCounter = true;
 
 // TODO: temporary
@@ -63,7 +62,7 @@ MutableVector2 previousTarget;
 Optional<LidarInfosGlue> previousLidarInfosGlue;
 Optional<CamInfosGlue> previousCamInfosGlue;
 
-void aloop() {
+void loop() {
   unsigned long start_millis = millis();
   log_a(InfoLevel, "src.loop", "***");
 
@@ -183,5 +182,5 @@ void aloop() {
 
   unsigned long elapsed = millis() - start_millis;
   log_a(InfoLevel, "src.loop", "Temps loop : " + String(elapsed) + "ms");
-  delay(2);
+  delay(20);
 }

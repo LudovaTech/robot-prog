@@ -69,30 +69,28 @@ FutureAction chooseStrategy(
     if (leavingField_D(fP, oLDI.value())) {
       SerialDebug.println("leavingField_D");
       return refrainLeavingField_D(fP, oLDI.value());
-    }// } else if (enterInMyGoal_D(fP, oLDI.value())) {
-    //   // TODO
-    //   SerialDebug.println("enterInMyGoal_D");      
-    //   return refrainLeavingField_D(fP, oLDI.value());
-    // } else if (enterInEnemyGoal_D(fP, oLDI.value())) {
-    //   // TODO
-    //   SerialDebug.println("enterInEnemyGoald_D");
-    //   return refrainLeavingField_D(fP, oLDI.value());
-    // }
-    SerialDebug.println("rien");
-  }// } else if (oLBI.hasValue()) {
-  //   if (leavingField_B(fP, oLBI.value())) {
-  //     return refrainLeavingField_B(fP, oLBI.value());
-  //   }
-  // } else if (oMGP.hasValue()) {
-  //   if (enterInMyGoal_C(fP, oMGP.value())) {
-  //     return refrainEnterInMyGoal_C(fP, oMGP.value());
-  //   }
-  // } else if (oEGP.hasValue()) {
-  //   if (enterInEnemyGoal_C(fP, oEGP.value())) {
-  //     return refrainEnterInEnemyGoal_C(fP, oEGP.value());
-  //   }
-  // }
-  return FutureAction::stopRobot();
+    } else if (enterInMyGoal_D(fP, oLDI.value())) {
+      // TODO
+      SerialDebug.println("enterInMyGoal_D");      
+      return refrainLeavingField_D(fP, oLDI.value());
+    } else if (enterInEnemyGoal_D(fP, oLDI.value())) {
+      // TODO
+      SerialDebug.println("enterInEnemyGoald_D");
+      return refrainLeavingField_D(fP, oLDI.value());
+    }
+  } else if (oLBI.hasValue()) {
+    if (leavingField_B(fP, oLBI.value())) {
+      return refrainLeavingField_B(fP, oLBI.value());
+    }
+  } else if (oMGP.hasValue()) {
+    if (enterInMyGoal_C(fP, oMGP.value())) {
+      return refrainEnterInMyGoal_C(fP, oMGP.value());
+    }
+  } else if (oEGP.hasValue()) {
+    if (enterInEnemyGoal_C(fP, oEGP.value())) {
+      return refrainEnterInEnemyGoal_C(fP, oEGP.value());
+    }
+  }
   // Then we choose the appropriate Strategy
   if (!oBP.hasValue()) {
     // We don't know where the ball is
@@ -240,10 +238,10 @@ FutureAction refrainLeavingField_D(FieldProperties fP, LidarDetailedInfos lDI) {
     yDirection = -sin(lDI.orientation());
   } 
   if (lDI.coordinates().y() < -fP.fieldLength() / 2 + criticalWallDistance + criticalGoalDistance) {
-    xDirection = sin(lDI.orientation());
+    xDirection = -sin(lDI.orientation());
     yDirection = cos(lDI.orientation());
   } else if (fP.fieldLength() / 2 - criticalWallDistance - criticalGoalDistance < lDI.coordinates().y()) {
-    xDirection = -sin(lDI.orientation());
+    xDirection = sin(lDI.orientation());
     yDirection = -cos(lDI.orientation());
   }
   SerialDebug.println(Vector2(xDirection, yDirection).toString());
@@ -496,14 +494,14 @@ FutureAction slalomingBackwards_D(FieldProperties fP, LidarDetailedInfos lDI) {
   log_a(StratLevel, "strategy.slalomingBackwards_D", "Choosed strategy : slalomingBackwards_D");
   if (lDI.coordinates().y() < -50) {
     wasSlalomingBackwards = true;
-    if (lDI.coordinates().x() < -5) {
+    if (lDI.coordinates().x() < -10) {
       return FutureAction(
           Vector2(10, 0),
           speedmotors,
           0,
           false,
           0);
-    } else if (5 < lDI.coordinates().x()) {
+    } else if (10 < lDI.coordinates().x()) {
       return FutureAction(
           Vector2(-10, 0),
           speedmotors,
