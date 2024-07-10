@@ -1,5 +1,6 @@
 #include <string>
 
+#include "blue_reader.hpp"
 #include "cam_reader.hpp"
 #include "lidar_analyzer_anc.hpp"
 #include "lidar_reader.hpp"
@@ -16,7 +17,7 @@ const FieldProperties fieldProperties = FieldProperties(
     115,  // distanceYGoalFromCenter
     9,    // robotRadius
     2,    // ballRadius
-    255  // maxDribblerSpeed
+    255   // maxDribblerSpeed
 );
 
 const Motors motors(
@@ -27,10 +28,9 @@ const Motors motors(
     MotorMov(11, 12, 10, Degree(140)));
 
 DribblerKicker dribblerKicker(
-  MotorMov(6, 9, 5, 0),
-  27,
-  28
-);
+    MotorMov(6, 9, 5, 0),
+    27,
+    28);
 
 uint8_t camSerialBuffer[4000];
 uint8_t bigserialbufferlidar[10000];
@@ -48,7 +48,7 @@ void setup() {
   SerialLidar.addMemoryForRead(&bigserialbufferlidar, sizeof(bigserialbufferlidar));
 
   SerialCam.setTimeout(10);
-  SerialLidar.setTimeout(2); // !!! 2 !!!
+  SerialLidar.setTimeout(2);  // !!! 2 !!!
 
   pinMode(pinLED, OUTPUT);
   pinMode(pinSwitch, INPUT);
@@ -103,7 +103,7 @@ void loop() {
   }
   log_a(StratLevel, "src.loop", full_log);
 
-  Optional<Radians> angleFrontGoalLidar; 
+  Optional<Radians> angleFrontGoalLidar;
   Optional<Radians> angleRearGoalLidar;
   if (lidarInfos.oLDI.hasValue()) {
     angleFrontGoalLidar = Vector2(lidarInfos.oLDI.value().frontGoalCoordinates().x(), lidarInfos.oLDI.value().frontGoalCoordinates().y()).angle();
@@ -112,6 +112,19 @@ void loop() {
 
   // GETTING CAM DATA
   CamInfosGlue camInfos = getCamInfos(angleFrontGoalLidar, angleRearGoalLidar);
+
+  // GETTING/SENDING BLUE DATA
+  BlueInfosGlue blueInfos = getBlueInfos();
+  if (!camInfos.ballPos.hasValue()) {
+    camInfos.ballPos = BallPos(
+      blueInfos.ballPos.value().x(),
+      blueInfos.ballPos.value().y()
+    );
+  }
+  sendBlueData(
+    lidarInfos.oLDI.hasValue() ? lidarInfos.oLDI.value().coordinates() : Vector2(0, 0),
+    camInfos.ballPos.hasValue() ? camInfos.ballPos.value() : Vector2(0, 0)
+  );
 
   // calculating the orientation of the robot
   Radians orientation = 0;
@@ -124,7 +137,7 @@ void loop() {
   int minimumVelocityRatio = 0.5;
   int slowingDownWallDistance = 40;
   if (lidarInfos.oLBI.hasValue()) {
-    speedReductionRatio = minimumVelocityRatio*(lidarInfos.oLBI.value().distance(Vector2(0, 0))/slowingDownWallDistance + 1);
+    speedReductionRatio = minimumVelocityRatio * (lidarInfos.oLBI.value().distance(Vector2(0, 0)) / slowingDownWallDistance + 1);
   }
 
   if (camInfos.enemyGoalPos.hasValue()) {
@@ -166,11 +179,11 @@ void loop() {
   } else {
     full_log2 += "Target : Unchanged (" + previousTarget.toVector2().toString() + ") ";
   }
-  full_log2 += "Vitesse : " + String(currentAction.celerity()*speedReductionRatio) + " Rotation : " + String(orientation);
+  full_log2 += "Vitesse : " + String(currentAction.celerity() * speedReductionRatio) + " Rotation : " + String(orientation);
   log_a(InfoLevel, "src.loop", full_log2);
 
   if (currentAction.activeKicker()) {
-    delay(100); // A changer
+    delay(100);  // A changer
     dribblerKicker.kick();
   }
   dribblerKicker.dribble(currentAction.celerityDribbler());
