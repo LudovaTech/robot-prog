@@ -67,7 +67,7 @@ String readFromCam(int bytesAvailable) {
   for (unsigned int i = 0; i < bytesAvailable; i++) {
     int receive = SerialCam.read();
     if (receive == -1) {
-      log_a(CriticalLevel, "getCamInfos", "strange, -1");
+      log_a(CriticalLevel, "readFromCam", "strange, -1");
     }
     data += static_cast<char>(receive);
   }
@@ -172,8 +172,10 @@ CamInfosGlue getCamInfos(Optional<Radians> angleFrontGoalLidar, Optional<Radians
           log_a(InfoLevel, "getCamInfos", "enemyGoalPos : " + enemyGoalPos.value().toString());
         }
       } else {
+        log_a(ErrorLevel, "getCamInfos", "sequence invalide");
       }
     } else {
+      log_a(ErrorLevel, "getCamInfos", "derniere sequence vide");
     }
   } else {
   }
