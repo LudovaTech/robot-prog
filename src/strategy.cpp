@@ -53,7 +53,7 @@ const int goalMinDistance = 90;       // 85 pour SN10 et 95 pour SN9
 const int myGoalMinDistance = 82;
 const int speedmotors = 140;
 const int shootSpeed = 200;
-const int distanceKickOK = 100;
+const int distanceKickOK = 120;
 bool wasSlalomingBackwards = false;
 int dribblerSpeedIfLeavingField = 0;
 
@@ -103,11 +103,9 @@ FutureAction chooseStrategy(
       // The ball is caught
       dribblerSpeedIfLeavingField = 255;
       if (oLDI.hasValue()) {
-        SerialDebug.println("targeted orientation : " + String(enemyGoalPosTheorical(fP).angle()));
-        SerialDebug.println("close enough to kick : " + globalToLocalCoordinates(oLDI.value(), enemyGoalPosTheorical(fP)).toString());
-        if (robotOnSide(fP, oLDI.value())) {
-          return spinToWin_D(fP, oLDI.value());
-        } else if (orientedTowardsEnemyGoal_D(fP, oLDI.value()) && closeEnoughToKick_D(fP, oLDI.value())) {
+        // if (robotOnSide(fP, oLDI.value())) {
+          // return spinToWin_D(fP, oLDI.value());
+        if (orientedTowardsEnemyGoal_D(fP, oLDI.value()) && closeEnoughToKick_D(fP, oLDI.value())) {
           return shoot_D(fP, oLDI.value());
         } else {
           return accelerateToGoal_D(fP, oLDI.value());
@@ -125,9 +123,9 @@ FutureAction chooseStrategy(
       // The ball is not caught
       dribblerSpeedIfLeavingField = 0;
       if (oLDI.hasValue()) {
-        if (ballInCorner_CD(fP, bP, oLDI.value()) && false) {
-          return goToBallChangingOrientation_CD(fP, bP, oLDI.value());
-        } else if (ballAhead(fP, bP)) {
+        // if (ballInCorner_CD(fP, bP, oLDI.value()) && false) {
+          // return goToBallChangingOrientation_CD(fP, bP, oLDI.value());
+        if (ballAhead(fP, bP)) {
           return goToBall_C(fP, bP);
         } else {
           return goToBallAvoidingBall_CD(fP, bP, oLDI.value());
@@ -197,11 +195,11 @@ bool ballInCenter(FieldProperties fP, BallPos bP) {
 }
 
 bool ballIsCaught(FieldProperties fP, BallPos bP) {
-  return ballAtLevel(fP, bP) && ballInCenter(fP, bP) && bP.y() <= 33;  // TODO create parameter
+  return ballAtLevel(fP, bP) && ballInCenter(fP, bP) && bP.y() <= 34;  // TODO create parameter
 }
 
 bool closeEnoughToKick_D(FieldProperties fP, LidarDetailedInfos lDI) {
-  return lDI.coordinates().y() >= fP.distanceYGoalFromCenter() - distanceKickOK;
+  return lDI.frontGoalCoordinates().norm()/10 < distanceKickOK;
 }
 
 bool closeEnoughToKick_C(FieldProperties fP, EnemyGoalPos eGP) {
@@ -209,7 +207,7 @@ bool closeEnoughToKick_C(FieldProperties fP, EnemyGoalPos eGP) {
 }
 
 bool orientedTowardsEnemyGoal_D(FieldProperties fP, LidarDetailedInfos lDI) {
-  return abs(lDI.orientation() - enemyGoalPosTheorical(fP).angle()) <= 0.2;  // TODO create parameter
+  return abs(lDI.frontGoalCoordinates().angle()) <= 0.2;  // TODO create parameter
 }
 
 bool enemyGoalInCenter(FieldProperties fP, EnemyGoalPos eGP) {
@@ -428,7 +426,7 @@ FutureAction accelerateToGoal_D(FieldProperties fP, LidarDetailedInfos lDI) {
   
   /* TEST EVITEMENT OBSTACLES */
   std::vector<Vector2> obstacles;
-  Vector2 directionGoal = globalToLocalCoordinates(lDI, enemyGoalPosTheorical(fP));
+  Vector2 directionGoal = lDI.frontGoalCoordinates();
   Vector2 direction = directionGoal;
   for (const auto& obstacle : obstacles) {
     
@@ -448,7 +446,7 @@ FutureAction accelerateToGoal_D(FieldProperties fP, LidarDetailedInfos lDI) {
   return FutureAction(
       directionGoal, // A changer avec direction
       speedmotors,
-      enemyGoalPosTheorical(fP).angle(),
+      -lDI.frontGoalCoordinates().angle() + lDI.orientation(),
       false,
       fP.maxDribblerSpeed());
 }
@@ -486,9 +484,9 @@ FutureAction shoot_C(FieldProperties fP, EnemyGoalPos eGP) {// TODO refactor
 FutureAction shoot_D(FieldProperties fP, LidarDetailedInfos lDI) {
   log_a(StratLevel, "strategy.shoot_D", "Choosed strategy : shoot_D");
   return FutureAction(
-      globalToLocalCoordinates(lDI, enemyGoalPosTheorical(fP)),
+      lDI.frontGoalCoordinates(),
       shootSpeed,
-      enemyGoalPosTheorical(fP).angle(),
+      -lDI.frontGoalCoordinates().angle() + lDI.orientation(),
       true,
       fP.maxDribblerSpeed());
 }
