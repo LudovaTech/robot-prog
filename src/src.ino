@@ -54,7 +54,6 @@ void setup() {
   pinMode(pinSwitch, INPUT);
 }
 
-
 bool ledCounter = true;
 
 // TODO: temporary
@@ -111,15 +110,12 @@ void loop() {
   BlueInfosGlue blueInfos = getBlueInfos();
   if (!camInfos.ballPos.hasValue() && blueInfos.ballPos.hasValue()) {
     camInfos.ballPos = BallPos(
-      blueInfos.ballPos.value().x(),
-      blueInfos.ballPos.value().y()
-    );
+        blueInfos.ballPos.value().x(),
+        blueInfos.ballPos.value().y());
   }
   sendBlueData(
-    lidarInfos.oLDI.hasValue() ? lidarInfos.oLDI.value().coordinates() : Vector2(0, 0),
-    camInfos.ballPos.hasValue() ? camInfos.ballPos.value() : Vector2(0, 0)
-  );
-  
+      lidarInfos.oLDI.hasValue() ? lidarInfos.oLDI.value().coordinates() : Vector2(0, 0),
+      camInfos.ballPos.hasValue() ? camInfos.ballPos.value() : Vector2(0, 0));
 
   // calculating the orientation of the robot
   Radians orientation = 0;
@@ -148,13 +144,30 @@ void loop() {
   }
 
   // DOING ACTION
-  FutureAction currentAction = chooseStrategy(
-      fieldProperties,
+  Role myRole = findMyRole(
       lidarInfos.oLDI,
-      lidarInfos.oLBI,
       camInfos.ballPos,
-      camInfos.myGoalPos,
-      camInfos.enemyGoalPos);
+      myGoalPosTheorical(fieldProperties),
+      blueInfos.partnerPos);
+  
+  FutureAction currentAction(0, 0, 0, 0); // va tout de suite être réécris dessus
+  switch (myRole) {
+    case Role::alone:
+    case Role::attacker:
+      currentAction = chooseStrategyAttacker(
+          fieldProperties,
+          lidarInfos.oLDI,
+          lidarInfos.oLBI,
+          camInfos.ballPos,
+          camInfos.myGoalPos,
+          camInfos.enemyGoalPos);
+      break;
+    case Role::defender:
+      // TODO
+      /*currentAction =*/ 
+      break;
+  }
+  
   Radians futureOrientation = 0;
   if (lidarInfos.oLDI.hasValue()) {
     futureOrientation = orientation - currentAction.targetOrientation();

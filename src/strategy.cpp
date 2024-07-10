@@ -57,7 +57,33 @@ const int distanceKickOK = 120;
 bool wasSlalomingBackwards = false;
 int dribblerSpeedIfLeavingField = 0;
 
-FutureAction chooseStrategy(
+Role memoryRole = Role::alone;
+
+Role findMyRole(Optional<LidarDetailedInfos> oLDI,
+                Optional<BallPos> oBP,
+                MyGoalPos mGP,
+                Optional<Vector2> otherPos) {
+  if (!otherPos.hasValue() || !oLDI.hasValue()) {
+    return Role::alone;
+  }
+  if (oBP.hasValue()) {
+    // le plus proche de la balle est attaquant
+    if (oLDI.value().coordinates().distance(oBP.value()) < otherPos.value().distance(oBP.value())) {
+      return Role::attacker;
+    } else {
+      return Role::defender;
+    }
+  } else {
+    // le plus proche du goal ami est défenseur
+    if (oLDI.value().coordinates().distance(mGP) < otherPos.value().distance(mGP)) {
+      return Role::defender;
+    } else {
+      return Role::attacker;
+    }
+  }
+}
+
+FutureAction chooseStrategyAttacker(
     FieldProperties fP,
     Optional<LidarDetailedInfos> oLDI,
     Optional<LidarBasicInfos> oLBI,
@@ -69,7 +95,7 @@ FutureAction chooseStrategy(
     if (leavingField_D(fP, oLDI.value())) {
       return refrainLeavingField_D(fP, oLDI.value());
     } else if (enterInMyGoal_D(fP, oLDI.value())) {
-      // TODO    
+      // TODO
       return refrainLeavingField_D(fP, oLDI.value());
     } else if (enterInEnemyGoal_D(fP, oLDI.value())) {
       // TODO
@@ -104,7 +130,7 @@ FutureAction chooseStrategy(
       dribblerSpeedIfLeavingField = 255;
       if (oLDI.hasValue() && oLBI.hasValue()) {
         // if (robotOnSide(fP, oLDI.value())) {
-          // return spinToWin_D(fP, oLDI.value());
+        // return spinToWin_D(fP, oLDI.value());
         if (orientedTowardsEnemyGoal_D(fP, oLDI.value()) && closeEnoughToKick_D(fP, oLDI.value())) {
           return shoot_D(fP, oLDI.value());
         } else {
@@ -124,7 +150,7 @@ FutureAction chooseStrategy(
       dribblerSpeedIfLeavingField = 0;
       if (oLDI.hasValue()) {
         // if (ballInCorner_CD(fP, bP, oLDI.value()) && false) {
-          // return goToBallChangingOrientation_CD(fP, bP, oLDI.value());
+        // return goToBallChangingOrientation_CD(fP, bP, oLDI.value());
         if (ballAhead(fP, bP)) {
           return goToBall_C(fP, bP);
         } else {
@@ -199,7 +225,7 @@ bool ballIsCaught(FieldProperties fP, BallPos bP) {
 }
 
 bool closeEnoughToKick_D(FieldProperties fP, LidarDetailedInfos lDI) {
-  return lDI.frontGoalCoordinates().norm()/10 < distanceKickOK;
+  return lDI.frontGoalCoordinates().norm() / 10 < distanceKickOK;
 }
 
 bool closeEnoughToKick_C(FieldProperties fP, EnemyGoalPos eGP) {
@@ -233,7 +259,7 @@ FutureAction refrainLeavingField_D(FieldProperties fP, LidarDetailedInfos lDI) {
   } else if (fP.fieldWidth() / 2 - criticalWallDistance < lDI.coordinates().x()) {
     xDirection = -cos(lDI.orientation());
     yDirection = -sin(lDI.orientation());
-  } 
+  }
   if (lDI.coordinates().y() < -fP.fieldLength() / 2 + criticalWallDistance + criticalGoalDistance) {
     xDirection = -sin(lDI.orientation());
     yDirection = cos(lDI.orientation());
@@ -278,7 +304,7 @@ FutureAction refrainEnterInMyGoal_C(FieldProperties fP, MyGoalPos mGP) {
 FutureAction refrainEnterInEnemyGoal_C(FieldProperties fP, EnemyGoalPos eGP) {
   log_a(StratLevel, "strategy.refrainEnterInEnemyGoal_C", "Choosed strategy : refrainEnterInEnemyGoal_C");
   return FutureAction(
-      Vector2(// TODO on ne retourne pas en arriere ?
+      Vector2(  // TODO on ne retourne pas en arriere ?
           -eGP.x(),
           -eGP.y()),
       speedmotors,
@@ -291,7 +317,7 @@ FutureAction goToBallChangingOrientation_CD(FieldProperties fP, BallPos bP, Lida
   return FutureAction(
       bP,
       speedmotors,
-      bP.angle() + lDI.orientation(), // STRANGE
+      bP.angle() + lDI.orientation(),  // STRANGE
       false,
       fP.maxDribblerSpeed());
 }
@@ -299,10 +325,10 @@ FutureAction goToBallChangingOrientation_CD(FieldProperties fP, BallPos bP, Lida
 FutureAction goToBall_C(FieldProperties fP, BallPos bP) {
   log_a(StratLevel, "strategy.goToBall_C", "Choosed strategy : goToBall_C");
   int adjustedspeedmotors = speedmotors;
-  if(bP.norm() < 50) {
+  if (bP.norm() < 50) {
     adjustedspeedmotors -= 50;
   }
-  
+
   return FutureAction(
       Vector2(
           bP.x(),
@@ -423,27 +449,26 @@ FutureAction accelerateToGoal_C(FieldProperties fP, EnemyGoalPos eGP) {
 
 FutureAction accelerateToGoal_D(FieldProperties fP, LidarDetailedInfos lDI, LidarBasicInfos lBI) {
   log_a(StratLevel, "strategy.accelerateToGoal_D", "Choosed strategy : accelerateToGoal_D");
-  
+
   /* TEST EVITEMENT OBSTACLES */
   std::vector<Vector2> obstacles = lBI.obstacles();
   Vector2 directionGoal = lDI.frontGoalCoordinates();
   Vector2 direction = directionGoal;
   for (const auto& obstacle : obstacles) {
-    
     Radians angle = directionGoal.angle() - obstacle.angle();
     float distance = obstacle.norm();
 
-    if (abs(angle) < 0.5 && distance <= directionGoal.norm() - 10) { // Paramètre (0.5) à modifier en fonction de la distance 
-      SerialDebug.println("obstacle dans le chemin : " + String(distance/10) + ", angle : " + String(angle));
+    if (abs(angle) < 0.5 && distance <= directionGoal.norm() - 10) {  // Paramètre (0.5) à modifier en fonction de la distance
+      SerialDebug.println("obstacle dans le chemin : " + String(distance / 10) + ", angle : " + String(angle));
       if (angle >= 0) {
-        direction.rotate(1); // Paramètre à modifier en fonction de la distance 
+        direction.rotate(1);  // Paramètre à modifier en fonction de la distance
       } else {
-        direction.rotate(-1); // Paramètre à modifier en fonction de la distance 
+        direction.rotate(-1);  // Paramètre à modifier en fonction de la distance
       }
     }
-  } 
+  }
   /******* *******/
-  
+
   return FutureAction(
       direction,
       speedmotors,
@@ -472,7 +497,7 @@ FutureAction spinToWin_D(FieldProperties fP, LidarDetailedInfos lDI) {
   }
 }
 
-FutureAction shoot_C(FieldProperties fP, EnemyGoalPos eGP) {// TODO refactor
+FutureAction shoot_C(FieldProperties fP, EnemyGoalPos eGP) {  // TODO refactor
   log_a(StratLevel, "strategy.shoot_C", "Choosed strategy : shoot_C");
   return FutureAction(
       eGP,

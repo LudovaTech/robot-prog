@@ -41,7 +41,13 @@ class FutureAction {
   inline static FutureAction stopRobot();
 };
 
-FutureAction chooseStrategy(
+enum class Role {
+  alone,
+  attacker,
+  defender
+};
+
+FutureAction chooseStrategyAttacker(
     FieldProperties fP,
     Optional<LidarDetailedInfos> oLDI,
     Optional<LidarBasicInfos> oLBI,
@@ -52,6 +58,11 @@ FutureAction chooseStrategy(
 EnemyGoalPos enemyGoalPosTheorical(FieldProperties fP);
 MyGoalPos myGoalPosTheorical(FieldProperties fP);
 Vector2 globalToLocalCoordinates(LidarDetailedInfos lDI, Vector2 target);
+
+Role findMyRole(Optional<LidarDetailedInfos> oLDI,
+                Optional<BallPos> oBP,
+                MyGoalPos mGP,
+                Optional<Vector2> otherPos);
 
 bool enterInMyGoal_C(FieldProperties fP, MyGoalPos mGP);
 bool enterInMyGoal_D(FieldProperties fP, LidarDetailedInfos lDI);
