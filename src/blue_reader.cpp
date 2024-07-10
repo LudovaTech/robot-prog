@@ -62,5 +62,5 @@ BlueInfosGlue getBlueInfos() {
 }
 
 void sendBlueData(Vector2 myPos, Vector2 ballPos) {
-  SerialBlue.printf("b%+04d%+04d%+04d%+04de", myPos.x(), myPos.y(), ballPos.x(), ballPos.y());
+  SerialBlue.printf("b%+04d%+04d%+04d%+04de", (int)myPos.x(), (int)myPos.y(), (int)ballPos.x(), (int)ballPos.y());
 }
