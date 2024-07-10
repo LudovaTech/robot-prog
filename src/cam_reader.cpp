@@ -162,6 +162,15 @@ CamInfosGlue getCamInfos(Optional<Radians> angleFrontGoalLidar, Optional<Radians
         ballPos = convertTo<BallPos>(Vector2(ballX, ballY));
         myGoalPos = convertTo<MyGoalPos>(optionalMyGoalPos);
         enemyGoalPos = convertTo<EnemyGoalPos>(optionalEnemyGoalPos);
+        if (ballPos.hasValue()) {
+          log_a(InfoLevel, "getCamInfos", "ballPos : " + ballPos.value().toString());
+        }
+        if (myGoalPos.hasValue()) {
+          log_a(InfoLevel, "getCamInfos", "myGoalPos : " + myGoalPos.value().toString());
+        }
+        if (enemyGoalPos.hasValue()) {
+          log_a(InfoLevel, "getCamInfos", "enemyGoalPos : " + enemyGoalPos.value().toString());
+        }
       } else {
       }
     } else {

@@ -42,7 +42,7 @@ void setup() {
   SerialCam.begin(115200);
   SerialLidar.begin(230400);
   SerialBlue.begin(115200);
-  setupLog(StratLevel, 25);
+  setupLog(CriticalLevel, 25);
 
   SerialCam.addMemoryForRead(&camSerialBuffer, sizeof(camSerialBuffer));
   SerialLidar.addMemoryForRead(&bigserialbufferlidar, sizeof(bigserialbufferlidar));
@@ -106,11 +106,6 @@ void loop() {
 
   // GETTING CAM DATA
   CamInfosGlue camInfos = getCamInfos(angleFrontGoalLidar, angleRearGoalLidar);
-
-  // BLUETOOTH
-  if (SerialBlue.available() > 20) {
-    //SerialBlue.readBytes()
-  }
 
   if (camInfos.ballPos.hasValue() && lidarInfos.oLDI.hasValue()) {
     SerialBlue.println("b(" + String(camInfos.ballPos.value().x()) + "," + String(camInfos.ballPos.value().y()) + "),(" + String(lidarInfos.oLDI.value().coordinates().x()) + "," + String(lidarInfos.oLDI.value().coordinates().y()) + ")e");
