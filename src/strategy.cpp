@@ -67,15 +67,12 @@ FutureAction chooseStrategy(
   // First we look to see if there's a risk of leaving the field
   if (oLDI.hasValue()) {
     if (leavingField_D(fP, oLDI.value())) {
-      SerialDebug.println("leavingField_D");
       return refrainLeavingField_D(fP, oLDI.value());
     } else if (enterInMyGoal_D(fP, oLDI.value())) {
-      // TODO
-      SerialDebug.println("enterInMyGoal_D");      
+      // TODO    
       return refrainLeavingField_D(fP, oLDI.value());
     } else if (enterInEnemyGoal_D(fP, oLDI.value())) {
       // TODO
-      SerialDebug.println("enterInEnemyGoald_D");
       return refrainLeavingField_D(fP, oLDI.value());
     }
   } else if (oLBI.hasValue()) {
@@ -244,7 +241,6 @@ FutureAction refrainLeavingField_D(FieldProperties fP, LidarDetailedInfos lDI) {
     xDirection = sin(lDI.orientation());
     yDirection = -cos(lDI.orientation());
   }
-  SerialDebug.println(Vector2(xDirection, yDirection).toString());
   return FutureAction(
       Vector2(
           xDirection,
