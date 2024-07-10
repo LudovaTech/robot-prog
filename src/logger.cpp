@@ -16,7 +16,7 @@ void setupLog(int logLevel, unsigned int fixedMessageLength) {
     } else {
       _logFile = SD.open("log1.log", FILE_WRITE);
       if (!_logFile) {
-        SerialDebug.println("logger.setupLog : cannot open a file, logger desactivated");
+        Serial.println("logger.setupLog : cannot open a file, logger desactivated");
       }
     }
   }

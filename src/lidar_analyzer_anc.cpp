@@ -32,7 +32,9 @@ struct Point {
 Optional<LidarBasicInfos> getNearestWall(std::vector<Vector2> walls) {
   if (walls.empty()) {
     return Optional<LidarBasicInfos>();
-  }
+  } 
+
+  std::vector<Vector2> obstacles;
 
   float nearest = 100000;
   size_t indice;
@@ -45,7 +47,8 @@ Optional<LidarBasicInfos> getNearestWall(std::vector<Vector2> walls) {
   }
   return Optional<LidarBasicInfos>(LidarBasicInfos(
     walls[indice].x()/10,
-    walls[indice].y()/10
+    walls[indice].y()/10,
+    obstacles
   ));
 }
 
@@ -565,8 +568,8 @@ LidarInfosGlue getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool
 
 
   /*** Détection des autres robots ***/
-
-  std::vector<Vector2> obstacles;
+  float temps = millis();
+  /*std::vector<Vector2> obstacles;
 
   double wall1_a, wall1_b, wall1_c, wall2_a, wall2_b, wall2_c, wall3_a, wall3_b, wall3_c, wall4_a, wall4_b, wall4_c;
   if (walls.size() == 4) {
@@ -662,8 +665,8 @@ LidarInfosGlue getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool
     }
     if (full_log.length() > 0 && full_log[full_log.length() - 1] == ',') { full_log = full_log.substring(0, full_log.length() - 1); }
     full_log += "\r\n";
-  }
-  SerialDebug.println(full_log);
+    SerialDebug.println(full_log);
+  }*/
 
 
   // Trouver les coins
