@@ -102,13 +102,13 @@ FutureAction chooseStrategy(
     if (ballIsCaught(fP, bP)) {
       // The ball is caught
       dribblerSpeedIfLeavingField = 255;
-      if (oLDI.hasValue()) {
+      if (oLDI.hasValue() && oLBI.hasValue()) {
         // if (robotOnSide(fP, oLDI.value())) {
           // return spinToWin_D(fP, oLDI.value());
         if (orientedTowardsEnemyGoal_D(fP, oLDI.value()) && closeEnoughToKick_D(fP, oLDI.value())) {
           return shoot_D(fP, oLDI.value());
         } else {
-          return accelerateToGoal_D(fP, oLDI.value());
+          return accelerateToGoal_D(fP, oLDI.value(), oLBI.value());
         }
       } else if (oEGP.hasValue()) {
         if (enemyGoalInCenter(fP, oEGP.value())) {
@@ -421,11 +421,11 @@ FutureAction accelerateToGoal_C(FieldProperties fP, EnemyGoalPos eGP) {
       fP.maxDribblerSpeed());
 }
 
-FutureAction accelerateToGoal_D(FieldProperties fP, LidarDetailedInfos lDI) {
+FutureAction accelerateToGoal_D(FieldProperties fP, LidarDetailedInfos lDI, LidarBasicInfos lBI) {
   log_a(StratLevel, "strategy.accelerateToGoal_D", "Choosed strategy : accelerateToGoal_D");
   
   /* TEST EVITEMENT OBSTACLES */
-  std::vector<Vector2> obstacles;
+  std::vector<Vector2> obstacles = lBI.obstacles();
   Vector2 directionGoal = lDI.frontGoalCoordinates();
   Vector2 direction = directionGoal;
   for (const auto& obstacle : obstacles) {
@@ -434,6 +434,7 @@ FutureAction accelerateToGoal_D(FieldProperties fP, LidarDetailedInfos lDI) {
     float distance = obstacle.norm();
 
     if (abs(angle) < 0.5 && distance <= directionGoal.norm() - 10) { // Paramètre (0.5) à modifier en fonction de la distance 
+      SerialDebug.println("obstacle dans le chemin : " + String(distance/10) + ", angle : " + String(angle));
       if (angle >= 0) {
         direction.rotate(1); // Paramètre à modifier en fonction de la distance 
       } else {
@@ -444,7 +445,7 @@ FutureAction accelerateToGoal_D(FieldProperties fP, LidarDetailedInfos lDI) {
   /******* *******/
   
   return FutureAction(
-      directionGoal, // A changer avec direction
+      direction,
       speedmotors,
       -lDI.frontGoalCoordinates().angle() + lDI.orientation(),
       false,

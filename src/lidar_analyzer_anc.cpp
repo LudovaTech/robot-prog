@@ -29,12 +29,10 @@ struct Point {
   double x, y;
 };
 
-Optional<LidarBasicInfos> getNearestWall(std::vector<Vector2> walls) {
+Optional<LidarBasicInfos> getNearestWall(std::vector<Vector2> walls, std::vector<Vector2> obstacles) {
   if (walls.empty()) {
     return Optional<LidarBasicInfos>();
   } 
-
-  std::vector<Vector2> obstacles;
 
   float nearest = 100000;
   size_t indice;
@@ -569,7 +567,8 @@ LidarInfosGlue getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool
 
   /*** Détection des autres robots ***/
   float temps = millis();
-  /*std::vector<Vector2> obstacles;
+  std::vector<Vector2> obstacles;
+  std::vector<HoughLine> other_lines;
 
   double wall1_a, wall1_b, wall1_c, wall2_a, wall2_b, wall2_c, wall3_a, wall3_b, wall3_c, wall4_a, wall4_b, wall4_c;
   if (walls.size() == 4) {
@@ -578,19 +577,83 @@ LidarInfosGlue getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool
     convertHoughLineToGeneralForm(walls[2], wall3_a, wall3_b, wall3_c);
     convertHoughLineToGeneralForm(walls[3], wall4_a, wall4_b, wall4_c);
   }
-
+  int i = 0;
   for (auto& line : lines) {
+    if (line.nb_accumulators > 25 || line.nb_accumulators < 10) {
+      continue;
+    }
+    bool isDifferentEnough = true;
+
+    if(!walls.empty()) {
+      for (const auto& wall : walls) {
+
+          // on exclut les lignes qui ont un rho et theta similaires :
+          if (abs(line.rho - wall.rho) < rhoTolerance && abs(line.theta - wall.theta) < thetaMargin) {
+              isDifferentEnough = false;
+              break;
+          }
+
+          // cas particulier des lignes verticales : 
+          if (line.theta > PI - thetaMargin && wall.theta < thetaMargin 
+                && ((line.rho < 0 && wall.rho > 0) || (line.rho > 0 && wall.rho < 0))) {
+            if (abs(line.rho) - abs(wall.rho) < rhoTolerance && abs(PI - line.theta - wall.theta) < thetaMargin) {
+              isDifferentEnough = false;
+              break;
+            }
+          } else if (line.theta < thetaMargin && wall.theta > PI - thetaMargin 
+                && ((line.rho < 0 && wall.rho > 0) || (line.rho > 0 && wall.rho < 0))) {
+            if (abs(line.rho) - abs(wall.rho) < rhoTolerance && abs(PI - line.theta - wall.theta) < thetaMargin) {
+              isDifferentEnough = false;
+              break;
+            }
+          }
+      }
+    }
+
+    if(!other_lines.empty()) {
+      for (const auto& other_line : other_lines) {
+
+          // on exclut les lignes qui ont un rho et theta similaires :
+          if (abs(line.rho - other_line.rho) < rhoTolerance && abs(line.theta - other_line.theta) < thetaMargin) {
+              isDifferentEnough = false;
+              break;
+          }
+
+          // cas particulier des lignes verticales : 
+          if (line.theta > PI - thetaMargin && other_line.theta < thetaMargin 
+                && ((line.rho < 0 && other_line.rho > 0) || (line.rho > 0 && other_line.rho < 0))) {
+            if (abs(line.rho) - abs(other_line.rho) < rhoTolerance && abs(PI - line.theta - other_line.theta) < thetaMargin) {
+              isDifferentEnough = false;
+              break;
+            }
+          } else if (line.theta < thetaMargin && other_line.theta > PI - thetaMargin 
+                && ((line.rho < 0 && other_line.rho > 0) || (line.rho > 0 && other_line.rho < 0))) {
+            if (abs(line.rho) - abs(other_line.rho) < rhoTolerance && abs(PI - line.theta - other_line.theta) < thetaMargin) {
+              isDifferentEnough = false;
+              break;
+            }
+          }
+      }
+    }
+
+    if (!isDifferentEnough) {
+      continue;
+    }
+
+    i++;
     double line_a, line_b, line_c;
     convertHoughLineToGeneralForm(line, line_a, line_b, line_c);
 
     // ** Check de la longueur du segment détecté
     std::vector<Vector2> closePoints;  // on récupère tous les points "sur" la droite
+    int temps2 = micros();
     for (const auto& point : points_cart) {
       double distance = calculateDistanceToLine(point, line_a, line_b, line_c);
       if (distance <= PointToLineDistanceMax) {
         closePoints.push_back(point);
       }
     }
+    //SerialDebug.println(micros() - temps2);
 
     // On crée des groupes des points rapprochés sur la droite :
     std::vector<std::vector<Vector2>> groups;
@@ -645,11 +708,14 @@ LidarInfosGlue getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool
           
           if (barycentreIsOk) {
             obstacles.push_back(barycentre); 
+            other_lines.push_back(line);
           }
         }
       }
     }        
   }
+  // SerialDebug.println("***" + String(millis() - temps));
+  // SerialDebug.println(i);
 
   if(show_log) {
     full_log += "** obstacles x: ";
@@ -666,7 +732,7 @@ LidarInfosGlue getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool
     if (full_log.length() > 0 && full_log[full_log.length() - 1] == ',') { full_log = full_log.substring(0, full_log.length() - 1); }
     full_log += "\r\n";
     SerialDebug.println(full_log);
-  }*/
+  }
 
 
   // Trouver les coins
@@ -717,7 +783,7 @@ LidarInfosGlue getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool
   if (corners.size() != 4) {  // on n'a pas les 4 coins, on arrête là
     LidarInfosGlue nInfos{
         Optional<LidarDetailedInfos>(),
-        getNearestWall(points_walls)
+        getNearestWall(points_walls, obstacles)
     };
     if (show_log) {
       if (nInfos.oLBI.hasValue()) {
@@ -821,7 +887,7 @@ LidarInfosGlue getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool
       frontGoal.toVector2(),
       rearGoal.toVector2()
     )),
-    getNearestWall(points_walls)
+    getNearestWall(points_walls, obstacles)
   };
 
   if (show_log) {

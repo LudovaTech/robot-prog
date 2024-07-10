@@ -89,7 +89,7 @@ FutureAction goToBallAvoidingBall_C(FieldProperties fP, BallPos bP);
 FutureAction goToBallAvoidingBall_CD(FieldProperties fP, BallPos bP, LidarDetailedInfos lDI);
 
 FutureAction accelerateToGoal_C(FieldProperties fP, EnemyGoalPos eGP);
-FutureAction accelerateToGoal_D(FieldProperties fP, LidarDetailedInfos lDI);
+FutureAction accelerateToGoal_D(FieldProperties fP, LidarDetailedInfos lDI, LidarBasicInfos lBI);
 
 FutureAction spinToWin_D(FieldProperties fP, LidarDetailedInfos lDI);
 FutureAction shoot_C(FieldProperties fP, EnemyGoalPos eGP);
