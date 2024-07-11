@@ -127,7 +127,7 @@ FutureAction chooseStrategyAttacker(
     BallPos bP = oBP.value();
     if (ballIsCaught(fP, bP)) {
       // The ball is caught
-      dribblerSpeedIfLeavingField = 255;
+      dribblerSpeedIfLeavingField = fP.maxDribblerSpeed();
       if (oLDI.hasValue() && oLBI.hasValue()) {
         // if (robotOnSide(fP, oLDI.value())) {
         // return spinToWin_D(fP, oLDI.value());
