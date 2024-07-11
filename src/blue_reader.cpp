@@ -40,7 +40,6 @@ BlueInfosGlue getBlueInfos() {
   if (bytesAvailable >= minBytesAvailableBlue) {
     String data = readFromBlue(bytesAvailable);
     String lastCompleteSequence = extractLastCompleteSequenceBlue(data);
-    SerialDebug.println(data);
     if (lastCompleteSequence != "") {
       int partnerX, partnerY, ballX, ballY;
       if (sequenceToValuesBlue(lastCompleteSequence, &partnerX, &partnerY, &ballX, &ballY)) {

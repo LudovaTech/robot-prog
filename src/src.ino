@@ -42,7 +42,7 @@ void setup() {
   SerialCam.begin(115200);
   SerialLidar.begin(230400);
   SerialBlue.begin(115200);
-  setupLog(StratLevel, 25);
+  setupLog(CriticalLevel, 25);
 
   SerialCam.addMemoryForRead(&camSerialBuffer, sizeof(camSerialBuffer));
   SerialLidar.addMemoryForRead(&bigserialbufferlidar, sizeof(bigserialbufferlidar));
@@ -109,9 +109,9 @@ void loop() {
   // GETTING/SENDING BLUE DATA
   BlueInfosGlue blueInfos = getBlueInfos();
   if (!camInfos.ballPos.hasValue() && blueInfos.ballPos.hasValue()) {
-    camInfos.ballPos = BallPos(
-        blueInfos.ballPos.value().x(),
-        blueInfos.ballPos.value().y());
+    // camInfos.ballPos = BallPos(
+    //     blueInfos.ballPos.value().x(),
+    //     blueInfos.ballPos.value().y());
   }
   sendBlueData(
       lidarInfos.oLDI.hasValue() ? lidarInfos.oLDI.value().coordinates() : Vector2(0, 0),
@@ -149,11 +149,12 @@ void loop() {
       camInfos.ballPos,
       myGoalPosTheorical(fieldProperties),
       blueInfos.partnerPos);
-  
-  FutureAction currentAction(0, 0, 0, 0); // va tout de suite être réécris dessus
+
+  FutureAction currentAction(0, 0, 0, 0);  // va tout de suite être réécris dessus
   switch (myRole) {
     case Role::alone:
     case Role::attacker:
+      SerialDebug.println("Attaquant");
       currentAction = chooseStrategyAttacker(
           fieldProperties,
           lidarInfos.oLDI,
@@ -164,10 +165,11 @@ void loop() {
       break;
     case Role::defender:
       // TODO
-      /*currentAction =*/ 
+      /*currentAction =*/
+      SerialDebug.println("Défenseur");
       break;
   }
-  
+
   Radians futureOrientation = 0;
   if (lidarInfos.oLDI.hasValue()) {
     futureOrientation = orientation - currentAction.targetOrientation();
