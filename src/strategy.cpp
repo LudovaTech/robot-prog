@@ -62,24 +62,24 @@ Role memoryRole = Role::alone;
 Role findMyRole(Optional<LidarDetailedInfos> oLDI,
                 Optional<BallPos> oBP,
                 MyGoalPos mGP,
-                Optional<Vector2> otherPos) {
-  if (!otherPos.hasValue() || !oLDI.hasValue()) {
-    return Role::alone;
-  }
-  if (oBP.hasValue()) {
+                Optional<Vector2> otherPos,
+                Optional<Vector2> otherBallPos) {
+  if (oBP.hasValue() && otherBallPos.hasValue()) {
     // le plus proche de la balle est attaquant
-    if (oLDI.value().coordinates().distance(oBP.value()) < otherPos.value().distance(oBP.value())) {
+    if (oBP.value().norm() < otherBallPos.value().norm()) {
       return Role::attacker;
     } else {
       return Role::defender;
     }
-  } else {
+  } else if (otherPos.hasValue() && oLDI.hasValue()) {
     // le plus proche du goal ami est défenseur
     if (oLDI.value().coordinates().distance(mGP) < otherPos.value().distance(mGP)) {
       return Role::defender;
     } else {
       return Role::attacker;
     }
+  } else {
+    return Role::alone;
   }
 }
 
@@ -601,4 +601,18 @@ FutureAction chooseStrategyDefender(
     Optional<MyGoalPos> oMGP,
     Optional<EnemyGoalPos> oEGP) {
   return FutureAction::stopRobot();
+
+  if (oLDI.hasValue()) {
+    
+    float distanceToFocalPoints = globalToLocalCoordinates(oLDI.value(), Vector2(enemyGoalPosTheorical(fP).x() - fP.goalWidth() + 5,
+                                                                                 enemyGoalPosTheorical(fP).y())).norm()
+                                  + globalToLocalCoordinates(oLDI.value(), Vector2(enemyGoalPosTheorical(fP).x() + fP.goalWidth() - 5,
+                                                                                 enemyGoalPosTheorical(fP).y())).norm();
+    
+    if (abs(distanceToFocalPoints - 60) <= 10) {
+      if (oBP.hasValue()) {
+        
+      }
+    }
+  }
 }

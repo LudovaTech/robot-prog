@@ -148,7 +148,8 @@ void loop() {
       lidarInfos.oLDI,
       camInfos.ballPos,
       myGoalPosTheorical(fieldProperties),
-      blueInfos.partnerPos);
+      blueInfos.partnerPos,
+      blueInfos.ballPos);
 
   FutureAction currentAction(0, 0, 0, 0);  // va tout de suite être réécris dessus
   switch (myRole) {
@@ -181,7 +182,7 @@ void loop() {
           camInfos.ballPos,
           camInfos.myGoalPos,
           camInfos.enemyGoalPos);
-      SerialDebug.println("Défenseur");
+      SerialDebug.println("Defenseur");
       break;
   }
 

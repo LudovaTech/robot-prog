@@ -62,7 +62,8 @@ Vector2 globalToLocalCoordinates(LidarDetailedInfos lDI, Vector2 target);
 Role findMyRole(Optional<LidarDetailedInfos> oLDI,
                 Optional<BallPos> oBP,
                 MyGoalPos mGP,
-                Optional<Vector2> otherPos);
+                Optional<Vector2> otherPos,
+                Optional<Vector2> otherBallPos);
 
 bool enterInMyGoal_C(FieldProperties fP, MyGoalPos mGP);
 bool enterInMyGoal_D(FieldProperties fP, LidarDetailedInfos lDI);
