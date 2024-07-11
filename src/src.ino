@@ -153,6 +153,15 @@ void loop() {
   FutureAction currentAction(0, 0, 0, 0);  // va tout de suite être réécris dessus
   switch (myRole) {
     case Role::alone:
+      SerialDebug.println("Alone");
+      currentAction = chooseStrategyAttacker(
+          fieldProperties,
+          lidarInfos.oLDI,
+          lidarInfos.oLBI,
+          camInfos.ballPos,
+          camInfos.myGoalPos,
+          camInfos.enemyGoalPos);
+      break;
     case Role::attacker:
       SerialDebug.println("Attaquant");
       currentAction = chooseStrategyAttacker(
