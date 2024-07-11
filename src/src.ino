@@ -190,7 +190,15 @@ void loop() {
       SerialDebug.println("Defenseur");
       break;
   }
-
+  
+  currentAction = chooseStrategyDefender(
+          fieldProperties,
+          lidarInfos.oLDI,
+          lidarInfos.oLBI,
+          camInfos.ballPos,
+          camInfos.myGoalPos,
+          camInfos.enemyGoalPos);
+          
   Radians futureOrientation = 0;
   if (lidarInfos.oLDI.hasValue()) {
     futureOrientation = orientation - currentAction.targetOrientation();

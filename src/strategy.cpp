@@ -595,6 +595,7 @@ FutureAction slalomingBackwards_D(FieldProperties fP, LidarDetailedInfos lDI) {
   }
 }
 
+// TODO : stratégies séparées
 FutureAction chooseStrategyDefender(
     FieldProperties fP,
     Optional<LidarDetailedInfos> oLDI,
@@ -603,25 +604,39 @@ FutureAction chooseStrategyDefender(
     Optional<MyGoalPos> oMGP,
     Optional<EnemyGoalPos> oEGP) {
 
-  if (oLDI.hasValue() && abs(oLDI.value().coordinates().y() + fP.distanceYGoalFromCenter() - criticalWallDistance - criticalGoalDistance) < 10) {
-    if (oBP.hasValue()) {
+  if (oLDI.hasValue()) {
+
+    int yPositionToTargetDefenseLine = -oLDI.value().coordinates().y() - fP.distanceYGoalFromCenter() + criticalWallDistance + criticalGoalDistance;
+
+    if (abs(yPositionToTargetDefenseLine) > 8) {
       return FutureAction(
-          Vector2(oBP.value().rotate(oLDI.value().orientation()).x(), 
-                  oLDI.value().coordinates().y() - fP.distanceYGoalFromCenter() + criticalWallDistance + criticalGoalDistance),
+          Vector2(oLDI.value().rearGoalCoordinates().x()/10,
+                  yPositionToTargetDefenseLine),
           speedmotors,
           0,
           false,
           0);
+    } else if (oBP.hasValue()) {
+      if (!ballInCenter(fP, oBP.value())) {
+        int defenseSpeed = 255;
+        if (abs(oBP.value().x()) <= 18) {
+          defenseSpeed = speedmotors;
+        } 
+
+        return FutureAction(
+            Vector2(oBP.value().x(), 
+                    0),
+            defenseSpeed,
+            0,
+            false,
+            0);
+      }
+
     } else {
-      return FutureAction(
-          Vector2(oLDI.value().rearGoalCoordinates().x()/10, // .rotate(oLDI.value().orientation())
-                  -oLDI.value().coordinates().y() - fP.distanceYGoalFromCenter() + criticalWallDistance + criticalGoalDistance),
-          speedmotors,
-          0,
-          false,
-          0);
+      return FutureAction::stopRobot(); // TODO : s'aligner avec l'obstacle le plus proche n'étant pas notre robot
     }
-  } else {
+  } else { // TODO : se baser sur la caméra
     return FutureAction::stopRobot();
   }
+  
 }
