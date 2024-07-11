@@ -1,5 +1,41 @@
 #include "blue_reader.hpp"
 
+
+Optional<Vector2> cachePartnerPos;
+int timeCachePartnerPos = millis();
+Optional<Vector2> cacheBallPosBlue;
+int timeCacheBallPosBlue = millis();
+
+Optional<Vector2> readAndUpdateCacheBluePartnerPos(Optional<Vector2> partnerPos) {
+  if (partnerPos.hasValue()) {
+    cachePartnerPos = partnerPos;
+    timeCachePartnerPos = millis();
+    return partnerPos;
+  } else {
+    if (millis() <= timeCachePartnerPos + timeBlueCache) {
+      // cache valide
+      return cachePartnerPos;
+    } else {
+      return Optional<Vector2>();
+    }
+  }
+}
+
+Optional<Vector2> readAndUpdateCacheBlueBallPos(Optional<Vector2> ballPos) {
+  if (ballPos.hasValue()) {
+    cacheBallPosBlue = ballPos;
+    timeCacheBallPosBlue = millis();
+    return ballPos;
+  } else {
+    if (millis() <= timeCacheBallPosBlue + timeBlueCache) {
+      // cache valide
+      return cacheBallPosBlue;
+    } else {
+      return Optional<Vector2>();
+    }
+  }
+}
+
 String readFromBlue(int bytesAvailable) {
   String data;
   for (unsigned int i = 0; i < bytesAvailable; i++) {
@@ -54,6 +90,8 @@ BlueInfosGlue getBlueInfos() {
       log_a(ErrorLevel, "getBlueInfos", "derniere sequence vide");
     }
   }
+  partnerPos = readAndUpdateCacheBluePartnerPos(partnerPos);
+  ballPos = readAndUpdateCacheBlueBallPos(ballPos);
   return BlueInfosGlue{
     partnerPos,
     ballPos
