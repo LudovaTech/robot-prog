@@ -55,6 +55,14 @@ FutureAction chooseStrategyAttacker(
     Optional<MyGoalPos> oMGP,
     Optional<EnemyGoalPos> oEGP);
 
+FutureAction chooseStrategyDefender(
+    FieldProperties fP,
+    Optional<LidarDetailedInfos> oLDI,
+    Optional<LidarBasicInfos> oLBI,
+    Optional<BallPos> oBP,
+    Optional<MyGoalPos> oMGP,
+    Optional<EnemyGoalPos> oEGP);
+
 EnemyGoalPos enemyGoalPosTheorical(FieldProperties fP);
 MyGoalPos myGoalPosTheorical(FieldProperties fP);
 Vector2 globalToLocalCoordinates(LidarDetailedInfos lDI, Vector2 target);

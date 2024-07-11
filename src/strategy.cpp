@@ -66,6 +66,7 @@ Role findMyRole(Optional<LidarDetailedInfos> oLDI,
                 Optional<Vector2> otherBallPos) {
   if (oBP.hasValue() && otherBallPos.hasValue()) {
     // le plus proche de la balle est attaquant
+    SerialDebug.println("balle");
     if (oBP.value().norm() < otherBallPos.value().norm()) {
       return Role::attacker;
     } else {
@@ -73,6 +74,7 @@ Role findMyRole(Optional<LidarDetailedInfos> oLDI,
     }
   } else if (otherPos.hasValue() && oLDI.hasValue()) {
     // le plus proche du goal ami est défenseur
+    SerialDebug.println("goal");
     if (oLDI.value().coordinates().distance(mGP) < otherPos.value().distance(mGP)) {
       return Role::defender;
     } else {
@@ -600,19 +602,24 @@ FutureAction chooseStrategyDefender(
     Optional<BallPos> oBP,
     Optional<MyGoalPos> oMGP,
     Optional<EnemyGoalPos> oEGP) {
-  return FutureAction::stopRobot();
 
   if (oLDI.hasValue()) {
-    
-    float distanceToFocalPoints = globalToLocalCoordinates(oLDI.value(), Vector2(enemyGoalPosTheorical(fP).x() - fP.goalWidth() + 5,
-                                                                                 enemyGoalPosTheorical(fP).y())).norm()
-                                  + globalToLocalCoordinates(oLDI.value(), Vector2(enemyGoalPosTheorical(fP).x() + fP.goalWidth() - 5,
-                                                                                 enemyGoalPosTheorical(fP).y())).norm();
-    
-    if (abs(distanceToFocalPoints - 60) <= 10) {
-      if (oBP.hasValue()) {
-        
-      }
+    if (oBP.hasValue()) {
+      return FutureAction(
+          Vector2(oBP.value().rotate(oLDI.value().orientation()).x(), 
+                  oLDI.value().coordinates().y() - fP.distanceYGoalFromCenter() + criticalWallDistance + criticalGoalDistance),
+          speedmotors,
+          0,
+          false,
+          0);
+    } else {
+      return FutureAction(
+          Vector2(oLDI.value().rearGoalCoordinates().rotate(oLDI.value().orientation()).x(), 
+                  oLDI.value().coordinates().y() - fP.distanceYGoalFromCenter() + criticalWallDistance + criticalGoalDistance),
+          speedmotors,
+          0,
+          false,
+          0);
     }
   }
 }

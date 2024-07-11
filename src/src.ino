@@ -175,7 +175,7 @@ void loop() {
       break;
     case Role::defender:
       // TODO
-      currentAction = chooseStrategyAttacker(
+      currentAction = chooseStrategyDefender(
           fieldProperties,
           lidarInfos.oLDI,
           lidarInfos.oLBI,
