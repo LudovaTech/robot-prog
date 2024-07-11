@@ -570,7 +570,7 @@ LidarInfosGlue getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool
   std::vector<Vector2> obstacles;
   std::vector<HoughLine> other_lines;
 
-  double wall1_a, wall1_b, wall1_c, wall2_a, wall2_b, wall2_c, wall3_a, wall3_b, wall3_c, wall4_a, wall4_b, wall4_c;
+  /*double wall1_a, wall1_b, wall1_c, wall2_a, wall2_b, wall2_c, wall3_a, wall3_b, wall3_c, wall4_a, wall4_b, wall4_c;
   if (walls.size() == 4) {
     convertHoughLineToGeneralForm(walls[0], wall1_a, wall1_b, wall1_c);
     convertHoughLineToGeneralForm(walls[1], wall2_a, wall2_b, wall2_c);
@@ -732,7 +732,7 @@ LidarInfosGlue getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool
     if (full_log.length() > 0 && full_log[full_log.length() - 1] == ',') { full_log = full_log.substring(0, full_log.length() - 1); }
     full_log += "\r\n";
     SerialDebug.println(full_log);
-  }
+  }*/
 
 
   // Trouver les coins

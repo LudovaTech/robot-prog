@@ -217,7 +217,7 @@ bool ballAtLevel(FieldProperties fP, BallPos bP) {
 }
 
 bool ballInCenter(FieldProperties fP, BallPos bP) {
-  return abs(bP.x()) <= 7;  // TODO create parameter
+  return abs(bP.x()) <= 10;  // TODO create parameter
 }
 
 bool ballIsCaught(FieldProperties fP, BallPos bP) {
@@ -325,15 +325,17 @@ FutureAction goToBallChangingOrientation_CD(FieldProperties fP, BallPos bP, Lida
 FutureAction goToBall_C(FieldProperties fP, BallPos bP) {
   log_a(StratLevel, "strategy.goToBall_C", "Choosed strategy : goToBall_C");
   int adjustedspeedmotors = speedmotors;
+  float coefficient = 1.0;
   if (bP.norm() < 50) {
-    adjustedspeedmotors -= 50;
+    adjustedspeedmotors -= 30;
+    coefficient = 0.4;
   }
 
   return FutureAction(
       Vector2(
-          bP.x(),
+          bP.x()*coefficient,
           bP.y() - fP.robotRadius() * 3),  // TODO create parameter
-      adjustedspeedmotors,
+      speedmotors,
       0,
       false,
       fP.maxDribblerSpeed());
