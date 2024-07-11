@@ -171,4 +171,53 @@ class Optional {
   }
 };
 
+
+template <typename T>
+class Cache {
+ private:
+  Optional<T> _value;
+  unsigned int _birth = millis();
+  const unsigned int _lifetime;
+
+ public:
+  Cache(unsigned int lifetime) : _lifetime(lifetime) {}
+
+  bool valid();
+  Optional<T> cache();
+  void update(Optional<T> newValue);
+  Optional<T> readAndUpdate(Optional<T> newValue);
+};
+
+//////CACHE
+
+template <typename T>
+bool Cache<T>::valid() {
+  return millis() < _birth + _lifetime;
+}
+
+template <typename T>
+Optional<T> Cache<T>::cache() {
+  if (valid()) {
+    return _value;
+  } else {
+    return Optional<T>();
+  }
+}
+
+template <typename T>
+void Cache<T>::update(Optional<T> newValue) {
+  _value = newValue;
+  _birth = millis();
+}
+
+template <typename T>
+Optional<T> Cache<T>::readAndUpdate(Optional<T> newValue) {
+  if (newValue.hasValue()) {
+    update(newValue);
+    return newValue;
+  } else {
+    return cache();
+  }
+}
+
 #endif

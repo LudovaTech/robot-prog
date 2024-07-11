@@ -209,3 +209,138 @@ TEST(ResultOrErrorOptional, OptionalNoValue) {
   Optional<int> r;
   ASSERT_FALSE(r.hasValue());
 }
+
+// Test de la fonction valid()
+TEST(CacheTest, ValidityWithinLifetime) {
+    Cache<int> cache(100);
+    EXPECT_TRUE(cache.valid());
+}
+
+TEST(CacheTest, ValidityAfterLifetime) {
+    Cache<int> cache(1);
+    delay(1);
+    EXPECT_FALSE(cache.valid());
+}
+
+TEST(CacheTest, ValidityWithZeroLifetime) {
+    Cache<int> cache(0);
+    delay(1);
+    EXPECT_FALSE(cache.valid());
+}
+
+TEST(CacheTest, ValidityAfterUpdate) {
+    Cache<int> cache(100);
+    cache.update(42);
+    EXPECT_TRUE(cache.valid());
+}
+
+// Test de la fonction cache()
+TEST(CacheTest, CacheReturnsValueWithinLifetime) {
+    Cache<int> cache(100);
+    cache.update(42);
+    EXPECT_EQ(cache.cache().value(), 42);
+}
+
+TEST(CacheTest, CacheReturnsEmptyOptionalAfterLifetime) {
+    Cache<int> cache(1);
+    cache.update(42);
+    delay(1);
+    EXPECT_FALSE(cache.cache().hasValue());
+}
+
+TEST(CacheTest, CacheReturnsEmptyOptionalIfNeverUpdated) {
+    Cache<int> cache(100);
+    EXPECT_FALSE(cache.cache().hasValue());
+}
+
+TEST(CacheTest, CacheReturnsEmptyOptionalWithZeroLifetime) {
+    Cache<int> cache(0);
+    cache.update(42);
+    EXPECT_FALSE(cache.cache().hasValue());
+}
+
+TEST(CacheTest, CacheReturnsUpdatedValueWithinLifetime) {
+    Cache<int> cache(10);
+    cache.update(42);
+    delay(5);
+    cache.update(84);
+    EXPECT_EQ(cache.cache().value(), 84);
+}
+
+// Test de la fonction update()
+TEST(CacheTest, UpdateChangesValue) {
+    Cache<int> cache(100);
+    cache.update(42);
+    EXPECT_EQ(cache.cache().value(), 42);
+}
+
+TEST(CacheTest, UpdateChangesBirthTime) {
+    Cache<int> cache(10);
+    delay(5);
+    cache.update(42);
+    EXPECT_TRUE(cache.valid());
+    delay(10);
+    EXPECT_FALSE(cache.valid());
+}
+
+TEST(CacheTest, UpdateWithEmptyOptional) {
+    Cache<int> cache(100);
+    cache.update(Optional<int>());
+    EXPECT_FALSE(cache.cache().hasValue());
+}
+
+TEST(CacheTest, MultipleUpdates) {
+    Cache<int> cache(100);
+    cache.update(42);
+    EXPECT_EQ(cache.cache().value(), 42);
+    cache.update(84);
+    EXPECT_EQ(cache.cache().value(), 84);
+}
+
+TEST(CacheTest, UpdateResetsValidity) {
+    Cache<int> cache(10);
+    cache.update(42);
+    delay(5);
+    cache.update(84);
+    EXPECT_TRUE(cache.valid());
+    delay(15);
+    EXPECT_FALSE(cache.valid());
+}
+
+// Test de la fonction readAndUpdate()
+TEST(CacheTest, ReadAndUpdateWithValue) {
+    Cache<int> cache(100);
+    EXPECT_EQ(cache.readAndUpdate(42).value(), 42);
+    EXPECT_EQ(cache.cache().value(), 42);
+}
+
+TEST(CacheTest, ReadAndUpdateWithEmptyOptional) {
+    Cache<int> cache(100);
+    cache.update(42);
+    EXPECT_EQ(cache.readAndUpdate(Optional<int>()).value(), 42);
+}
+
+TEST(CacheTest, ReadAndUpdateUpdatesValue) {
+    Cache<int> cache(100);
+    cache.update(42);
+    cache.readAndUpdate(84);
+    EXPECT_EQ(cache.cache().value(), 84);
+}
+
+TEST(CacheTest, ReadAndUpdateUpdatesBirthTime) {
+    Cache<int> cache(10);
+    cache.update(42);
+    delay(5);
+    cache.readAndUpdate(84);
+    delay(15);
+    EXPECT_FALSE(cache.valid());
+}
+
+TEST(CacheTest, ReadAndUpdateWithEmptyOptionalDoesNotChangeBirthTime) {
+    Cache<int> cache(10);
+    cache.update(42);
+    delay(5);
+    cache.readAndUpdate(Optional<int>());
+    delay(15);
+    EXPECT_FALSE(cache.valid());
+}
