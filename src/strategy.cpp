@@ -603,7 +603,7 @@ FutureAction chooseStrategyDefender(
     Optional<MyGoalPos> oMGP,
     Optional<EnemyGoalPos> oEGP) {
 
-  if (oLDI.hasValue()) {
+  if (oLDI.hasValue() && abs(oLDI.value().coordinates().y() + fP.distanceYGoalFromCenter() - criticalWallDistance - criticalGoalDistance) < 10) {
     if (oBP.hasValue()) {
       return FutureAction(
           Vector2(oBP.value().rotate(oLDI.value().orientation()).x(), 
@@ -614,12 +614,14 @@ FutureAction chooseStrategyDefender(
           0);
     } else {
       return FutureAction(
-          Vector2(oLDI.value().rearGoalCoordinates().rotate(oLDI.value().orientation()).x(), 
-                  oLDI.value().coordinates().y() - fP.distanceYGoalFromCenter() + criticalWallDistance + criticalGoalDistance),
+          Vector2(oLDI.value().rearGoalCoordinates().x()/10, // .rotate(oLDI.value().orientation())
+                  -oLDI.value().coordinates().y() - fP.distanceYGoalFromCenter() + criticalWallDistance + criticalGoalDistance),
           speedmotors,
           0,
           false,
           0);
     }
+  } else {
+    return FutureAction::stopRobot();
   }
 }

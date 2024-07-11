@@ -184,6 +184,7 @@ void loop() {
           camInfos.ballPos,
           camInfos.myGoalPos,
           camInfos.enemyGoalPos);
+      SerialDebug.println(currentAction.target().toString());
       SerialDebug.println("Defenseur");
       break;
   }
