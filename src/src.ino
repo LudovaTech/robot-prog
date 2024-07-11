@@ -174,7 +174,13 @@ void loop() {
       break;
     case Role::defender:
       // TODO
-      /*currentAction =*/
+      currentAction = chooseStrategyAttacker(
+          fieldProperties,
+          lidarInfos.oLDI,
+          lidarInfos.oLBI,
+          camInfos.ballPos,
+          camInfos.myGoalPos,
+          camInfos.enemyGoalPos);
       SerialDebug.println("Défenseur");
       break;
   }

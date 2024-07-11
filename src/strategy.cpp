@@ -233,7 +233,10 @@ bool closeEnoughToKick_C(FieldProperties fP, EnemyGoalPos eGP) {
 }
 
 bool orientedTowardsEnemyGoal_D(FieldProperties fP, LidarDetailedInfos lDI) {
-  return abs(lDI.frontGoalCoordinates().angle()) <= 0.2;  // TODO create parameter
+  return lDI.orientation() < globalToLocalCoordinates(lDI, Vector2(enemyGoalPosTheorical(fP).x() - fP.goalWidth() + 5,
+                                                                   enemyGoalPosTheorical(fP).y())).angle()
+      && lDI.orientation() > globalToLocalCoordinates(lDI, Vector2(enemyGoalPosTheorical(fP).x() + fP.goalWidth() - 5,
+                                                                   enemyGoalPosTheorical(fP).y())).angle();
 }
 
 bool enemyGoalInCenter(FieldProperties fP, EnemyGoalPos eGP) {
@@ -333,7 +336,7 @@ FutureAction goToBall_C(FieldProperties fP, BallPos bP) {
 
   return FutureAction(
       Vector2(
-          bP.x()*coefficient,
+          bP.x() * coefficient,
           bP.y() - fP.robotRadius() * 3),  // TODO create parameter
       speedmotors,
       0,
@@ -588,4 +591,14 @@ FutureAction slalomingBackwards_D(FieldProperties fP, LidarDetailedInfos lDI) {
           0);
     }
   }
+}
+
+FutureAction chooseStrategyDefender(
+    FieldProperties fP,
+    Optional<LidarDetailedInfos> oLDI,
+    Optional<LidarBasicInfos> oLBI,
+    Optional<BallPos> oBP,
+    Optional<MyGoalPos> oMGP,
+    Optional<EnemyGoalPos> oEGP) {
+  return FutureAction::stopRobot();
 }
