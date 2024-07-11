@@ -127,10 +127,12 @@ void loop() {
 
   // Slowing down when approaching a wall
   float speedReductionRatio = 1;
-  int minimumVelocityRatio = 0.5;
-  int slowingDownWallDistance = 40;
+  float minimumVelocityRatio = 0.5;
+  int slowingDownWallDistance = 50;
   if (lidarInfos.oLBI.hasValue()) {
-    speedReductionRatio = minimumVelocityRatio * (lidarInfos.oLBI.value().distance(Vector2(0, 0)) / slowingDownWallDistance + 1);
+    if (lidarInfos.oLBI.value().norm() < slowingDownWallDistance) {
+      speedReductionRatio = minimumVelocityRatio * (lidarInfos.oLBI.value().distance(Vector2(0, 0)) / slowingDownWallDistance + 1);
+    }
   }
 
   if (camInfos.enemyGoalPos.hasValue()) {
@@ -196,10 +198,10 @@ void loop() {
     futureOrientation = orientation;
   }
   if (currentAction.changeTarget()) {
-    motors.goTo(currentAction.target(), currentAction.celerity(), futureOrientation);
+    motors.goTo(currentAction.target(), currentAction.celerity()*speedReductionRatio, futureOrientation);
     previousTarget = currentAction.target();
   } else {
-    motors.goTo(previousTarget.toVector2(), currentAction.celerity(), futureOrientation);
+    motors.goTo(previousTarget.toVector2(), currentAction.celerity()*speedReductionRatio, futureOrientation);
   }
 
   String full_log2;
