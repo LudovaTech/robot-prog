@@ -5,7 +5,6 @@
 #include "logger.hpp"
 
 const int minBytesAvailableBlue = 17;
-const int timeBlueCache = 50;
 
 struct BlueInfosGlue {
   Optional<Vector2> partnerPos;

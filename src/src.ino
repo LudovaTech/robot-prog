@@ -58,9 +58,7 @@ bool ledCounter = true;
 
 // TODO: temporary
 MutableVector2 previousTarget;
-const int timeCacheLidar = 140;
-Optional<LidarInfosGlue> cacheLidarInfosGlue;
-int timeCacheInfosGlue = millis();
+Cache<LidarInfosGlue> cacheLidarInfos(140);
 
 void loop() {
   unsigned long start_millis = millis();
@@ -77,12 +75,12 @@ void loop() {
 
   // GETTING LIDAR DATA
   LidarInfosGlue lidarInfos;
-  if (SerialLidar.available() < 2600 && cacheLidarInfosGlue.hasValue() && millis() <= timeCacheInfosGlue + timeCacheLidar) {
-    lidarInfos = cacheLidarInfosGlue.value();
+  Optional<LidarInfosGlue> cacheLidarInfosValue = cacheLidarInfos.cache();
+  if (SerialLidar.available() < 2600 && cacheLidarInfosValue.hasValue()) {
+    lidarInfos = cacheLidarInfosValue.value();
   } else {
     lidarInfos = getLidarInfos(fieldProperties, true, false);
-    cacheLidarInfosGlue = lidarInfos;
-    timeCacheInfosGlue = millis();
+    cacheLidarInfos.update(lidarInfos);
   }
 
   String full_log;
