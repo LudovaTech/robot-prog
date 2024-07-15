@@ -88,8 +88,14 @@ CamInfosGlue getCamInfos(Optional<Radians> angleFrontGoalLidar, Optional<Radians
         Optional<Vector2> optionalMyGoalPos = interpret(angleFrontGoalLidar, angleRearGoalLidar, myGoalsX, myGoalsY);
         Optional<Vector2> optionalEnemyGoalPos = interpret(angleFrontGoalLidar, angleRearGoalLidar, enemyGoalsX, enemyGoalsY);
         ballPos = convertTo<BallPos>(Vector2(ballX, ballY));
-        myGoalPos = convertTo<MyGoalPos>(optionalMyGoalPos);
-        enemyGoalPos = convertTo<EnemyGoalPos>(optionalEnemyGoalPos);
+        if (digitalRead(26) == LOW) {
+          myGoalPos = convertTo<MyGoalPos>(optionalMyGoalPos);
+          enemyGoalPos = convertTo<EnemyGoalPos>(optionalEnemyGoalPos);
+        } else if (digitalRead(26) == HIGH) {
+          myGoalPos = convertTo<MyGoalPos>(optionalEnemyGoalPos);
+          enemyGoalPos = convertTo<EnemyGoalPos>(optionalMyGoalPos);
+        }
+          
         if (ballPos.hasValue()) {
           log_a(InfoLevel, "getCamInfos", "ballPos : " + ballPos.value().toString());
         }
@@ -110,6 +116,7 @@ CamInfosGlue getCamInfos(Optional<Radians> angleFrontGoalLidar, Optional<Radians
   Optional<BallPos> afterCacheBallPos = cacheBallPos.readAndUpdate(ballPos);
   Optional<MyGoalPos> afterCacheMyGoalPos = cacheMyGoalPos.readAndUpdate(myGoalPos);
   Optional<EnemyGoalPos> afterCacheEnemyGoalPos = cacheEnemyGoalPos.readAndUpdate(enemyGoalPos);
+  
   return CamInfosGlue{
       afterCacheBallPos,
       afterCacheMyGoalPos,
