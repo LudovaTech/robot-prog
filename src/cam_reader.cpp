@@ -1,35 +1,8 @@
 #include "cam_reader.hpp"
 
-Optional<BallPos> cacheBallPos;
-int timeCacheBallPos = millis();
-Optional<MyGoalPos> cacheMyGoalPos;
-int timeCacheMyGoalPos = millis();
-Optional<EnemyGoalPos> cacheEnemyGoalPos;
-int timeCacheEnemyGoalPos = millis();
-
-void _test_set_cacheBallPos(Optional<BallPos> _cacheBallPos) {
-  cacheBallPos = _cacheBallPos;
-}
-
-void _test_set_timeCacheBallPos(int _timeCacheBallPos) {
-  timeCacheBallPos = _timeCacheBallPos;
-}
-
-void _test_set_cacheEnemyGoalPos(Optional<EnemyGoalPos> _cacheEnemyGoalPos) {
-  cacheEnemyGoalPos = _cacheEnemyGoalPos;
-}
-
-void _test_set_timeCacheEnemyGoalPos(int _timeCacheEnemyGoalPos) {
-  timeCacheEnemyGoalPos = _timeCacheEnemyGoalPos;
-}
-
-void _test_set_cacheMyGoalPos(Optional<MyGoalPos> _cacheMyGoalPos) {
-  cacheMyGoalPos = _cacheMyGoalPos;
-}
-
-void _test_set_timeCacheMyGoalPos(int _timeCacheMyGoalPos) {
-  timeCacheMyGoalPos = _timeCacheMyGoalPos;
-}
+Cache<BallPos> cacheBallPos(50);
+Cache<MyGoalPos> cacheMyGoalPos(50);
+Cache<EnemyGoalPos> cacheEnemyGoalPos(50);
 
 String extractLastCompleteSequence(String str) {
   int lastE = str.lastIndexOf('e');
@@ -101,51 +74,6 @@ Optional<T> convertTo(Optional<Vector2> from) {
   }
 }
 
-Optional<BallPos> readAndUpdateCache(Optional<BallPos> ballPos) {
-  if (ballPos.hasValue()) {
-    cacheBallPos = ballPos;
-    timeCacheBallPos = millis();
-    return ballPos;
-  } else {
-    if (millis() <= timeCacheBallPos + timeCache) {
-      // cache valide
-      return cacheBallPos;
-    } else {
-      return Optional<BallPos>();
-    }
-  }
-}
-
-Optional<MyGoalPos> readAndUpdateCache(Optional<MyGoalPos> myGoalPos) {
-  if (myGoalPos.hasValue()) {
-    cacheMyGoalPos = myGoalPos;
-    timeCacheMyGoalPos = millis();
-    return myGoalPos;
-  } else {
-    if (millis() <= timeCacheMyGoalPos + timeCache) {
-      // cache valide
-      return cacheMyGoalPos;
-    } else {
-      return Optional<MyGoalPos>();
-    }
-  }
-}
-
-Optional<EnemyGoalPos> readAndUpdateCache(Optional<EnemyGoalPos> enemyGoalPos) {
-  if (enemyGoalPos.hasValue()) {
-    cacheEnemyGoalPos = enemyGoalPos;
-    timeCacheEnemyGoalPos = millis();
-    return enemyGoalPos;
-  } else {
-    if (millis() <= timeCacheEnemyGoalPos + timeCache) {
-      // cache valide
-      return cacheEnemyGoalPos;
-    } else {
-      return Optional<EnemyGoalPos>();
-    }
-  }
-}
-
 CamInfosGlue getCamInfos(Optional<Radians> angleFrontGoalLidar, Optional<Radians> angleRearGoalLidar) {
   size_t bytesAvailable = SerialCam.available();
   Optional<BallPos> ballPos;
@@ -179,9 +107,9 @@ CamInfosGlue getCamInfos(Optional<Radians> angleFrontGoalLidar, Optional<Radians
     }
   } else {
   }
-  Optional<BallPos> afterCacheBallPos = readAndUpdateCache(ballPos);
-  Optional<MyGoalPos> afterCacheMyGoalPos = readAndUpdateCache(myGoalPos);
-  Optional<EnemyGoalPos> afterCacheEnemyGoalPos = readAndUpdateCache(enemyGoalPos);
+  Optional<BallPos> afterCacheBallPos = cacheBallPos.readAndUpdate(ballPos);
+  Optional<MyGoalPos> afterCacheMyGoalPos = cacheMyGoalPos.readAndUpdate(myGoalPos);
+  Optional<EnemyGoalPos> afterCacheEnemyGoalPos = cacheEnemyGoalPos.readAndUpdate(enemyGoalPos);
   return CamInfosGlue{
       afterCacheBallPos,
       afterCacheMyGoalPos,
