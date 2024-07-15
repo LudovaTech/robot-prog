@@ -131,9 +131,6 @@ void loop() {
     if (lidarInfos.oLBI.value().norm() < slowingDownWallDistance) {
       speedReductionRatio = minimumVelocityRatio * (lidarInfos.oLBI.value().distance(Vector2(0, 0)) / slowingDownWallDistance + 1);
     }
-    for (const auto& obstacle : lidarInfos.oLBI.value().obstacles()) {
-      SerialDebug.println("*** " + obstacle.toString());
-    }
   }
 
   if (camInfos.enemyGoalPos.hasValue()) {
@@ -167,7 +164,6 @@ void loop() {
   FutureAction currentAction(0, 0, 0, 0);  // va tout de suite être réécris dessus
   switch (myRole) {
     case Role::alone:
-      SerialDebug.println("Alone");
       currentAction = chooseStrategyAttacker(
           fieldProperties,
           lidarInfos.oLDI,
@@ -178,7 +174,6 @@ void loop() {
           blueInfos.partnerPos);
       break;
     case Role::attacker:
-      SerialDebug.println("Attaquant");
       currentAction = chooseStrategyAttacker(
           fieldProperties,
           lidarInfos.oLDI,
@@ -189,7 +184,6 @@ void loop() {
           blueInfos.partnerPos);
       break;
     case Role::defender:
-      SerialDebug.println("Defenseur");
       currentAction = chooseStrategyDefender(
           fieldProperties,
           lidarInfos.oLDI,
@@ -226,7 +220,7 @@ void loop() {
     delay(100);  // A changer
     dribblerKicker.kick();
   }
-  SerialDebug.println("********************************* " + String(currentAction.celerityDribbler()));
+  // SerialDebug.println("********************************* " + String(currentAction.celerityDribbler()));
   dribblerKicker.dribble(currentAction.celerityDribbler());
 
   unsigned long elapsed = millis() - start_millis;

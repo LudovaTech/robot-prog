@@ -130,10 +130,9 @@ FutureAction chooseStrategyAttacker(
       return FutureAction::stopRobot();
     }
   } else {
-    SerialDebug.println("ball seen");
+    // SerialDebug.println("ball seen");
     BallPos bP = oBP.value();
     if (oLDI.hasValue() && oLBI.hasValue()) {
-      //SerialDebug.println("valeur : " + alignedWithBallAndGoal_D(fP, oLBI.value(), oLDI.value(), oBP.value()));
       
     } else if (ballIsCaught(fP, bP)) {
       SerialDebug.println("ball is caught");
@@ -161,7 +160,6 @@ FutureAction chooseStrategyAttacker(
       dribblerSpeedIfLeavingField = 0;
       if (oLDI.hasValue() && oLBI.hasValue()) {
         if (alignedWithBallAndGoal_D(fP, oLBI.value(), oLDI.value(), oBP.value())) {
-          SerialDebug.println("aligned");
           return FutureAction(
                 oBP.value(),
                 maxRobotSpeed,
@@ -254,22 +252,17 @@ bool closeEnoughToKick_C(FieldProperties fP, EnemyGoalPos eGP) {
 }
 
 bool orientedTowardsEnemyGoal_D(FieldProperties fP, LidarBasicInfos lBI, LidarDetailedInfos lDI) {
-  for (const auto& obstacle : lBI.obstacles()) {
-    if (abs(lDI.orientation() - obstacle.angle()) < 0.4) {
-      return false;
-    }
-    SerialDebug.println("obstacle dans le chemin : " + String(lDI.orientation() - obstacle.angle()));
-  }
-
+  // for (const auto& obstacle : lBI.obstacles()) {
+  //   if (abs(obstacle.angle()) < 0.3) {
+  //     SerialDebug.println("obstacle dans le chemin");
+  //     return false;
+  //   }
+  // }
+  // SerialDebug.println("aucun obstacle dans le chemin");
   return globalToLocalCoordinates(lDI, Vector2(enemyGoalPosTheorical(fP).x() - fP.goalWidth()/2 + 4,
                                                                    enemyGoalPosTheorical(fP).y())).angle()
         * globalToLocalCoordinates(lDI, Vector2(enemyGoalPosTheorical(fP).x() + fP.goalWidth()/2 - 4,
                                                                    enemyGoalPosTheorical(fP).y())).angle() < 0; 
-                                                                                                                 
-  // return lDI.orientation() < globalToLocalCoordinates(lDI, Vector2(enemyGoalPosTheorical(fP).x() - fP.goalWidth()/2 + 2,
-  //                                                                  enemyGoalPosTheorical(fP).y())).angle()
-  //     && lDI.orientation() > globalToLocalCoordinates(lDI, Vector2(enemyGoalPosTheorical(fP).x() + fP.goalWidth()/2 - 2,
-  //                                                                  enemyGoalPosTheorical(fP).y())).angle();
 }
 
 bool alignedWithBallAndGoal_D(FieldProperties fP, LidarBasicInfos lBI, LidarDetailedInfos lDI, BallPos bP) {
@@ -278,13 +271,6 @@ bool alignedWithBallAndGoal_D(FieldProperties fP, LidarBasicInfos lBI, LidarDeta
       return false;
     }
   }
-  SerialDebug.println("ball angle : " + String(bP.angle()));
-  SerialDebug.println("poteau gauche : " + String(globalToLocalCoordinates(lDI, Vector2(enemyGoalPosTheorical(fP).x() - fP.goalWidth()/2 + 2, enemyGoalPosTheorical(fP).y())).angle()));
-  SerialDebug.println("poteau droit : " + String(globalToLocalCoordinates(lDI, Vector2(enemyGoalPosTheorical(fP).x() + fP.goalWidth()/2 - 2, enemyGoalPosTheorical(fP).y())).angle()));
-  // SerialDebug.println(bP.angle() < globalToLocalCoordinates(lDI, Vector2(enemyGoalPosTheorical(fP).x() - fP.goalWidth()/2 + 2,
-  //                                                                  enemyGoalPosTheorical(fP).y())).angle()
-  //     && bP.angle() > globalToLocalCoordinates(lDI, Vector2(enemyGoalPosTheorical(fP).x() + fP.goalWidth()/2 - 2,
-  //                                                                  enemyGoalPosTheorical(fP).y())).angle());
   return bP.angle() < globalToLocalCoordinates(lDI, Vector2(enemyGoalPosTheorical(fP).x() - fP.goalWidth()/2 + 4,
                                                                    enemyGoalPosTheorical(fP).y())).angle()
       && bP.angle() > globalToLocalCoordinates(lDI, Vector2(enemyGoalPosTheorical(fP).x() + fP.goalWidth()/2 - 4,
@@ -514,12 +500,14 @@ FutureAction accelerateToGoal_D(FieldProperties fP, LidarDetailedInfos lDI, Lida
     Radians angle = directionGoal.angle() - obstacle.angle();
     float distance = obstacle.norm();
 
-    if (abs(angle) < 0.4 && distance <= directionGoal.norm()/10 - 5) {  // Paramètre (0.5) à modifier en fonction de la distance
-      SerialDebug.println("obstacle dans le chemin : " + String(distance) + ", angle : " + String(angle));
-      if (angle >= 0) { 
-        direction = direction.toVector2().rotate(0.4);  // Paramètre à modifier en fonction de la distance
+    if (abs(obstacle.angle()) < 0.3) {  // Paramètre à modifier en fonction de la distance
+      // SerialDebug.println("obstacle dans le chemin : " + String(distance) + ", angle : " + String(obstacle.angle()));
+      if (obstacle.angle() >= 0) { 
+        SerialDebug.println("go right");
+        // direction = direction.toVector2().rotate(-1.4);  // Paramètre à modifier en fonction de la distance
       } else {
-        direction = direction.toVector2().rotate(-0.4);  // Paramètre à modifier en fonction de la distance
+        SerialDebug.println("go left");
+        // direction = direction.toVector2().rotate(1.4);  // Paramètre à modifier en fonction de la distance
       }
     }
   }
@@ -657,7 +645,7 @@ FutureAction chooseStrategyDefender(
   if (oLDI.hasValue() && oLBI.hasValue()) {
 
     float yPositionToTargetDefenseLine = -oLDI.value().coordinates().y() - fP.distanceYGoalFromCenter() + criticalWallDistance + criticalGoalDistance;
-    // SerialDebug.println("yPositionToTargetDefenseLine " + String(yPositionToTargetDefenseLine) + ", x pos : " + String(oLDI.value().coordinates().x()));
+
     if (yPositionToTargetDefenseLine <= -16) {
       SerialDebug.println("too far");
       return FutureAction(
