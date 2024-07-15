@@ -133,17 +133,28 @@ void loop() {
     if (lidarInfos.oLBI.value().norm() < slowingDownWallDistance) {
       speedReductionRatio = minimumVelocityRatio * (lidarInfos.oLBI.value().distance(Vector2(0, 0)) / slowingDownWallDistance + 1);
     }
+    for (const auto& obstacle : lidarInfos.oLBI.value().obstacles()) {
+      SerialDebug.println("*** " + obstacle.toString());
+    }
   }
 
   if (camInfos.enemyGoalPos.hasValue()) {
     if (camInfos.enemyGoalPos.value().y() < 0) {
-      // orientation = -abs(camInfos.enemyGoalPos.value().x())/camInfos.enemyGoalPos.value().x() * PI/2;
+      if (camInfos.enemyGoalPos.value().x() >= 0) {
+        // orientation = -PI/2;
+      } else {
+        // orientation = PI/2;
+      } 
     }
   }
 
   if (camInfos.myGoalPos.hasValue()) {
     if (camInfos.myGoalPos.value().y() > 0) {
-      // orientation = abs(camInfos.myGoalPos.value().x())/camInfos.myGoalPos.value().x() * PI/2;
+      if (camInfos.myGoalPos.value().x() >= 0) {
+        // orientation = PI/2;
+      } else {
+        // orientation = -PI/2;
+      } 
     }
   }
 
@@ -165,7 +176,8 @@ void loop() {
           lidarInfos.oLBI,
           camInfos.ballPos,
           camInfos.myGoalPos,
-          camInfos.enemyGoalPos);
+          camInfos.enemyGoalPos,
+          blueInfos.partnerPos);
       break;
     case Role::attacker:
       SerialDebug.println("Attaquant");
@@ -175,30 +187,21 @@ void loop() {
           lidarInfos.oLBI,
           camInfos.ballPos,
           camInfos.myGoalPos,
-          camInfos.enemyGoalPos);
+          camInfos.enemyGoalPos,
+          blueInfos.partnerPos);
       break;
     case Role::defender:
-      // TODO
+      SerialDebug.println("Defenseur");
       currentAction = chooseStrategyDefender(
           fieldProperties,
           lidarInfos.oLDI,
           lidarInfos.oLBI,
           camInfos.ballPos,
           camInfos.myGoalPos,
-          camInfos.enemyGoalPos);
-      SerialDebug.println(currentAction.target().toString());
-      SerialDebug.println("Defenseur");
+          camInfos.enemyGoalPos,
+          blueInfos.partnerPos);
       break;
   }
-  
-  currentAction = chooseStrategyDefender(
-          fieldProperties,
-          lidarInfos.oLDI,
-          lidarInfos.oLBI,
-          camInfos.ballPos,
-          camInfos.myGoalPos,
-          camInfos.enemyGoalPos);
-          
   Radians futureOrientation = 0;
   if (lidarInfos.oLDI.hasValue()) {
     futureOrientation = orientation - currentAction.targetOrientation();
@@ -225,6 +228,7 @@ void loop() {
     delay(100);  // A changer
     dribblerKicker.kick();
   }
+  SerialDebug.println("********************************* " + String(currentAction.celerityDribbler()));
   dribblerKicker.dribble(currentAction.celerityDribbler());
 
   unsigned long elapsed = millis() - start_millis;

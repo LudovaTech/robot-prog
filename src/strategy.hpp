@@ -8,6 +8,7 @@
 #include "logger.hpp"
 #include "parameters.hpp"
 #include "utilities.hpp"
+#include "blue_reader.hpp"
 
 class FutureAction {
  private:
@@ -53,7 +54,8 @@ FutureAction chooseStrategyAttacker(
     Optional<LidarBasicInfos> oLBI,
     Optional<BallPos> oBP,
     Optional<MyGoalPos> oMGP,
-    Optional<EnemyGoalPos> oEGP);
+    Optional<EnemyGoalPos> oEGP,
+    Optional<Vector2> oPP);
 
 FutureAction chooseStrategyDefender(
     FieldProperties fP,
@@ -61,7 +63,8 @@ FutureAction chooseStrategyDefender(
     Optional<LidarBasicInfos> oLBI,
     Optional<BallPos> oBP,
     Optional<MyGoalPos> oMGP,
-    Optional<EnemyGoalPos> oEGP);
+    Optional<EnemyGoalPos> oEGP,
+    Optional<Vector2> oPP);
 
 EnemyGoalPos enemyGoalPosTheorical(FieldProperties fP);
 MyGoalPos myGoalPosTheorical(FieldProperties fP);
@@ -89,7 +92,8 @@ bool ballIsCaught(FieldProperties fP, BallPos bP);
 
 bool closeEnoughToKick_D(FieldProperties fP, LidarDetailedInfos lDI);
 bool closeEnoughToKick_C(FieldProperties fP, EnemyGoalPos eGP);
-bool orientedTowardsEnemyGoal_D(FieldProperties fP, LidarDetailedInfos lDI);
+bool orientedTowardsEnemyGoal_D(FieldProperties fP, LidarBasicInfos lBI, LidarDetailedInfos lDI);
+bool alignedWithBallAndGoal_D(FieldProperties fP, LidarBasicInfos lBI, LidarDetailedInfos lDI, BallPos bP);
 
 bool enemyGoalInCenter(FieldProperties fP, EnemyGoalPos eGP);
 

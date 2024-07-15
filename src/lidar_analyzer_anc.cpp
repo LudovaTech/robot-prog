@@ -706,8 +706,8 @@ LidarInfosGlue getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool
             }
           }
           
-          if (barycentreIsOk) {
-            obstacles.push_back(barycentre); 
+          if (barycentreIsOk && barycentre.norm() < 1000) {
+            obstacles.push_back(Vector2(barycentre.x()/10, barycentre.y()/10)); 
             other_lines.push_back(line);
           }
         }
