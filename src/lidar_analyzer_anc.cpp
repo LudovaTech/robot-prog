@@ -569,11 +569,13 @@ LidarInfosGlue getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool
   float temps = millis(); 
   std::vector<Vector2> obstacles;
   std::vector<HoughLine> other_lines;
-  float thetaMarginObstacles = 0.5;
-  float rhoToleranceObstacles = 500;
+  float thetaMarginObstaclesOther = 0.3;
+  float rhoToleranceObstaclesOther = 300;
+  float thetaMarginObstaclesWall = 0.7;
+  float rhoToleranceObstaclesWall = 700;
 
-  double wall1_a, wall1_b, wall1_c, wall2_a, wall2_b, wall2_c, wall3_a, wall3_b, wall3_c, wall4_a, wall4_b, wall4_c;
-  /*if (walls.size() == 4) {
+  /*double wall1_a, wall1_b, wall1_c, wall2_a, wall2_b, wall2_c, wall3_a, wall3_b, wall3_c, wall4_a, wall4_b, wall4_c;
+  if (walls.size() == 4) {
     convertHoughLineToGeneralForm(walls[0], wall1_a, wall1_b, wall1_c);
     convertHoughLineToGeneralForm(walls[1], wall2_a, wall2_b, wall2_c);
     convertHoughLineToGeneralForm(walls[2], wall3_a, wall3_b, wall3_c);
@@ -590,21 +592,21 @@ LidarInfosGlue getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool
       for (const auto& wall : walls) {
 
           // on exclut les lignes qui ont un rho et theta similaires :
-          if (abs(line.rho - wall.rho) < rhoToleranceObstacles && abs(line.theta - wall.theta) < thetaMarginObstacles) {
+          if (abs(line.rho - wall.rho) < rhoToleranceObstaclesWall && abs(line.theta - wall.theta) < thetaMarginObstaclesWall) {
               isDifferentEnough = false;
               break;
           }
 
           // cas particulier des lignes verticales : 
-          if (line.theta > PI - thetaMarginObstacles && wall.theta < thetaMarginObstacles 
+          if (line.theta > PI - thetaMarginObstaclesWall && wall.theta < thetaMarginObstaclesWall 
                 && ((line.rho < 0 && wall.rho > 0) || (line.rho > 0 && wall.rho < 0))) {
-            if (abs(line.rho) - abs(wall.rho) < rhoToleranceObstacles && abs(PI - line.theta - wall.theta) < thetaMarginObstacles) {
+            if (abs(line.rho) - abs(wall.rho) < rhoToleranceObstaclesWall && abs(PI - line.theta - wall.theta) < thetaMarginObstaclesWall) {
               isDifferentEnough = false;
               break;
             }
-          } else if (line.theta < thetaMarginObstacles && wall.theta > PI - thetaMarginObstacles 
+          } else if (line.theta < thetaMarginObstaclesWall && wall.theta > PI - thetaMarginObstaclesWall 
                 && ((line.rho < 0 && wall.rho > 0) || (line.rho > 0 && wall.rho < 0))) {
-            if (abs(line.rho) - abs(wall.rho) < rhoToleranceObstacles && abs(PI - line.theta - wall.theta) < thetaMarginObstacles) {
+            if (abs(line.rho) - abs(wall.rho) < rhoToleranceObstaclesWall && abs(PI - line.theta - wall.theta) < thetaMarginObstaclesWall) {
               isDifferentEnough = false;
               break;
             }
@@ -616,21 +618,21 @@ LidarInfosGlue getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool
       for (const auto& other_line : other_lines) {
 
           // on exclut les lignes qui ont un rho et theta similaires :
-          if (abs(line.rho - other_line.rho) < rhoToleranceObstacles && abs(line.theta - other_line.theta) < thetaMarginObstacles) {
+          if (abs(line.rho - other_line.rho) < rhoToleranceObstaclesOther && abs(line.theta - other_line.theta) < thetaMarginObstaclesWall) {
               isDifferentEnough = false;
               break;
           }
 
           // cas particulier des lignes verticales : 
-          if (line.theta > PI - thetaMarginObstacles && other_line.theta < thetaMarginObstacles 
+          if (line.theta > PI - thetaMarginObstaclesOther && other_line.theta < thetaMarginObstaclesOther 
                 && ((line.rho < 0 && other_line.rho > 0) || (line.rho > 0 && other_line.rho < 0))) {
-            if (abs(line.rho) - abs(other_line.rho) < rhoToleranceObstacles && abs(PI - line.theta - other_line.theta) < thetaMarginObstacles) {
+            if (abs(line.rho) - abs(other_line.rho) < rhoToleranceObstaclesOther && abs(PI - line.theta - other_line.theta) < thetaMarginObstaclesOther) {
               isDifferentEnough = false;
               break;
             }
-          } else if (line.theta < thetaMarginObstacles && other_line.theta > PI - thetaMarginObstacles 
+          } else if (line.theta < thetaMarginObstaclesOther && other_line.theta > PI - thetaMarginObstaclesOther
                 && ((line.rho < 0 && other_line.rho > 0) || (line.rho > 0 && other_line.rho < 0))) {
-            if (abs(line.rho) - abs(other_line.rho) < rhoToleranceObstacles && abs(PI - line.theta - other_line.theta) < thetaMarginObstacles) {
+            if (abs(line.rho) - abs(other_line.rho) < rhoToleranceObstaclesOther && abs(PI - line.theta - other_line.theta) < thetaMarginObstaclesOther) {
               isDifferentEnough = false;
               break;
             }
