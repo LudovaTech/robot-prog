@@ -645,6 +645,7 @@ FutureAction chooseStrategyDefender(
   if (oLDI.hasValue() && oLBI.hasValue()) {
 
     float yPositionToTargetDefenseLine = -oLDI.value().coordinates().y() - fP.distanceYGoalFromCenter() + criticalWallDistance + criticalGoalDistance;
+    int sign = oLDI.value().coordinates().x() >= 0 ? 1 : -1;
 
     if (yPositionToTargetDefenseLine <= -16) {
       SerialDebug.println("too far");
@@ -668,7 +669,7 @@ FutureAction chooseStrategyDefender(
           } 
 
           return FutureAction(
-              Vector2((abs(oLDI.coordinates().x()) > (fP.goalWidth()/1.8)) ? 0 : oBP.value().x(), 0),
+              Vector2((abs(oLDI.coordinates().x()) > (fP.goalWidth()/1.8)) ? sign : oBP.value().x(), 0),
               defenseSpeed,
               0,
               false,
@@ -677,7 +678,7 @@ FutureAction chooseStrategyDefender(
       } else {
         SerialDebug.println("realigning"); 
         return FutureAction(
-            Vector2((abs(oLDI.coordinates().x()) > (fP.goalWidth()/1.8)) ? 0 : oBP.value().x(),
+            Vector2((abs(oLDI.coordinates().x()) > (fP.goalWidth()/1.8)) ? sign : oBP.value().x(),
                     yPositionToTargetDefenseLine),
             maxRobotSpeed,
             0,
@@ -708,7 +709,7 @@ FutureAction chooseStrategyDefender(
         } 
 
         return FutureAction(
-            Vector2((abs(oLDI.coordinates().x()) > (fP.goalWidth()/1.8)) ? 0 : closestObstacle.x(), 0),
+            Vector2((abs(oLDI.coordinates().x()) > (fP.goalWidth()/1.8)) ? sign : closestObstacle.x(), 0),
             defenseSpeed,
             0,
             false,
