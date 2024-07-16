@@ -649,7 +649,7 @@ FutureAction chooseStrategyDefender(
     if (yPositionToTargetDefenseLine <= -16) {
       SerialDebug.println("too far");
       return FutureAction(
-            Vector2(oLDI.value().rearGoalCoordinates().x()/10,
+            Vector2(0,
                     yPositionToTargetDefenseLine),
             speedmotors,
             0,

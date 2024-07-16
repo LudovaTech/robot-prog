@@ -164,7 +164,7 @@ void loop() {
   FutureAction currentAction(0, 0, 0, 0);  // va tout de suite être réécris dessus
   switch (myRole) {
     case Role::alone:
-      currentAction = chooseStrategyAttacker(
+      currentAction = chooseStrategyDefender(
           fieldProperties,
           lidarInfos.oLDI,
           lidarInfos.oLBI,
@@ -174,7 +174,7 @@ void loop() {
           blueInfos.partnerPos);
       break;
     case Role::attacker:
-      currentAction = chooseStrategyAttacker(
+      currentAction = chooseStrategyDefender(
           fieldProperties,
           lidarInfos.oLDI,
           lidarInfos.oLBI,

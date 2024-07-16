@@ -892,6 +892,46 @@ LidarInfosGlue getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool
     getNearestWall(points_walls, obstacles)
   };
 
+  /*std::vector<uint8_t> rearList;
+  std::vector<uint8_t> forwardList;
+  for (size_t i = 0; i < nb_points; i++) {
+    MutableLidarPoint lidarPoint = points2[i];
+    // SerialTest.println(String((lidarPoint.angle()/100 - 180) - Degree(frontGoal.toVector2().angle())));
+    if (abs((lidarPoint.angle()/100 - 180) - Degree(frontGoal.toVector2().rotate(-PI/2).angle())) < 8) {
+      rearList.push_back(lidarPoint.intensity());
+      // SerialTest.println("rear : " + String(lidarPoint.angle()/100 - 180));
+    } else if (abs((lidarPoint.angle()/100 - 180) - Degree(rearGoal.toVector2().rotate(-PI/2).angle())) < 8) {
+      forwardList.push_back(lidarPoint.intensity());
+      // SerialTest.println("forward : " + String(lidarPoint.angle()/100 - 180));
+    }
+  }
+  
+  unsigned long rearMean = 0;
+  if (rearList.size() != 0) {
+    for (size_t i = 0; i < rearList.size(); i++) {
+      rearMean += rearList[i];
+      // SerialTest.println(rearList[i]);
+    }
+    rearMean /= rearList.size();
+    SerialTest.println("yellow goal : " + String(rearMean));
+  }
+
+  unsigned long forwardMean = 0;
+  if (forwardList.size() != 0) {
+    for (size_t i = 0; i < forwardList.size(); i++) {
+      forwardMean += forwardList[i];
+      // SerialTest.println(forwardList[i]);
+    }
+    forwardMean /= forwardList.size();
+    SerialTest.println("blue goal : " + String(forwardMean));
+  }
+
+  if (forwardMean > rearMean) {
+    SerialTest.println("yellow in front");
+  } else {
+    SerialTest.println("blue in front");
+  }*/
+
   if (show_log) {
     if (nInfos.oLDI.hasValue()) {
       full_log += "** Infos: x=" + String(nInfos.oLDI.value().coordinates().x() / 10.0) + " cm, y=" + String(nInfos.oLDI.value().coordinates().y() / 10.0) + " cm, ""orientation: " + String(nInfos.oLDI.value().orientation()) + " rad, ";
