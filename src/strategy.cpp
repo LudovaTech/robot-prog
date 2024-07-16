@@ -668,7 +668,7 @@ FutureAction chooseStrategyDefender(
           } 
 
           return FutureAction(
-              Vector2(oBP.value().x(), 0),
+              Vector2((abs(oLDI.coordinates().x()) > (fP.goalWidth()/1.8)) ? 0 : oBP.value().x(), 0),
               defenseSpeed,
               0,
               false,
@@ -677,7 +677,7 @@ FutureAction chooseStrategyDefender(
       } else {
         SerialDebug.println("realigning"); 
         return FutureAction(
-            Vector2(oBP.value().x(),
+            Vector2((abs(oLDI.coordinates().x()) > (fP.goalWidth()/1.8)) ? 0 : oBP.value().x(),
                     yPositionToTargetDefenseLine),
             maxRobotSpeed,
             0,
@@ -685,7 +685,7 @@ FutureAction chooseStrategyDefender(
             0);
       }
     } else if (size(oLBI.value().obstacles()) > 0) {
-      MutableVector2 closestObstacle = {0, 1000};
+      MutableVector2 closestObstacle(0, 1000);
       for (const auto& obstacle : oLBI.value().obstacles()) {
         if (obstacle.norm() < closestObstacle.toVector2().norm()) {
           if (oPP.hasValue()) {
@@ -698,7 +698,7 @@ FutureAction chooseStrategyDefender(
         }
       }
       SerialDebug.println(String(oLDI.value().rearGoalCoordinates().angle() - closestObstacle.toVector2().angle()));
-      if (abs(abs(oLDI.value().rearGoalCoordinates().angle() - closestObstacle.toVector2().angle()) - PI) < 0.3) {
+      if (abs(closestObstacle.toVector2().x()) <= 10) {
         return FutureAction::stopRobot();
       } else {
         SerialDebug.println("aligning with obstacle");
@@ -708,7 +708,7 @@ FutureAction chooseStrategyDefender(
         } 
 
         return FutureAction(
-            Vector2(closestObstacle.x(), 0),
+            Vector2((abs(oLDI.coordinates().x()) > (fP.goalWidth()/1.8)) ? 0 : closestObstacle.x(), 0),
             defenseSpeed,
             0,
             false,
@@ -718,6 +718,7 @@ FutureAction chooseStrategyDefender(
     } else if (abs(yPositionToTargetDefenseLine) < 8 && abs(oLDI.value().coordinates().x()) < 10) {
       SerialDebug.println("centered & awaiting");
       return FutureAction::stopRobot();
+        
     } else {
       SerialDebug.println("centering");
       return FutureAction(
