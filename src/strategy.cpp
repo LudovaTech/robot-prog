@@ -647,20 +647,18 @@ FutureAction chooseStrategyDefender(
     float yPositionToTargetDefenseLine = -oLDI.value().coordinates().y() - fP.distanceYGoalFromCenter() + criticalWallDistance + criticalGoalDistance;
     int sign = oLDI.value().coordinates().x() >= 0 ? -1 : 1;
     Optional<float> target_x = 0;
+    MutableVector2 closestObstacle(0, 1000);
     if (oBP.hasValue()) {
       target_x = oBP.value().x();
-    } else if (oLBI.hasValue()) {
-      MutableVector2 closestObstacle(0, 1000);
-      if (size(oLBI.value().obstacles()) > 0) {
-        for (const auto& obstacle : oLBI.value().obstacles()) {
-          if (obstacle.norm() < closestObstacle.toVector2().norm()) {
-            if (oPP.hasValue()) {
-              if (obstacle.distance(oPP.value()) > 10) {
-                closestObstacle = obstacle;
-              }
-            } else {
+    } else if (size(oLBI.value().obstacles()) > 0) {
+      for (const auto& obstacle : oLBI.value().obstacles()) {
+        if (obstacle.norm() < closestObstacle.toVector2().norm()) {
+          if (oPP.hasValue()) {
+            if (obstacle.distance(oPP.value()) > 10) {
               closestObstacle = obstacle;
             }
+          } else {
+            closestObstacle = obstacle;
           }
         }
       }
