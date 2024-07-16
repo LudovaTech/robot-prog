@@ -645,7 +645,27 @@ FutureAction chooseStrategyDefender(
   if (oLDI.hasValue() && oLBI.hasValue()) {
 
     float yPositionToTargetDefenseLine = -oLDI.value().coordinates().y() - fP.distanceYGoalFromCenter() + criticalWallDistance + criticalGoalDistance;
-    int sign = oLDI.value().coordinates().x() >= 0 ? 1 : -1;
+    int sign = oLDI.value().coordinates().x() >= 0 ? -1 : 1;
+    Optional<float> target_x = 0;
+    if (oBP.hasValue()) {
+      target_x = oBP.value().x();
+    } else if (oLBI.hasValue()) {
+      MutableVector2 closestObstacle(0, 1000);
+      if (size(oLBI.value().obstacles()) > 0) {
+        for (const auto& obstacle : oLBI.value().obstacles()) {
+          if (obstacle.norm() < closestObstacle.toVector2().norm()) {
+            if (oPP.hasValue()) {
+              if (obstacle.distance(oPP.value()) > 10) {
+                closestObstacle = obstacle;
+              }
+            } else {
+              closestObstacle = obstacle;
+            }
+          }
+        }
+      }
+      target_x = closestObstacle.x();
+    }
 
     if (yPositionToTargetDefenseLine <= -16) {
       SerialDebug.println("too far");
@@ -656,20 +676,20 @@ FutureAction chooseStrategyDefender(
             0,
             false,
             0);
-    } else if (oBP.hasValue()) {
+    } else if (target_x.hasValue()) {
       if (abs(yPositionToTargetDefenseLine) < 8) {
-        if (ballInCenter(fP, oBP.value())) {
-          SerialDebug.println("aligned with ball");
+        if (abs(target_x.value()) <= 10) {
+          SerialDebug.println("aligned with object");
           return FutureAction::stopRobot();
         } else {
-          SerialDebug.println("aligning with ball");
+          SerialDebug.println("aligning with object");
           int defenseSpeed = maxRobotSpeed;
-          if (abs(oBP.value().x()) <= 18) {
+          if (abs(target_x.value()) <= 30) {
             defenseSpeed = speedmotors;
           } 
 
           return FutureAction(
-              Vector2((abs(oLDI.value().coordinates().x()) > (fP.goalWidth()/1.8)) ? sign : oBP.value().x(), 0),
+              Vector2((abs(oLDI.value().coordinates().x()) > (fP.goalWidth()/1.8)) ? sign : target_x.value(), 0),
               defenseSpeed,
               0,
               false,
@@ -678,44 +698,13 @@ FutureAction chooseStrategyDefender(
       } else {
         SerialDebug.println("realigning"); 
         return FutureAction(
-            Vector2((abs(oLDI.value().coordinates().x()) > (fP.goalWidth()/1.8)) ? sign : oBP.value().x(),
+            Vector2((abs(oLDI.value().coordinates().x()) > (fP.goalWidth()/1.8)) ? sign : target_x.value(),
                     yPositionToTargetDefenseLine),
             maxRobotSpeed,
             0,
             false,
             0);
       }
-    } else if (size(oLBI.value().obstacles()) > 0) {
-      MutableVector2 closestObstacle(0, 1000);
-      for (const auto& obstacle : oLBI.value().obstacles()) {
-        if (obstacle.norm() < closestObstacle.toVector2().norm()) {
-          if (oPP.hasValue()) {
-            if (obstacle.distance(oPP.value()) > 10) {
-              closestObstacle = obstacle;
-            }
-          } else {
-            closestObstacle = obstacle;
-          }
-        }
-      }
-      SerialDebug.println(String(oLDI.value().rearGoalCoordinates().angle() - closestObstacle.toVector2().angle()));
-      if (abs(closestObstacle.toVector2().x()) <= 10) {
-        return FutureAction::stopRobot();
-      } else {
-        SerialDebug.println("aligning with obstacle");
-        int defenseSpeed = maxRobotSpeed;
-        if (abs(closestObstacle.toVector2().x()) <= 18) {
-          defenseSpeed = speedmotors;
-        } 
-
-        return FutureAction(
-            Vector2((abs(oLDI.value().coordinates().x()) > (fP.goalWidth()/1.8)) ? sign : closestObstacle.x(), 0),
-            defenseSpeed,
-            0,
-            false,
-            0);
-      }
-
     } else if (abs(yPositionToTargetDefenseLine) < 8 && abs(oLDI.value().coordinates().x()) < 10) {
       SerialDebug.println("centered & awaiting");
       return FutureAction::stopRobot();
