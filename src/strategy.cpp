@@ -495,28 +495,24 @@ FutureAction accelerateToGoal_D(FieldProperties fP, LidarDetailedInfos lDI, Lida
 
   /* TEST EVITEMENT OBSTACLES */
   Vector2 directionGoal = lDI.frontGoalCoordinates();
-  MutableVector2 direction = directionGoal;
-  for (const auto& obstacle : lBI.obstacles()) {
-    Radians angle = directionGoal.angle() - obstacle.angle();
-    float distance = obstacle.norm();
+  Radians angleDecal = 0;
 
-    if (abs(obstacle.angle()) < 0.3) {  // Paramètre à modifier en fonction de la distance
-      // SerialDebug.println("obstacle dans le chemin : " + String(distance) + ", angle : " + String(obstacle.angle()));
-      if (obstacle.angle() >= 0) { 
-        SerialDebug.println("go right");
-        // direction = direction.toVector2().rotate(-1.4);  // Paramètre à modifier en fonction de la distance
-      } else {
-        SerialDebug.println("go left");
-        // direction = direction.toVector2().rotate(1.4);  // Paramètre à modifier en fonction de la distance
-      }
+  for (const auto& obstacle : lBI.obstacles()) {
+    Radians angle = directionGoal.angle() - obstacle.angle(); 
+    float distance = obstacle.norm();
+    float distToTrajectory = abs(distance*sin(angle));
+    
+    if (distToTrajectory < (fP.robotRadius() * 3) && abs(angle) < (PI / 2)) {
+      float distDecal = 3 * fP.robotRadius() - distToTrajectory;
+      float heigh = abs(distance * cos(angle));
+      Radians angleDecal = abs(atan2(distDecal, heigh)) * (angle > 0 ? -1 : 1);
     }
   }
-  /******* *******/
 
   return FutureAction(
-      direction.toVector2(),
+      directionGoal.rotate(angleDecal),
       speedmotors,
-      -direction.toVector2().angle() + lDI.orientation(),
+      -directionGoal.angle() + lDI.orientation(),
       false,
       fP.maxDribblerSpeed());
 }
