@@ -253,13 +253,16 @@ bool closeEnoughToKick_C(FieldProperties fP, EnemyGoalPos eGP) {
 }
 
 bool orientedTowardsEnemyGoal_D(FieldProperties fP, LidarBasicInfos lBI, LidarDetailedInfos lDI) {
-  // for (const auto& obstacle : lBI.obstacles()) {
-  //   if (abs(obstacle.angle()) < 0.3) {
-  //     SerialDebug.println("obstacle dans le chemin");
-  //     return false;
-  //   }
-  // }
-  // SerialDebug.println("aucun obstacle dans le chemin");
+  for (const auto& obstacle : lBI.obstacles()) {
+    Radians angle = lDI.frontGoalCoordinates().angle() - obstacle.angle(); 
+    float distance = obstacle.norm();
+    float distToTrajectory = abs(distance*sin(angle));
+    if (distToTrajectory < (fP.robotRadius() * 1.5) && abs(angle) < (PI / 2)) {
+      SerialDebug.println("obstacle dans le chemin");
+      return false;
+    }
+  }
+  SerialDebug.println("aucun obstacle dans le chemin");
   return globalToLocalCoordinates(lDI, Vector2(enemyGoalPosTheorical(fP).x() - fP.goalWidth()/2 + 4,
                                                                    enemyGoalPosTheorical(fP).y())).angle()
         * globalToLocalCoordinates(lDI, Vector2(enemyGoalPosTheorical(fP).x() + fP.goalWidth()/2 - 4,
@@ -503,10 +506,10 @@ FutureAction accelerateToGoal_D(FieldProperties fP, LidarDetailedInfos lDI, Lida
     float distance = obstacle.norm();
     float distToTrajectory = abs(distance*sin(angle));
     
-    if (distToTrajectory < (fP.robotRadius() * 3) && abs(angle) < (PI / 2)) {
-      float distDecal = 3 * fP.robotRadius() - distToTrajectory;
-      float heigh = abs(distance * cos(angle));
-      Radians angleDecal = abs(atan2(distDecal, heigh)) * (angle > 0 ? -1 : 1);
+    if (distToTrajectory < (fP.robotRadius() * 1.5) && abs(angle) < (PI / 2)) {
+      float distDecal = 1.5 * fP.robotRadius() - distToTrajectory;
+      float height = abs(distance * cos(angle));
+      Radians angleDecal = abs(atan2(distDecal, height)) * (angle > 0 ? -1 : 1);
     }
   }
 
