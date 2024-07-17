@@ -569,12 +569,12 @@ LidarInfosGlue getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool
   float temps = millis(); 
   std::vector<Vector2> obstacles;
   std::vector<HoughLine> other_lines;
-  float thetaMarginObstaclesOther = 0.3;
-  float rhoToleranceObstaclesOther = 300;
+  float thetaMarginObstaclesOther = 0.2;
+  float rhoToleranceObstaclesOther = 200;
   float thetaMarginObstaclesWall = 0.7;
   float rhoToleranceObstaclesWall = 700;
 
-  /*double wall1_a, wall1_b, wall1_c, wall2_a, wall2_b, wall2_c, wall3_a, wall3_b, wall3_c, wall4_a, wall4_b, wall4_c;
+  double wall1_a, wall1_b, wall1_c, wall2_a, wall2_b, wall2_c, wall3_a, wall3_b, wall3_c, wall4_a, wall4_b, wall4_c;
   if (walls.size() == 4) {
     convertHoughLineToGeneralForm(walls[0], wall1_a, wall1_b, wall1_c);
     convertHoughLineToGeneralForm(walls[1], wall2_a, wall2_b, wall2_c);
@@ -720,7 +720,7 @@ LidarInfosGlue getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool
   }
   // SerialDebug.println("***" + String(millis() - temps));
   // SerialDebug.println(i);
-
+  SerialTest.println(millis() - temps);
   if(show_log) {
     full_log += "** obstacles x: ";
     for (size_t i = 0; i < obstacles.size(); i++) {
@@ -736,7 +736,7 @@ LidarInfosGlue getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool
     if (full_log.length() > 0 && full_log[full_log.length() - 1] == ',') { full_log = full_log.substring(0, full_log.length() - 1); }
     full_log += "\r\n";
     SerialDebug.println(full_log);
-  }*/
+  }
 
 
   // Trouver les coins
@@ -899,10 +899,18 @@ LidarInfosGlue getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool
   for (size_t i = 0; i < nb_points; i++) {
     MutableLidarPoint lidarPoint = points2[i];
     // SerialTest.println(String((lidarPoint.angle()/100 - 180) - Degree(frontGoal.toVector2().angle())));
-    if (static_cast<int>(abs((270 - lidarPoint.angle()/100) - Degree(frontGoal.toVector2().angle())))%360 < 8) {
+    
+    float leftPoteauAngleFront = Vector2(-fP.goalWidth()/2 + 4 - coordinates.x, 115 - coordinates.y).rotate(orientation).angle();
+    float rightPoteauAngleFront = Vector2(fP.goalWidth()/2 - 4 - coordinates.x, 115 - coordinates.y).rotate(orientation).angle();
+    float leftPoteauAngleRear = Vector2(fP.goalWidth()/2 - 4 - coordinates.x, -115 - coordinates.y).rotate(orientation).angle();
+    float rightPoteauAngleRear = Vector2(fP.goalWidth()/2 - 4 - coordinates.x, -115 - coordinates.y).rotate(orientation).angle();
+        
+    float angleLidarPoint = lidarPoint.angle()/100 <= 90 ? (270 - lidarPoint.angle()/100) - 360 : (270 - lidarPoint.angle()/100);
+    
+    if ((leftPoteauAngleFront > angleLidarPoint && angleLidarPoint > rightPoteauAngleFront) || (leftPoteauAngleFront > angleLidarPoint && angleLidarPoint + 360 > rightPoteauAngleFront + 360)) {
       rearList.push_back(lidarPoint.intensity());
       SerialTest.println("rear : " + String(lidarPoint.angle()/100));
-    } else if (static_cast<int>(abs((270 - lidarPoint.angle()/100) - Degree(rearGoal.toVector2().angle())))%360 < 8) {
+    } else if ((leftPoteauAngleRear < angleLidarPoint && angleLidarPoint < rightPoteauAngleRear)) {
       forwardList.push_back(lidarPoint.intensity());
       SerialTest.println("forward : " + String(lidarPoint.angle()/100));
     }

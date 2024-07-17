@@ -163,7 +163,7 @@ void loop() {
   FutureAction currentAction(0, 0, 0, 0);  // va tout de suite être réécris dessus
   switch (myRole) {
     case Role::alone:
-      currentAction = chooseStrategyDefender(
+      currentAction = chooseStrategyAttacker(
           fieldProperties,
           lidarInfos.oLDI,
           lidarInfos.oLBI,
@@ -173,7 +173,7 @@ void loop() {
           blueInfos.partnerPos);
       break;
     case Role::attacker:
-      currentAction = chooseStrategyDefender(
+      currentAction = chooseStrategyAttacker(
           fieldProperties,
           lidarInfos.oLDI,
           lidarInfos.oLBI,
@@ -216,7 +216,6 @@ void loop() {
   log_a(InfoLevel, "src.loop", full_log2);
 
   if (currentAction.activeKicker()) {
-    SerialTest.println("kick");
     delay(100);  // A changer
     dribblerKicker.kick();
   }

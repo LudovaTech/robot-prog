@@ -509,7 +509,7 @@ FutureAction accelerateToGoal_D(FieldProperties fP, LidarDetailedInfos lDI, Lida
       float distDecal = 1.5 * fP.robotRadius() - distToTrajectory;
       float height = abs(distance * cos(angle));
       Radians angleDecal = abs(atan2(distDecal, height)) * (angle > 0 ? -1 : 1);
-    }
+    } 
   }
 
   return FutureAction(
