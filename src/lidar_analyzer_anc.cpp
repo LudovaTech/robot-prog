@@ -894,17 +894,17 @@ LidarInfosGlue getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool
     getNearestWall(points_walls, obstacles)
   };
 
-  /*std::vector<uint8_t> rearList;
+  std::vector<uint8_t> rearList;
   std::vector<uint8_t> forwardList;
   for (size_t i = 0; i < nb_points; i++) {
     MutableLidarPoint lidarPoint = points2[i];
     // SerialTest.println(String((lidarPoint.angle()/100 - 180) - Degree(frontGoal.toVector2().angle())));
-    if (abs((lidarPoint.angle()/100 - 180) - Degree(frontGoal.toVector2().rotate(-PI/2).angle())) < 8) {
+    if (static_cast<int>(abs((270 - lidarPoint.angle()/100) - Degree(frontGoal.toVector2().rotate(-PI/2).angle())))%360 < 8) {
       rearList.push_back(lidarPoint.intensity());
-      // SerialTest.println("rear : " + String(lidarPoint.angle()/100 - 180));
-    } else if (abs((lidarPoint.angle()/100 - 180) - Degree(rearGoal.toVector2().rotate(-PI/2).angle())) < 8) {
+      SerialTest.println("rear : " + String(lidarPoint.angle()/100 - 180));
+    } else if (static_cast<int>(abs((270 - lidarPoint.angle()/1000) - Degree(rearGoal.toVector2().rotate(-PI/2).angle())))%360 < 8) {
       forwardList.push_back(lidarPoint.intensity());
-      // SerialTest.println("forward : " + String(lidarPoint.angle()/100 - 180));
+      SerialTest.println("forward : " + String(lidarPoint.angle()/100 - 180));
     }
   }
   
@@ -932,7 +932,7 @@ LidarInfosGlue getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool
     SerialTest.println("yellow in front");
   } else {
     SerialTest.println("blue in front");
-  }*/
+  }
 
   if (show_log) {
     if (nInfos.oLDI.hasValue()) {
