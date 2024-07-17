@@ -65,7 +65,6 @@ Role findMyRole(Optional<LidarDetailedInfos> oLDI,
                 MyGoalPos mGP,
                 Optional<Vector2> otherPos,
                 Optional<Vector2> otherBallPos) {
-  return Role::defender;
   if (oBP.hasValue() && otherBallPos.hasValue()) {
     // le plus proche de la balle est attaquant
     if (oBP.value().norm() <= otherBallPos.value().norm()) {
@@ -643,7 +642,7 @@ FutureAction chooseStrategyDefender(
     Optional<Vector2> oPP) {
 
   if (oLDI.hasValue() && oLBI.hasValue()) {
-
+    
     float yPositionToTargetDefenseLine = -oLDI.value().coordinates().y() - fP.distanceYGoalFromCenter() + criticalWallDistance + criticalGoalDistance;
     int sign = oLDI.value().coordinates().x() >= 0 ? -1 : 1;
     Optional<float> target_x = 0;

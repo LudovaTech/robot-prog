@@ -59,6 +59,18 @@ bool ledCounter = true;
 MutableVector2 previousTarget;
 Cache<LidarInfosGlue> cacheLidarInfos(140);
 
+void aloop() {
+  // dribblerKicker.dribble(255);
+  // delay(1000);
+  // dribblerKicker.dribble(0);
+  // delay(1000);
+  dribblerKicker.dribble(255);
+  dribblerKicker.kick();
+  //delay(1000);
+  dribblerKicker.dribble(255);
+  delay(3000);
+}
+
 void loop() {
   unsigned long start_millis = millis();
   log_a(NoteLevel, "src.loop", "***");
@@ -214,13 +226,15 @@ void loop() {
   }
   full_log2 += "Vitesse : " + String(currentAction.celerity() * speedReductionRatio) + " Rotation : " + String(orientation);
   log_a(InfoLevel, "src.loop", full_log2);
-
+  
+  //dribblerKicker.dribble(currentAction.celerityDribbler());
   if (currentAction.activeKicker()) {
     delay(100);  // A changer
     dribblerKicker.kick();
   }
+
+  dribblerKicker.dribble(255);  // TODO Rustine
   // SerialDebug.println("********************************* " + String(currentAction.celerityDribbler()));
-  dribblerKicker.dribble(currentAction.celerityDribbler());
 
   unsigned long elapsed = millis() - start_millis;
   log_a(InfoLevel, "src.loop", "Temps loop : " + String(elapsed) + "ms");

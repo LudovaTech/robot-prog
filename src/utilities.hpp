@@ -4,7 +4,7 @@
 #include <Arduino.h>
 
 #define SerialDebug Serial
-#define SerialTest Serial8
+#define SerialTest Serial
 #define SerialCam Serial2
 #define SerialLidar Serial6
 #define SerialBlue Serial1
