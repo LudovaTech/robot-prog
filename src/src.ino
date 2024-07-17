@@ -171,6 +171,7 @@ void loop() {
     }
   }
 
+  // SE RETOURNER AVEC LA CAMERA
   if (camInfos.enemyGoalPos.hasValue()) {
     if (camInfos.enemyGoalPos.value().y() < 0) {
       if (camInfos.enemyGoalPos.value().x() >= 0) {
@@ -188,6 +189,15 @@ void loop() {
       } else {
         orientation = -PI/2;
       } 
+    }
+  }
+
+  // PROTECTION POUR EVITER LES RETOURNEMENTS
+  if (lidarInfos.oLDI.hasValue()) {
+    if (lidarInfos.oLDI.value().orientation() > PI/3) {
+      orientation = -PI/2;
+    } else if (lidarInfos.oLDI.value().orientation() < -PI/3) {
+      orientation = PI/2;
     }
   }
 
