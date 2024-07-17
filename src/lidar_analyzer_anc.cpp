@@ -899,12 +899,12 @@ LidarInfosGlue getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool
   for (size_t i = 0; i < nb_points; i++) {
     MutableLidarPoint lidarPoint = points2[i];
     // SerialTest.println(String((lidarPoint.angle()/100 - 180) - Degree(frontGoal.toVector2().angle())));
-    if (static_cast<int>(abs((270 - lidarPoint.angle()/100) - Degree(frontGoal.toVector2().rotate(-PI/2).angle())))%360 < 8) {
+    if (static_cast<int>(abs((270 - lidarPoint.angle()/100) - Degree(frontGoal.toVector2().angle())))%360 < 8) {
       rearList.push_back(lidarPoint.intensity());
-      SerialTest.println("rear : " + String(lidarPoint.angle()/100 - 180));
-    } else if (static_cast<int>(abs((270 - lidarPoint.angle()/100) - Degree(rearGoal.toVector2().rotate(-PI/2).angle())))%360 < 8) {
+      SerialTest.println("rear : " + String(lidarPoint.angle()/100));
+    } else if (static_cast<int>(abs((270 - lidarPoint.angle()/100) - Degree(rearGoal.toVector2().angle())))%360 < 8) {
       forwardList.push_back(lidarPoint.intensity());
-      SerialTest.println("forward : " + String(lidarPoint.angle()/100 - 180));
+      SerialTest.println("forward : " + String(lidarPoint.angle()/100));
     }
   }
   

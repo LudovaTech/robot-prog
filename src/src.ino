@@ -53,7 +53,6 @@ void setup() {
   pinMode(pinLED, OUTPUT);
   pinMode(pinSwitch, INPUT);
 }
-
 bool ledCounter = true;
 
 // TODO: temporary
@@ -217,6 +216,7 @@ void loop() {
   log_a(InfoLevel, "src.loop", full_log2);
 
   if (currentAction.activeKicker()) {
+    SerialTest.println("kick");
     delay(100);  // A changer
     dribblerKicker.kick();
   }
