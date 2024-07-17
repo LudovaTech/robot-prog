@@ -54,10 +54,11 @@ void setup() {
   pinMode(pinSwitch, INPUT);
 }
 bool ledCounter = true;
+int state = 1;
 
 // TODO: temporary
 MutableVector2 previousTarget;
-Cache<LidarInfosGlue> cacheLidarInfos(140);
+Cache<LidarInfosGlue> cacheLidarInfos(200);
 
 void aloop() {
   // dribblerKicker.dribble(255);
@@ -93,6 +94,32 @@ void loop() {
     lidarInfos = getLidarInfos(fieldProperties, true, false);
     cacheLidarInfos.update(lidarInfos);
   }
+  //   SerialDebug.println("*************");
+  //   lidarInfos = getLidarInfos(fieldProperties, true, false);
+  //   SerialDebug.println("cache value : " + String(cacheLidarInfos.cache().hasValue()) + ", detailed : " + String(lidarInfos.oLDI.hasValue()));
+  //   if (cacheLidarInfos.cache().hasValue() && lidarInfos.oLDI.hasValue()) {
+  //     if (cacheLidarInfos.cache().value().oLDI.hasValue()) {
+  //       float cacheAngle = cacheLidarInfos.cache().value().oLDI.value().orientation();
+  //       float currentAngle = lidarInfos.oLDI.value().orientation();
+
+  //       SerialDebug.println("cache : " + String(cacheAngle)
+  //                       + ", nouveau : " + String(currentAngle)
+  //                       + ", coords : " + String(lidarInfos.oLDI.value().coordinates().toString()));
+  //       if (abs(cacheAngle) > 0.5 && abs(currentAngle) > 0.5 && cacheAngle * currentAngle < 0) {
+  //         state *= -1;
+  //       }
+  //       SerialDebug.println(state);
+  //     }
+  //   }
+  //   if (lidarInfos.oLDI.hasValue()) {
+  //     cacheLidarInfos.update(lidarInfos);
+  //     SerialDebug.println("cache2 : " + String(cacheLidarInfos.cache().value().oLDI.value().orientation())
+  //                       + ", nouveau2 : " + String(lidarInfos.oLDI.value().orientation())
+  //                       + ", coords2 : " + String(lidarInfos.oLDI.value().coordinates().toString()));
+  //   } else {
+  //     SerialDebug.println("no detailed infos");
+  //   }
+  // }
 
   String full_log;
   if (lidarInfos.oLDI.hasValue()) {
