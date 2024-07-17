@@ -574,7 +574,7 @@ LidarInfosGlue getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool
   float thetaMarginObstaclesWall = 0.7;
   float rhoToleranceObstaclesWall = 700;
 
-  double wall1_a, wall1_b, wall1_c, wall2_a, wall2_b, wall2_c, wall3_a, wall3_b, wall3_c, wall4_a, wall4_b, wall4_c;
+  /*double wall1_a, wall1_b, wall1_c, wall2_a, wall2_b, wall2_c, wall3_a, wall3_b, wall3_c, wall4_a, wall4_b, wall4_c;
   if (walls.size() == 4) {
     convertHoughLineToGeneralForm(walls[0], wall1_a, wall1_b, wall1_c);
     convertHoughLineToGeneralForm(walls[1], wall2_a, wall2_b, wall2_c);
@@ -720,7 +720,7 @@ LidarInfosGlue getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool
   }
   // SerialDebug.println("***" + String(millis() - temps));
   // SerialDebug.println(i);
-  SerialTest.println(millis() - temps);
+  // SerialTest.println(millis() - temps);
   if(show_log) {
     full_log += "** obstacles x: ";
     for (size_t i = 0; i < obstacles.size(); i++) {
@@ -736,7 +736,7 @@ LidarInfosGlue getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool
     if (full_log.length() > 0 && full_log[full_log.length() - 1] == ',') { full_log = full_log.substring(0, full_log.length() - 1); }
     full_log += "\r\n";
     SerialDebug.println(full_log);
-  }
+  }*/
 
 
   // Trouver les coins
@@ -894,7 +894,7 @@ LidarInfosGlue getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool
     getNearestWall(points_walls, obstacles)
   };
 
-  std::vector<uint8_t> rearList;
+  /*std::vector<uint8_t> rearList;
   std::vector<uint8_t> forwardList;
   for (size_t i = 0; i < nb_points; i++) {
     MutableLidarPoint lidarPoint = points2[i];
@@ -909,10 +909,10 @@ LidarInfosGlue getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool
     
     if ((leftPoteauAngleFront > angleLidarPoint && angleLidarPoint > rightPoteauAngleFront) || (leftPoteauAngleFront > angleLidarPoint && angleLidarPoint + 360 > rightPoteauAngleFront + 360)) {
       rearList.push_back(lidarPoint.intensity());
-      SerialTest.println("rear : " + String(lidarPoint.angle()/100));
+      // SerialTest.println("rear : " + String(lidarPoint.angle()/100));
     } else if ((leftPoteauAngleRear < angleLidarPoint && angleLidarPoint < rightPoteauAngleRear)) {
       forwardList.push_back(lidarPoint.intensity());
-      SerialTest.println("forward : " + String(lidarPoint.angle()/100));
+      // SerialTest.println("forward : " + String(lidarPoint.angle()/100));
     }
   }
   
@@ -923,7 +923,7 @@ LidarInfosGlue getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool
       // SerialTest.println(rearList[i]);
     }
     rearMean /= rearList.size();
-    SerialTest.println("yellow goal : " + String(rearMean));
+    // SerialTest.println("yellow goal : " + String(rearMean));
   }
 
   unsigned long forwardMean = 0;
@@ -933,14 +933,14 @@ LidarInfosGlue getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool
       // SerialTest.println(forwardList[i]);
     }
     forwardMean /= forwardList.size();
-    SerialTest.println("blue goal : " + String(forwardMean));
+    // SerialTest.println("blue goal : " + String(forwardMean));
   }
 
   if (forwardMean > rearMean) {
-    SerialTest.println("yellow in front");
+    // SerialTest.println("yellow in front");
   } else {
-    SerialTest.println("blue in front");
-  }
+    // SerialTest.println("blue in front");
+  }*/
 
   if (show_log) {
     if (nInfos.oLDI.hasValue()) {

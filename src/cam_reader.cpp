@@ -29,6 +29,7 @@ Optional<Vector2> interpret(
     Radians angle = vector2.angle();
     if (abs(angle - angleFrontGoalLidar.value()) < angleMargin ||
         abs(angle - angleRearGoalLidar.value()) < angleMargin) {
+      SerialDebug.println("angle : " + String(angle));
       return vector2;
     }
   }
