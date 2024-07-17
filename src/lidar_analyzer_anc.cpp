@@ -902,7 +902,7 @@ LidarInfosGlue getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool
     if (static_cast<int>(abs((270 - lidarPoint.angle()/100) - Degree(frontGoal.toVector2().rotate(-PI/2).angle())))%360 < 8) {
       rearList.push_back(lidarPoint.intensity());
       SerialTest.println("rear : " + String(lidarPoint.angle()/100 - 180));
-    } else if (static_cast<int>(abs((270 - lidarPoint.angle()/1000) - Degree(rearGoal.toVector2().rotate(-PI/2).angle())))%360 < 8) {
+    } else if (static_cast<int>(abs((270 - lidarPoint.angle()/100) - Degree(rearGoal.toVector2().rotate(-PI/2).angle())))%360 < 8) {
       forwardList.push_back(lidarPoint.intensity());
       SerialTest.println("forward : " + String(lidarPoint.angle()/100 - 180));
     }
