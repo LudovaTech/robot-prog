@@ -181,28 +181,37 @@ void loop() {
   }
 
 Radians futureOrientation = currentAction.targetOrientation();
+SerialDebug.println("Orientation strategie : " + String(futureOrientation));
 
-futureOrientation = Radians(min(PI/4, static_cast<float>(futureOrientation)));
-futureOrientation = Radians(max(-PI/4, static_cast<float>(futureOrientation)));
+// futureOrientation = Radians(min(PI/4, static_cast<float>(futureOrientation)));
+// futureOrientation = Radians(max(-PI/4, static_cast<float>(futureOrientation)));
+// SerialDebug.println("Orientation recentree : " + String(futureOrientation));
 
 if (camInfos.enemyGoalPos.hasValue()) {
     if (camInfos.enemyGoalPos.value().y() < 0) {
+      SerialDebug.println("Se retourne");
       if (camInfos.enemyGoalPos.value().x() >= 0) {
         futureOrientation = -PI;
       } else {
         futureOrientation = PI;
       } 
     }
+  } else {
+    
+    SerialDebug.println("pas de enemygoal");
   }
 
   if (camInfos.myGoalPos.hasValue()) {
     if (camInfos.myGoalPos.value().y() > 0) {
+      SerialDebug.println("Se retourne");
       if (camInfos.myGoalPos.value().x() >= 0) {
         futureOrientation = PI;
       } else {
         futureOrientation = -PI;
       } 
     }
+  } else {
+    SerialDebug.println("pas de mygoal");
   }
 
   Radians robotOrientationOr0 = 0;
@@ -223,7 +232,7 @@ if (camInfos.enemyGoalPos.hasValue()) {
   } else {
     full_log2 += "Target : Unchanged (" + previousTarget.toVector2().toString() + ") ";
   }
-  full_log2 += "Vitesse : " + String(currentAction.celerity() * speedReductionRatio) + " Rotation : " + String(orientation);
+  full_log2 += "Vitesse : " + String(currentAction.celerity() * speedReductionRatio) + " Rotation : " + String(futureOrientation);
   log_a(InfoLevel, "src.loop", full_log2);
   
   //dribblerKicker.dribble(currentAction.celerityDribbler());
