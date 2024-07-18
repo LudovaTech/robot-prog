@@ -316,7 +316,8 @@ FutureAction refrainLeavingField_D(FieldProperties fP, LidarDetailedInfos lDI) {
           xDirection,
           yDirection),
       speedmotors,
-      lDI.orientation(),
+      // lDI.orientation(),
+      0,
       false,
       dribblerSpeedIfLeavingField);
 }
@@ -361,7 +362,8 @@ FutureAction goToBallChangingOrientation_CD(FieldProperties fP, BallPos bP, Lida
   return FutureAction(
       bP,
       speedmotors,
-      -bP.angle() + lDI.orientation(),  
+      // -bP.angle() + lDI.orientation(),
+      0,
       false,
       fP.maxDribblerSpeed());
 }
@@ -515,7 +517,8 @@ FutureAction accelerateToGoal_D(FieldProperties fP, LidarDetailedInfos lDI, Lida
   return FutureAction(
       directionGoal.rotate(angleDecal),
       speedmotors,
-      -directionGoal.angle() + lDI.orientation(),
+      // -directionGoal.angle() + lDI.orientation(),
+      0,
       false,
       fP.maxDribblerSpeed());
 }
