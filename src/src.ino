@@ -164,6 +164,15 @@ void loop() {
     }
   }
 
+  // PROTECTION POUR EVITER LES RETOURNEMENTS
+  if (lidarInfos.oLDI.hasValue()) {
+    if (lidarInfos.oLDI.value().orientation() > PI/2) {
+      orientation = PI/2;
+    } else if (lidarInfos.oLDI.value().orientation() < -PI/2) {
+      orientation = -PI/2;
+    }
+  }
+
   // DOING ACTION
   Role myRole = findMyRole(
       lidarInfos.oLDI,
