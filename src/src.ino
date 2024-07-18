@@ -128,12 +128,6 @@ void loop() {
       lidarInfos.oLDI.hasValue() ? lidarInfos.oLDI.value().coordinates() : Vector2(0, 0),
       camInfos.ballPos.hasValue() ? camInfos.ballPos.value() : Vector2(0, 0));
 
-  // calculating the orientation of the robot
-  Radians orientation = 0;
-  if (lidarInfos.oLDI.hasValue()) {
-    orientation = lidarInfos.oLDI.value().orientation();
-  }
-
   // Slowing down when approaching a wall
   float speedReductionRatio = 1;
   float minimumVelocityRatio = 0.5;
@@ -141,26 +135,6 @@ void loop() {
   if (lidarInfos.oLBI.hasValue()) {
     if (lidarInfos.oLBI.value().norm() < slowingDownWallDistance) {
       speedReductionRatio = minimumVelocityRatio * (lidarInfos.oLBI.value().distance(Vector2(0, 0)) / slowingDownWallDistance + 1);
-    }
-  }
-
-  if (camInfos.enemyGoalPos.hasValue()) {
-    if (camInfos.enemyGoalPos.value().y() < 0) {
-      if (camInfos.enemyGoalPos.value().x() >= 0) {
-        orientation = -PI/2;
-      } else {
-        orientation = PI/2;
-      } 
-    }
-  }
-
-  if (camInfos.myGoalPos.hasValue()) {
-    if (camInfos.myGoalPos.value().y() > 0) {
-      if (camInfos.myGoalPos.value().x() >= 0) {
-        orientation = PI/2;
-      } else {
-        orientation = -PI/2;
-      } 
     }
   }
 
@@ -205,17 +179,42 @@ void loop() {
           blueInfos.partnerPos);
       break;
   }
-  Radians futureOrientation = 0;
-  if (lidarInfos.oLDI.hasValue()) {
-    futureOrientation = orientation - currentAction.targetOrientation();
-  } else {
-    futureOrientation = orientation;
+
+Radians futureOrientation = currentAction.targetOrientation();
+
+futureOrientation = Radians(min(PI/4, static_cast<float>(futureOrientation)));
+futureOrientation = Radians(max(-PI/4, static_cast<float>(futureOrientation)));
+
+if (camInfos.enemyGoalPos.hasValue()) {
+    if (camInfos.enemyGoalPos.value().y() < 0) {
+      if (camInfos.enemyGoalPos.value().x() >= 0) {
+        futureOrientation = -PI;
+      } else {
+        futureOrientation = PI;
+      } 
+    }
   }
+
+  if (camInfos.myGoalPos.hasValue()) {
+    if (camInfos.myGoalPos.value().y() > 0) {
+      if (camInfos.myGoalPos.value().x() >= 0) {
+        futureOrientation = PI;
+      } else {
+        futureOrientation = -PI;
+      } 
+    }
+  }
+
+  Radians robotOrientationOr0 = 0;
+  if (lidarInfos.oLDI.hasValue()) {
+  robotOrientationOr0 = lidarInfos.oLDI.value().orientation();
+  }
+
   if (currentAction.changeTarget()) {
-    motors.goTo(currentAction.target(), currentAction.celerity()*speedReductionRatio, futureOrientation);
+    motors.goTo(currentAction.target(), currentAction.celerity()*speedReductionRatio, futureOrientation - robotOrientationOr0);
     previousTarget = currentAction.target();
   } else {
-    motors.goTo(previousTarget.toVector2(), currentAction.celerity()*speedReductionRatio, futureOrientation);
+    motors.goTo(previousTarget.toVector2(), currentAction.celerity()*speedReductionRatio, futureOrientation - robotOrientationOr0);
   }
 
   String full_log2;
