@@ -147,9 +147,9 @@ void loop() {
   if (camInfos.enemyGoalPos.hasValue()) {
     if (camInfos.enemyGoalPos.value().y() < 0) {
       if (camInfos.enemyGoalPos.value().x() >= 0) {
-        // orientation = -PI/2;
+        orientation = -PI/2;
       } else {
-        // orientation = PI/2;
+        orientation = PI/2;
       } 
     }
   }
@@ -157,9 +157,9 @@ void loop() {
   if (camInfos.myGoalPos.hasValue()) {
     if (camInfos.myGoalPos.value().y() > 0) {
       if (camInfos.myGoalPos.value().x() >= 0) {
-        // orientation = PI/2;
+        orientation = PI/2;
       } else {
-        // orientation = -PI/2;
+        orientation = -PI/2;
       } 
     }
   }

@@ -20,6 +20,7 @@ Optional<Vector2> interpret(
     Optional<Radians> angleRearGoalLidar,
     int *Xs,
     int *Ys) {
+  return Vector2(Xs[0], Ys[0]);
   if (!(angleFrontGoalLidar.hasValue() && angleRearGoalLidar.hasValue())) {
     return Vector2(Xs[0], Ys[0]);
   }
