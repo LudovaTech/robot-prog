@@ -65,7 +65,6 @@ Role findMyRole(Optional<LidarDetailedInfos> oLDI,
                 MyGoalPos mGP,
                 Optional<Vector2> otherPos,
                 Optional<Vector2> otherBallPos) {
-  return Role::attacker;
   if (oBP.hasValue() && otherBallPos.hasValue()) {
     // le plus proche de la balle est attaquant
     if (oBP.value().norm() <= otherBallPos.value().norm()) {
