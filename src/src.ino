@@ -10,11 +10,11 @@
 #include "utilities.hpp"
 
 const FieldProperties fieldProperties = FieldProperties(
-    243,  // fieldLength
-    182,  // fieldWidth
-    12,   // spaceBeforeLineSide
+    600,  // fieldLength
+    400,  // fieldWidth
+    30,   // spaceBeforeLineSide
     60,   // goalWidth
-    115,  // distanceYGoalFromCenter
+    280,  // distanceYGoalFromCenter
     9,    // robotRadius
     2,    // ballRadius
     255   // maxDribblerSpeed

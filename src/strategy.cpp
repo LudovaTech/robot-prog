@@ -47,8 +47,8 @@ Vector2 globalToLocalCoordinates(LidarDetailedInfos lDI, Vector2 target) {
 }
 
 // TODO: remove parameters
-const int criticalWallDistance = 25;
-const int criticalGoalDistance = 30;  // changer avec la bonne valeur
+const int criticalWallDistance = 35;
+const int criticalGoalDistance = 40;  // changer avec la bonne valeur
 const int goalMinDistance = 90;       
 const int myGoalMinDistance = 90;
 const int speedmotors = 160;
@@ -284,7 +284,7 @@ bool enemyGoalInCenter(FieldProperties fP, EnemyGoalPos eGP) {
 }
 
 bool robotOnSide(FieldProperties fP, LidarDetailedInfos lDI) {
-  return abs(lDI.coordinates().x()) > 50;
+  return abs(lDI.coordinates().x()) > (fP.fieldWidth() / 2) - criticalWallDistance - 15;
 }
 
 bool robotInCenter(FieldProperties fP, LidarDetailedInfos lDI) {
@@ -586,7 +586,7 @@ FutureAction shoot_D(FieldProperties fP, LidarDetailedInfos lDI) {
 
 FutureAction slalomingBackwards_D(FieldProperties fP, LidarDetailedInfos lDI) {
   log_a(StratLevel, "strategy.slalomingBackwards_D", "Choosed strategy : slalomingBackwards_D");
-  if (lDI.coordinates().y() < -30) {
+  if (lDI.coordinates().y() < (-fP.fieldLength() / 4)) {
     wasSlalomingBackwards = true;
     if (lDI.coordinates().x() < -10) {
       return FutureAction(
@@ -611,7 +611,7 @@ FutureAction slalomingBackwards_D(FieldProperties fP, LidarDetailedInfos lDI) {
           0);
     }
 
-  } else if (50 < lDI.coordinates().y()) {
+  } else if ((fP.fieldLength() / 3) < lDI.coordinates().y()) {
     wasSlalomingBackwards = true;
     return FutureAction(
         Vector2(-20, -10),
@@ -621,7 +621,7 @@ FutureAction slalomingBackwards_D(FieldProperties fP, LidarDetailedInfos lDI) {
         0);
 
   } else {
-    if (lDI.coordinates().x() < -fP.fieldWidth() / 6) {
+    if (lDI.coordinates().x() < -fP.fieldWidth() / 3) {
       wasSlalomingBackwards = true;
       return FutureAction(
           Vector2(20, -10),
@@ -629,7 +629,7 @@ FutureAction slalomingBackwards_D(FieldProperties fP, LidarDetailedInfos lDI) {
           0,
           false,
           0);
-    } else if (fP.fieldWidth() / 6 < lDI.coordinates().x()) {
+    } else if (fP.fieldWidth() / 3 < lDI.coordinates().x()) {
       wasSlalomingBackwards = true;
       return FutureAction(
           Vector2(-20, -10),
