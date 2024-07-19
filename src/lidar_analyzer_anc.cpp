@@ -937,9 +937,9 @@ LidarInfosGlue getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool
   }
 
   if (forwardMean > rearMean) {
-    SerialTest.println("yellow in front");
+    // SerialTest.println("yellow in front");
   } else {
-    SerialTest.println("blue in front");
+    // SerialTest.println("blue in front"); //TODO STRANGE
   }
 
   if (show_log) {

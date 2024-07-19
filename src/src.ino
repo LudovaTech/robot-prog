@@ -240,14 +240,16 @@ void loop()
   if (lidarInfos.oLDI.hasValue())
   {
     Radians currentOrientation = lidarInfos.oLDI.value().orientation();
-    if (Radians(70) <= lastOrientation && lastOrientation <= Radians(90) && Radians(-90) <= currentOrientation && currentOrientation <= Radians(-70))
+    SerialDebug.println("lastOrientation : " + String(Degree(lastOrientation)));
+    SerialDebug.println("currentOrientation : " + String(Degree(currentOrientation)));
+    if (Radians(Degree(45)) <= lastOrientation && lastOrientation <= Radians(Degree(90)) && Radians(Degree(-90)) <= currentOrientation && currentOrientation <= Radians(Degree(-45)))
     {
-      SerialDebug.println("change cote");
+      SerialDebug.println("change cote *************************************************************************************");
       isFacingMyGoal = !isFacingMyGoal;
     }
-    else if (Radians(-90) <= lastOrientation && lastOrientation <= Radians(-70) && Radians(70) <= currentOrientation && currentOrientation <= Radians(-90))
+    else if (Radians(Degree(-90)) <= lastOrientation && lastOrientation <= Radians(Degree(-45)) && Radians(Degree(45)) <= currentOrientation && currentOrientation <= Radians(Degree(90)))
     {
-      SerialDebug.println("change cote");
+      SerialDebug.println("change cote *************************************************************************************");
       isFacingMyGoal = !isFacingMyGoal;
     }
     if (!isFacingMyGoal) {
@@ -257,6 +259,8 @@ void loop()
         adjestitedOrientation = PI/2;
       }
     }
+    SerialDebug.println("facing my goal ? : " + String(isFacingMyGoal));
+    lastOrientation = currentOrientation;
   }
   if (adjestitedOrientation == 0) {
 
@@ -266,16 +270,15 @@ void loop()
     robotOrientationOr0 = lidarInfos.oLDI.value().orientation();
   }
 
-
-  if (currentAction.changeTarget())
-  {
-    motors.goTo(currentAction.target(), currentAction.celerity() * speedReductionRatio, futureOrientation - robotOrientationOr0);
-    previousTarget = currentAction.target();
-  }
-  else
-  {
-    motors.goTo(previousTarget.toVector2(), currentAction.celerity() * speedReductionRatio, futureOrientation - robotOrientationOr0);
-  }
+    if (currentAction.changeTarget())
+    {
+      motors.goTo(currentAction.target(), currentAction.celerity() * speedReductionRatio, futureOrientation - robotOrientationOr0);
+      previousTarget = currentAction.target();
+    }
+    else
+    {
+      motors.goTo(previousTarget.toVector2(), currentAction.celerity() * speedReductionRatio, futureOrientation - robotOrientationOr0);
+    }
 
   } else {
     motors.goTo(currentAction.target(), currentAction.celerity() * speedReductionRatio, adjestitedOrientation);
