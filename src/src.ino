@@ -205,6 +205,7 @@ void loop() {
   } else {
     futureOrientation = orientation;
   }
+  futureOrientation = orientation;
   if (currentAction.changeTarget()) {
     motors.goTo(currentAction.target(), currentAction.celerity()*speedReductionRatio, futureOrientation);
     previousTarget = currentAction.target();
