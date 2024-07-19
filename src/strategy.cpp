@@ -48,11 +48,11 @@ Vector2 globalToLocalCoordinates(LidarDetailedInfos lDI, Vector2 target) {
 
 // TODO: remove parameters
 const int criticalWallDistance = 25;
-const int criticalGoalDistance = 20;  // changer avec la bonne valeur
+const int criticalGoalDistance = 30;  // changer avec la bonne valeur
 const int goalMinDistance = 90;       
 const int myGoalMinDistance = 82;
-const int speedmotors = 140;
-const int maxRobotSpeed = 200;
+const int speedmotors = 180;
+const int maxRobotSpeed = 240;
 const int shootSpeed = maxRobotSpeed;
 const int distanceKickOK = 120;
 bool wasSlalomingBackwards = false;
