@@ -8,7 +8,7 @@
 #include "logger.hpp"
 #include "utilities.hpp"
 
-const Radians angleMargin = 0.3;
+const Radians angleMargin = 0.4;
 const int minBytesAvailable = 57;
 
 class BallPos : public Vector2 {

@@ -358,10 +358,18 @@ FutureAction refrainEnterInEnemyGoal_C(FieldProperties fP, EnemyGoalPos eGP) {
 }
 
 FutureAction goToBallChangingOrientation_CD(FieldProperties fP, BallPos bP, LidarDetailedInfos lDI) {
+  
+  float direction = -bP.angle() + lDI.orientation();
+  if (direction > PI/3) {
+    direction = PI/3;
+  } else if (direction < -PI/3) {
+    direction = -PI/3;
+  }
+
   return FutureAction(
       bP,
       speedmotors,
-      -bP.angle() + lDI.orientation(),  
+      direction,  
       false,
       fP.maxDribblerSpeed());
 }
