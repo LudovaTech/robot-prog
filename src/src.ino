@@ -254,9 +254,9 @@ void loop()
     }
     if (!isFacingMyGoal) {
       if (currentOrientation < 0) {
-        adjestitedOrientation = -PI/2;
-      } else {
         adjestitedOrientation = PI/2;
+      } else {
+        adjestitedOrientation = -PI/2;
       }
     }
     SerialDebug.println("facing my goal ? : " + String(isFacingMyGoal));
@@ -281,7 +281,8 @@ void loop()
     }
 
   } else {
-    motors.goTo(currentAction.target(), currentAction.celerity() * speedReductionRatio, adjestitedOrientation);
+    motors.goTo(Vector2(0,0), 100, adjestitedOrientation);
+    delay(20);
   }
 
   String full_log2;
