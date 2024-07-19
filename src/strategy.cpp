@@ -50,11 +50,11 @@ Vector2 globalToLocalCoordinates(LidarDetailedInfos lDI, Vector2 target) {
 const int criticalWallDistance = 25;
 const int criticalGoalDistance = 30;  // changer avec la bonne valeur
 const int goalMinDistance = 90;       
-const int myGoalMinDistance = 82;
-const int speedmotors = 180;
-const int maxRobotSpeed = 240;
+const int myGoalMinDistance = 90;
+const int speedmotors = 160;
+const int maxRobotSpeed = 220;
 const int shootSpeed = maxRobotSpeed;
-const int distanceKickOK = 120;
+const int distanceKickOK = 160;
 bool wasSlalomingBackwards = false;
 int dribblerSpeedIfLeavingField = 0;
 
@@ -158,7 +158,6 @@ FutureAction chooseStrategyAttacker(
       // The ball is not caught
       dribblerSpeedIfLeavingField = 0;
       if (oLDI.hasValue() && oLBI.hasValue()) {
-        return goToBallAvoidingBall_CD(fP, bP, oLDI.value());
         if (alignedWithBallAndGoal_D(fP, oLBI.value(), oLDI.value(), oBP.value())) {
           return FutureAction(
                 oBP.value(),
@@ -179,7 +178,6 @@ FutureAction chooseStrategyAttacker(
         if (ballAhead(fP, bP)) {
           return goToBall_C(fP, bP);
         } else {
-          return FutureAction::stopRobot();
           return goToBallAvoidingBall_C(fP, bP);
         }
       }

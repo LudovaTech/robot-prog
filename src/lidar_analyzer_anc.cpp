@@ -894,7 +894,7 @@ LidarInfosGlue getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool
     getNearestWall(points_walls, obstacles)
   };
 
-  std::vector<uint8_t> rearList;
+  /*std::vector<uint8_t> rearList;
   std::vector<uint8_t> forwardList;
   for (size_t i = 0; i < nb_points; i++) {
     MutableLidarPoint lidarPoint = points2[i];
@@ -940,7 +940,7 @@ LidarInfosGlue getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool
     SerialTest.println("yellow in front");
   } else {
     SerialTest.println("blue in front");
-  }
+  }*/
 
   if (show_log) {
     if (nInfos.oLDI.hasValue()) {

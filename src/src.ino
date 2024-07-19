@@ -205,12 +205,19 @@ void loop() {
   } else {
     futureOrientation = orientation;
   }
+
+  if (orientation > PI/3) {
+    orientation = PI;
+  } else if (orientation < -PI/3) {
+    orientation = -PI;
+  }
   futureOrientation = orientation;
+
   if (currentAction.changeTarget()) {
-    motors.goTo(currentAction.target(), currentAction.celerity()*speedReductionRatio, futureOrientation);
+    motors.goTo(currentAction.target(), currentAction.celerity(), futureOrientation);
     previousTarget = currentAction.target();
   } else {
-    motors.goTo(previousTarget.toVector2(), currentAction.celerity()*speedReductionRatio, futureOrientation);
+    motors.goTo(previousTarget.toVector2(), currentAction.celerity(), futureOrientation);
   }
 
   String full_log2;
