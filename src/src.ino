@@ -20,6 +20,8 @@ const FieldProperties fieldProperties = FieldProperties(
     255   // maxDribblerSpeed
 );
 
+const int MODULE_PIN = 0;
+
 const Motors motors(
     // Teensy
     MotorMov(15, 14, 18, Degree(-40)),
@@ -213,11 +215,13 @@ void loop() {
   }
   futureOrientation = orientation;
 
-  if (currentAction.changeTarget()) {
-    motors.goTo(currentAction.target(), currentAction.celerity(), futureOrientation);
-    previousTarget = currentAction.target();
-  } else {
-    motors.goTo(previousTarget.toVector2(), currentAction.celerity(), futureOrientation);
+  if (digitalRead(MODULE_PIN)) {
+    if (currentAction.changeTarget()) {
+      motors.goTo(currentAction.target(), currentAction.celerity(), futureOrientation);
+      previousTarget = currentAction.target();
+    } else {
+      motors.goTo(previousTarget.toVector2(), currentAction.celerity(), futureOrientation);
+    }
   }
 
   String full_log2;
