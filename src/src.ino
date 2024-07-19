@@ -42,7 +42,7 @@ void setup() {
   SerialCam.begin(115200);
   SerialLidar.begin(230400);
   SerialBlue.begin(115200);
-  setupLog(CriticalLevel, 25);
+  setupLog(StratLevel, 25);
 
   SerialCam.addMemoryForRead(&camSerialBuffer, sizeof(camSerialBuffer));
   SerialLidar.addMemoryForRead(&bigserialbufferlidar, sizeof(bigserialbufferlidar));
