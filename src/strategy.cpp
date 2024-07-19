@@ -172,7 +172,7 @@ FutureAction chooseStrategyAttacker(
             return goToBall_C(fP, bP);
           }
         } else {
-          return goToBallAvoidingBall_CD(fP, bP, oLDI.value());
+          return goToBallAvoidingBall_C(fP, bP);
         }
       } else {
         if (ballAhead(fP, bP)) {
@@ -408,18 +408,18 @@ FutureAction goToBallAvoidingBall_C(FieldProperties fP, BallPos bP) {
         false,
         0);
 
-  } else if (bP.x() <= 0) {
+  } else if (bP.x() < 0) {
     return FutureAction(
         Vector2(2, -10),
-        maxRobotSpeed,
+        speedmotors,
         0,
         false,
         0);
 
-  } else if (bP.x() > 0) {
+  } else if (bP.x() >= 0) {
     return FutureAction(
         Vector2(-2, -10),
-        maxRobotSpeed,
+        speedmotors,
         0,
         false,
         0);
@@ -454,6 +454,7 @@ FutureAction goToBallAvoidingBall_CD(FieldProperties fP, BallPos bP, LidarDetail
 
     } else {
       if (-(fP.fieldWidth() / 2) + 6 * fP.robotRadius() > lDI.coordinates().x()) {
+        SerialDebug.println("1");
         return FutureAction(
             Vector2(10, -10),
             maxRobotSpeed,
@@ -462,6 +463,7 @@ FutureAction goToBallAvoidingBall_CD(FieldProperties fP, BallPos bP, LidarDetail
             0);
 
       } else {
+        SerialDebug.println("2");
         return FutureAction(
             Vector2(-10, -10),
             maxRobotSpeed,
@@ -472,6 +474,7 @@ FutureAction goToBallAvoidingBall_CD(FieldProperties fP, BallPos bP, LidarDetail
     }
 
   } else if (bP.x() < 0 && bP.x() > -40) {
+    SerialDebug.println("3");
     return FutureAction(
         Vector2(5, -10),
         maxRobotSpeed,
@@ -480,6 +483,7 @@ FutureAction goToBallAvoidingBall_CD(FieldProperties fP, BallPos bP, LidarDetail
         0);
 
   } else if (bP.x() > 0 && bP.x() < 40) {
+    SerialDebug.println("4");
     return FutureAction(
         Vector2(-5, -10),
         maxRobotSpeed,
@@ -488,6 +492,7 @@ FutureAction goToBallAvoidingBall_CD(FieldProperties fP, BallPos bP, LidarDetail
         0);
 
   } else {
+    SerialDebug.println("5");
     return FutureAction(
         Vector2(0, -10),
         maxRobotSpeed,
