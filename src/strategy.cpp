@@ -65,6 +65,7 @@ Role findMyRole(Optional<LidarDetailedInfos> oLDI,
                 MyGoalPos mGP,
                 Optional<Vector2> otherPos,
                 Optional<Vector2> otherBallPos) {
+  return Role::attacker;
   if (oBP.hasValue() && otherBallPos.hasValue()) {
     // le plus proche de la balle est attaquant
     if (oBP.value().norm() <= otherBallPos.value().norm()) {
@@ -158,6 +159,7 @@ FutureAction chooseStrategyAttacker(
       // The ball is not caught
       dribblerSpeedIfLeavingField = 0;
       if (oLDI.hasValue() && oLBI.hasValue()) {
+        return goToBallAvoidingBall_CD(fP, bP, oLDI.value());
         if (alignedWithBallAndGoal_D(fP, oLBI.value(), oLDI.value(), oBP.value())) {
           return FutureAction(
                 oBP.value(),
@@ -178,6 +180,7 @@ FutureAction chooseStrategyAttacker(
         if (ballAhead(fP, bP)) {
           return goToBall_C(fP, bP);
         } else {
+          return FutureAction::stopRobot();
           return goToBallAvoidingBall_C(fP, bP);
         }
       }

@@ -59,15 +59,8 @@ bool ledCounter = true;
 MutableVector2 previousTarget;
 Cache<LidarInfosGlue> cacheLidarInfos(140);
 
-void aloop() {
-  // dribblerKicker.dribble(255);
-  // delay(1000);
-  // dribblerKicker.dribble(0);
-  // delay(1000);
-  dribblerKicker.dribble(255);
+void tloop() {
   dribblerKicker.kick();
-  //delay(1000);
-  dribblerKicker.dribble(255);
   delay(3000);
 }
 
