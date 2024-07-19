@@ -127,14 +127,13 @@ FutureAction chooseStrategyAttacker(
     if (oLDI.hasValue()) {
       return slalomingBackwards_D(fP, oLDI.value());
     } else {
+      wasSlalomingBackwards = false;
       return FutureAction::stopRobot();
     }
   } else {
     // SerialDebug.println("ball seen");
     BallPos bP = oBP.value();
-    if (oLDI.hasValue() && oLBI.hasValue()) {
-      
-    } else if (ballIsCaught(fP, bP)) {
+    if (ballIsCaught(fP, bP)) {
       SerialDebug.println("ball is caught");
       // The ball is caught
       dribblerSpeedIfLeavingField = fP.maxDribblerSpeed();
@@ -293,6 +292,7 @@ bool robotInCenter(FieldProperties fP, LidarDetailedInfos lDI) {
 }
 
 FutureAction refrainLeavingField_D(FieldProperties fP, LidarDetailedInfos lDI) {
+  wasSlalomingBackwards = false;
   log_a(StratLevel, "strategy.refrainLeavingField_D", "Choosed strategy : refrainLeavingField_D");
   float xDirection = 0;
   float yDirection = 0;
@@ -322,6 +322,7 @@ FutureAction refrainLeavingField_D(FieldProperties fP, LidarDetailedInfos lDI) {
 }
 
 FutureAction refrainLeavingField_B(FieldProperties fP, LidarBasicInfos lBI) {
+  wasSlalomingBackwards = false;
   log_a(StratLevel, "strategy.refrainLeavingField_B", "Choosed strategy : refrainLeavingField_B");
   return FutureAction(
       Vector2(
@@ -334,6 +335,7 @@ FutureAction refrainLeavingField_B(FieldProperties fP, LidarBasicInfos lBI) {
 }
 
 FutureAction refrainEnterInMyGoal_C(FieldProperties fP, MyGoalPos mGP) {
+  wasSlalomingBackwards = false;
   log_a(StratLevel, "strategy.refrainEnterInMyGoal_C", "Choosed strategy : refrainEnterInMyGoal_C");
   return FutureAction(
       Vector2(
@@ -346,6 +348,7 @@ FutureAction refrainEnterInMyGoal_C(FieldProperties fP, MyGoalPos mGP) {
 }
 
 FutureAction refrainEnterInEnemyGoal_C(FieldProperties fP, EnemyGoalPos eGP) {
+  wasSlalomingBackwards = false;
   log_a(StratLevel, "strategy.refrainEnterInEnemyGoal_C", "Choosed strategy : refrainEnterInEnemyGoal_C");
   return FutureAction(
       Vector2(  // TODO on ne retourne pas en arriere ?
@@ -358,7 +361,7 @@ FutureAction refrainEnterInEnemyGoal_C(FieldProperties fP, EnemyGoalPos eGP) {
 }
 
 FutureAction goToBallChangingOrientation_CD(FieldProperties fP, BallPos bP, LidarDetailedInfos lDI) {
-  
+  wasSlalomingBackwards = false;
   float direction = -bP.angle() + lDI.orientation();
   if (direction > PI/3) {
     direction = PI/3;
@@ -375,6 +378,7 @@ FutureAction goToBallChangingOrientation_CD(FieldProperties fP, BallPos bP, Lida
 }
 
 FutureAction goToBall_C(FieldProperties fP, BallPos bP) {
+  wasSlalomingBackwards = false;
   log_a(StratLevel, "strategy.goToBall_C", "Choosed strategy : goToBall_C");
   int adjustedspeedmotors = speedmotors;
   float coefficient = 1.0;
@@ -394,6 +398,7 @@ FutureAction goToBall_C(FieldProperties fP, BallPos bP) {
 }
 
 FutureAction goToBallAvoidingBall_C(FieldProperties fP, BallPos bP) {
+  wasSlalomingBackwards = false;
   log_a(StratLevel, "strategy.goToBallAvoidingBall_C", "Choosed strategy : goToBallAvoidingBall_C");
   if (!ballAtLevel(fP, bP) && ballInCenter(fP, bP)) {
     return FutureAction(
@@ -426,6 +431,7 @@ FutureAction goToBallAvoidingBall_C(FieldProperties fP, BallPos bP) {
 }
 
 FutureAction goToBallAvoidingBall_CD(FieldProperties fP, BallPos bP, LidarDetailedInfos lDI) {
+  wasSlalomingBackwards = false;
   log_a(StratLevel, "strategy.goToBallAvoidingBall_CD", "Choosed strategy : goToBallAvoidingBall_CD");
   if (!ballAtLevel(fP, bP) && ballInCenter(fP, bP)) {
     if (bP.x() < 0) {
@@ -492,6 +498,7 @@ FutureAction goToBallAvoidingBall_CD(FieldProperties fP, BallPos bP, LidarDetail
 }
 
 FutureAction accelerateToGoal_C(FieldProperties fP, EnemyGoalPos eGP) {
+  wasSlalomingBackwards = false;
   log_a(StratLevel, "strategy.accelerateToGoal_C", "Choosed strategy : accelerateToGoal_C");
   return FutureAction(
       eGP,
@@ -502,6 +509,7 @@ FutureAction accelerateToGoal_C(FieldProperties fP, EnemyGoalPos eGP) {
 }
 
 FutureAction accelerateToGoal_D(FieldProperties fP, LidarDetailedInfos lDI, LidarBasicInfos lBI) {
+  wasSlalomingBackwards = false;
   log_a(StratLevel, "strategy.accelerateToGoal_D", "Choosed strategy : accelerateToGoal_D");
 
   /* TEST EVITEMENT OBSTACLES */
@@ -529,6 +537,7 @@ FutureAction accelerateToGoal_D(FieldProperties fP, LidarDetailedInfos lDI, Lida
 }
 
 FutureAction spinToWin_D(FieldProperties fP, LidarDetailedInfos lDI) {
+  wasSlalomingBackwards = false;
   Vector2 theoricalEGP = globalToLocalCoordinates(lDI, enemyGoalPosTheorical(fP));
   if (theoricalEGP.angle() - lDI.orientation() < PI / 6) {
     return FutureAction(
@@ -549,6 +558,7 @@ FutureAction spinToWin_D(FieldProperties fP, LidarDetailedInfos lDI) {
 }
 
 FutureAction shoot_C(FieldProperties fP, EnemyGoalPos eGP) {  // TODO refactor
+  wasSlalomingBackwards = false;
   log_a(StratLevel, "strategy.shoot_C", "Choosed strategy : shoot_C");
   return FutureAction(
       eGP,
@@ -559,6 +569,7 @@ FutureAction shoot_C(FieldProperties fP, EnemyGoalPos eGP) {  // TODO refactor
 }
 
 FutureAction shoot_D(FieldProperties fP, LidarDetailedInfos lDI) {
+  wasSlalomingBackwards = false;
   log_a(StratLevel, "strategy.shoot_D", "Choosed strategy : shoot_D");
   return FutureAction(
       lDI.frontGoalCoordinates(),
@@ -648,7 +659,7 @@ FutureAction chooseStrategyDefender(
     Optional<MyGoalPos> oMGP,
     Optional<EnemyGoalPos> oEGP,
     Optional<Vector2> oPP) {
-
+  wasSlalomingBackwards = false;
   if (oLDI.hasValue() && oLBI.hasValue()) {
     
     float yPositionToTargetDefenseLine = -oLDI.value().coordinates().y() - fP.distanceYGoalFromCenter() + criticalWallDistance + criticalGoalDistance;
