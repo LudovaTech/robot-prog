@@ -159,12 +159,13 @@ void loop() {
   SerialDebug.println("*****************");
 
   // DOING ACTION
-  Role myRole = findMyRole(
-      lidarInfos.oLDI,
-      camInfos.ballPos,
-      myGoalPosTheorical(fieldProperties),
-      blueInfos.partnerPos,
-      blueInfos.ballPos);
+  Role myRole = Role::attacker;
+  // findMyRole(
+  //     lidarInfos.oLDI,
+  //     camInfos.ballPos,
+  //     myGoalPosTheorical(fieldProperties),
+  //     blueInfos.partnerPos,
+  //     blueInfos.ballPos);
 
   FutureAction currentAction(0, 0, 0, 0);  // va tout de suite être réécris dessus
   switch (myRole) {

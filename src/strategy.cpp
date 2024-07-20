@@ -138,18 +138,12 @@ FutureAction chooseStrategyAttacker(
       // The ball is caught
       dribblerSpeedIfLeavingField = fP.maxDribblerSpeed();
       if (oLDI.hasValue() && oLBI.hasValue()) {
-        if (orientedTowardsEnemyGoal_D(fP, oLBI.value(), oLDI.value()) && closeEnoughToKick_D(fP, oLDI.value())) {
-          SerialDebug.println("properly oriented");
-          return shoot_D(fP, oLDI.value());
-        } else {
-          SerialDebug.println("accelerating to goal");
-          return accelerateToGoal_D(fP, oLDI.value(), oLBI.value());
-        }
-      } else if (oEGP.hasValue()) {
-        if (enemyGoalInCenter(fP, oEGP.value())) {
-          return shoot_C(fP, oEGP.value());
-        } else {
-          return accelerateToGoal_C(fP, oEGP.value());
+        if (oEGP.hasValue()) {
+          if (enemyGoalInCenter(fP, oEGP.value())) {
+            return shoot_C(fP, oEGP.value());
+          } else {
+            return accelerateToGoal_C(fP, oEGP.value());
+          }
         }
       } else {
         return FutureAction::stopRobot();
@@ -212,7 +206,7 @@ bool leavingField_D(FieldProperties fP, LidarDetailedInfos lDI) {
   bool frontWall = fP.fieldLength() / 2 - criticalWallDistance < lDI.coordinates().y();
 
   log_a(StratLevel, "strategy.leavingField_D", "Left Wall : " + String(leftWall) + " Right Wall : " + String(rightWall) + " Back Wall : " + String(backWall) + " Front Wall : " + String(frontWall));
-  return leftWall || rightWall || backWall || frontWall;
+  return lDI.coordinates().norm() > 30;
 }
 
 bool leavingField_B(FieldProperties fP, LidarBasicInfos lBI) {
@@ -313,8 +307,8 @@ FutureAction refrainLeavingField_D(FieldProperties fP, LidarDetailedInfos lDI) {
   }
   return FutureAction(
       Vector2(
-          xDirection,
-          yDirection),
+          -lDI.coordinates().x(),
+          -lDI.coordinates().y()),
       speedmotors,
       lDI.orientation(),
       false,
