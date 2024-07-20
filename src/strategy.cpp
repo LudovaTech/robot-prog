@@ -152,7 +152,12 @@ FutureAction chooseStrategyAttacker(
           return accelerateToGoal_C(fP, oEGP.value());
         }
       } else {
-        return FutureAction::stopRobot();
+        return FutureAction(
+                Vector2(0,10),
+                speedmotors,
+                0,
+                false,
+                fP.maxDribblerSpeed());
       }
     } else {
       // The ball is not caught
@@ -280,7 +285,7 @@ bool alignedWithBallAndGoal_D(FieldProperties fP, LidarBasicInfos lBI, LidarDeta
 }
 
 bool enemyGoalInCenter(FieldProperties fP, EnemyGoalPos eGP) {
-  return abs(eGP.x()) <= 10;  // TODO create parameter
+  return abs(eGP.x()) <= 15;  // TODO create parameter
 }
 
 bool robotOnSide(FieldProperties fP, LidarDetailedInfos lDI) {
@@ -508,7 +513,7 @@ FutureAction accelerateToGoal_C(FieldProperties fP, EnemyGoalPos eGP) {
   return FutureAction(
       eGP,
       speedmotors,
-      0,
+      eGP.angle(),
       false,
       fP.maxDribblerSpeed());
 }

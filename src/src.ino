@@ -38,6 +38,7 @@ uint8_t camSerialBuffer[4000];
 uint8_t bigserialbufferlidar[10000];
 const int pinLED = 13;
 const int pinSwitch = 26;
+const int pinModule = 2;
 
 void setup() {
   SerialDebug.begin(115200);
@@ -54,6 +55,8 @@ void setup() {
 
   pinMode(pinLED, OUTPUT);
   pinMode(pinSwitch, INPUT);
+
+  pinMode(pinModule, INPUT);
 }
 bool ledCounter = true;
 
@@ -215,13 +218,17 @@ void loop() {
   }
   futureOrientation = orientation;
 
-  if (digitalRead(MODULE_PIN)) {
-    if (currentAction.changeTarget()) {
-      motors.goTo(currentAction.target(), currentAction.celerity(), futureOrientation);
-      previousTarget = currentAction.target();
-    } else {
-      motors.goTo(previousTarget.toVector2(), currentAction.celerity(), futureOrientation);
+  if (digitalRead(pinModule) == HIGH) {
+    if (digitalRead(MODULE_PIN)) {
+      if (currentAction.changeTarget()) {
+        motors.goTo(currentAction.target(), currentAction.celerity(), futureOrientation);
+        previousTarget = currentAction.target();
+      } else {
+        motors.goTo(previousTarget.toVector2(), currentAction.celerity(), futureOrientation);
+      }
     }
+  } else {
+    motors.goTo(Vector2(0,0), 0, 0);
   }
 
   String full_log2;
@@ -239,7 +246,11 @@ void loop() {
     dribblerKicker.kick();
   }
 
-  dribblerKicker.dribble(255);  // TODO Rustine
+  if (digitalRead(pinModule) == HIGH) {
+    dribblerKicker.dribble(255);
+  } else {
+    dribblerKicker.dribble(0);
+  }  // TODO Rustine
   // SerialDebug.println("********************************* " + String(currentAction.celerityDribbler()));
 
   unsigned long elapsed = millis() - start_millis;
