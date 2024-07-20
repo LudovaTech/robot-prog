@@ -44,7 +44,7 @@ void setup() {
   SerialCam.begin(115200);
   SerialLidar.begin(230400);
   SerialBlue.begin(115200);
-  setupLog(StratLevel, 25);
+  setupLog(CriticalLevel, 25);
 
   SerialCam.addMemoryForRead(&camSerialBuffer, sizeof(camSerialBuffer));
   SerialLidar.addMemoryForRead(&bigserialbufferlidar, sizeof(bigserialbufferlidar));
@@ -85,7 +85,7 @@ void loop() {
   if (SerialLidar.available() < 2600 && cacheLidarInfosValue.hasValue()) {
     lidarInfos = cacheLidarInfosValue.value();
   } else {
-    lidarInfos = getLidarInfos(fieldProperties, true, false);
+    lidarInfos = getLidarInfos(fieldProperties, true, true);
     cacheLidarInfos.update(lidarInfos);
   }
 
@@ -158,7 +158,7 @@ void loop() {
       } 
     }
   }
-  SerialDebug.println("*****************");
+  // SerialDebug.println("*****************");
 
   // DOING ACTION
   Role myRole = findMyRole(

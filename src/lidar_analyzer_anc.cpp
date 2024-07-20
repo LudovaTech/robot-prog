@@ -15,7 +15,7 @@ const double thetaTolerancePerpendiculaire = 0.2;    // pour trouver les murs pe
 
 // Longueur des segments sur les lignes de Hough
 const int PointToLineDistanceMax = 20;   // un point doit être à moins de 2cm d'une ligne pour en faire partie
-const int PointToPointDistanceMax = 70;  // un point doit être à moins de 7cm du prochain pour faire partie du même groupe
+const int PointToPointDistanceMax = 200;  // un point doit être à moins de 7cm du prochain pour faire partie du même groupe
 const int LineLengthMin = 250;           // une ligne doit être longue d'au moins 25cm pour être prise en compte (permet de filtrer les robots)
 
 struct HoughLine {
