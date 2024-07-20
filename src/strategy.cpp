@@ -137,13 +137,11 @@ FutureAction chooseStrategyAttacker(
       SerialDebug.println("ball is caught");
       // The ball is caught
       dribblerSpeedIfLeavingField = fP.maxDribblerSpeed();
-      if (oLDI.hasValue() && oLBI.hasValue()) {
-        if (oEGP.hasValue()) {
-          if (enemyGoalInCenter(fP, oEGP.value())) {
-            return shoot_C(fP, oEGP.value());
-          } else {
-            return accelerateToGoal_C(fP, oEGP.value());
-          }
+      if (oEGP.hasValue()) {
+        if (enemyGoalInCenter(fP, oEGP.value())) {
+          return shoot_C(fP, oEGP.value());
+        } else {
+          return accelerateToGoal_C(fP, oEGP.value());
         }
       } else {
         return FutureAction::stopRobot();
