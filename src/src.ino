@@ -52,6 +52,8 @@ void setup() {
 
   pinMode(pinLED, OUTPUT);
   pinMode(pinSwitch, INPUT);
+
+  delay(5000);
 }
 bool ledCounter = true;
 
