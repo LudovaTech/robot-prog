@@ -232,7 +232,7 @@ LidarInfosGlue getLidarInfos(FieldProperties fP, bool readFromLidar = true, bool
       std::vector<LidarPoint> lidarPoints = ancLidarAnalyzer_getPoints();
       for (size_t j = 0; j < lidarPoints.size(); j++) {
         LidarPoint lidarPoint = lidarPoints[j];
-        if (lidarPoint.distance() > LidarDistanceMin && lidarPoint.distance() < 3000)  // on ne prend pas les points < 10cm et > 300cm
+        if (lidarPoint.distance() > LidarDistanceMin && lidarPoint.distance() < 7000)  // on ne prend pas les points < 10cm et > 700cm
         {
           points2[nb_points++] = lidarPoint;
           if (lidarPoint.distance() > distance_max) {
