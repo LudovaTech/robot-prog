@@ -54,6 +54,7 @@ void setup() {
   pinMode(pinSwitch, INPUT);
 
   delay(5000);
+  motors.goTo(Vector2(0, -10), 90, 0);
 }
 bool ledCounter = true;
 
@@ -214,7 +215,7 @@ void loop() {
   } else if (orientation < -PI/3) {
     orientation = -PI;
   }
-  futureOrientation = orientation;
+  futureOrientation = orientation - 0.2;
 
   if (currentAction.changeTarget()) {
     motors.goTo(currentAction.target(), currentAction.celerity(), futureOrientation);

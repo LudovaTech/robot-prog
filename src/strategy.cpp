@@ -51,8 +51,8 @@ const int criticalWallDistance = 25;
 const int criticalGoalDistance = 30;  // changer avec la bonne valeur
 const int goalMinDistance = 90;       
 const int myGoalMinDistance = 90;
-const int speedmotors = 160;
-const int maxRobotSpeed = 220;
+const int speedmotors = 80;
+const int maxRobotSpeed = 80;
 const int shootSpeed = maxRobotSpeed;
 const int distanceKickOK = 160;
 bool wasSlalomingBackwards = false;
@@ -137,14 +137,27 @@ FutureAction chooseStrategyAttacker(
       SerialDebug.println("ball is caught");
       // The ball is caught
       dribblerSpeedIfLeavingField = fP.maxDribblerSpeed();
+      return FutureAction(
+                Vector2(0, 0),
+                speedmotors,
+                0,
+                true,
+                fP.maxDribblerSpeed()); 
+      
+      
       if (oEGP.hasValue()) {
         if (enemyGoalInCenter(fP, oEGP.value())) {
           return shoot_C(fP, oEGP.value());
         } else {
-          return accelerateToGoal_C(fP, oEGP.value());
+          return shoot_C(fP, oEGP.value());
         }
       } else {
-        return FutureAction::stopRobot();
+        return FutureAction(
+                Vector2(10, 0),
+                speedmotors,
+                0,
+                false,
+                fP.maxDribblerSpeed()); 
       }
     } else {
       // The ball is not caught
@@ -204,7 +217,7 @@ bool leavingField_D(FieldProperties fP, LidarDetailedInfos lDI) {
   bool frontWall = fP.fieldLength() / 2 - criticalWallDistance < lDI.coordinates().y();
 
   log_a(StratLevel, "strategy.leavingField_D", "Left Wall : " + String(leftWall) + " Right Wall : " + String(rightWall) + " Back Wall : " + String(backWall) + " Front Wall : " + String(frontWall));
-  return lDI.coordinates().norm() > 30;
+  return lDI.coordinates().norm() > 25;
 }
 
 bool leavingField_B(FieldProperties fP, LidarBasicInfos lBI) {
@@ -272,7 +285,7 @@ bool alignedWithBallAndGoal_D(FieldProperties fP, LidarBasicInfos lBI, LidarDeta
 }
 
 bool enemyGoalInCenter(FieldProperties fP, EnemyGoalPos eGP) {
-  return abs(eGP.x()) <= 10;  // TODO create parameter
+  return abs(eGP.x()) <= 25;  // TODO create parameter
 }
 
 bool robotOnSide(FieldProperties fP, LidarDetailedInfos lDI) {
@@ -498,7 +511,7 @@ FutureAction accelerateToGoal_C(FieldProperties fP, EnemyGoalPos eGP) {
   wasSlalomingBackwards = false;
   log_a(StratLevel, "strategy.accelerateToGoal_C", "Choosed strategy : accelerateToGoal_C");
   return FutureAction(
-      eGP,
+      Vector2(eGP.x(), 0),
       speedmotors,
       0,
       false,
