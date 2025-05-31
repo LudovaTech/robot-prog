@@ -94,7 +94,7 @@ void loop() {
   if (SerialLidar.available() < 2600 && cacheLidarInfosValue.hasValue()) {
     lidarInfos = cacheLidarInfosValue.value();
   } else {
-    lidarInfos = getLidarInfos(fieldProperties, true, true);
+    lidarInfos = getLidarInfos(fieldProperties, true, false);
     cacheLidarInfos.update(lidarInfos);
   }
 
@@ -124,9 +124,9 @@ void loop() {
   // GETTING/SENDING BLUE DATA
   BlueInfosGlue blueInfos = getBlueInfos();
   if (!camInfos.ballPos.hasValue() && blueInfos.ballPos.hasValue()) {
-    // camInfos.ballPos = BallPos(
-    //     blueInfos.ballPos.value().x(),
-    //     blueInfos.ballPos.value().y());
+    camInfos.ballPos = BallPos(
+      blueInfos.ballPos.value().x(),
+      blueInfos.ballPos.value().y());
   }
   sendBlueData(
       lidarInfos.oLDI.hasValue() ? lidarInfos.oLDI.value().coordinates() : Vector2(0, 0),
@@ -253,7 +253,7 @@ void loop() {
 
   //dribblerKicker.dribble(0);  // TODO Rustine
   // SerialDebug.println("********************************* " + String(currentAction.celerityDribbler()));
-
+  //dribblerKicker.kick();
   delay(20);
   unsigned long elapsed = millis() - start_millis;
   log_a(InfoLevel, "src.loop", "Temps loop : " + String(elapsed) + "ms");

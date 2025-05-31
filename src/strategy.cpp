@@ -26,7 +26,7 @@ FutureAction::FutureAction(
       _celerityDribbler(celerityDribbler) {}
 
 FutureAction FutureAction::stopRobot() {
-  return FutureAction(Vector2(0, 0), 0, 0, false, 0);
+  return FutureAction(Vector2(0, 0), 0, 0, false, 255);
 }
 
 //////// Functions
@@ -47,11 +47,11 @@ Vector2 globalToLocalCoordinates(LidarDetailedInfos lDI, Vector2 target) {
 }
 
 
-const int ballCaughtMaxDistance = 35; // SN9 = 34  SN10 = 35
+const int ballCaughtMaxDistance = 35; // SN9 = 35  SN10 = 35
 const int criticalWallDistance = 30; // SN9 = 30
 const int criticalGoalDistance = 20; 
-const int goalMinDistance = 80; // SN9 = 85  SN10 = 80
-const int myGoalMinDistance = 80; // SN9 = 85  SN10 = 80
+const int goalMinDistance = 85; // SN9 = 85  SN10 = 80
+const int myGoalMinDistance = 85; // SN9 = 85  SN10 = 80
 const int speedmotors = 140;
 const int maxRobotSpeed = 180;
 const int shootSpeed = maxRobotSpeed;
@@ -103,10 +103,8 @@ FutureAction chooseStrategyAttacker(
     if (leavingField_D(fP, oLDI.value())) {
       return refrainLeavingField_D(fP, oLDI.value());
     } else if (enterInMyGoal_D(fP, oLDI.value())) {
-      // TODO
       return refrainLeavingField_D(fP, oLDI.value());
     } else if (enterInEnemyGoal_D(fP, oLDI.value())) {
-      // TODO
       return refrainLeavingField_D(fP, oLDI.value());
     }
   } else if (oLBI.hasValue()) {
@@ -125,7 +123,7 @@ FutureAction chooseStrategyAttacker(
   // Then we choose the appropriate Strategy
   if (!oBP.hasValue()) {
     // We don't know where the ball is
-    dribblerSpeedIfLeavingField = 0;
+    //dribblerSpeedIfLeavingField = 0;
     if (oLDI.hasValue()) {
       return slalomingBackwards_D(fP, oLDI.value());
     } else {
@@ -138,7 +136,7 @@ FutureAction chooseStrategyAttacker(
     if (ballIsCaught(fP, bP)) {
       SerialDebug.println("ball is caught");
       // The ball is caught
-      dribblerSpeedIfLeavingField = fP.maxDribblerSpeed();
+      //dribblerSpeedIfLeavingField = fP.maxDribblerSpeed();
       if (oLDI.hasValue() && oLBI.hasValue()) {
         if (orientedTowardsEnemyGoal_D(fP, oLBI.value(), oLDI.value()) && closeEnoughToKick_D(fP, oLDI.value())) {
           SerialDebug.println("properly oriented");
@@ -158,9 +156,10 @@ FutureAction chooseStrategyAttacker(
       }
     } else {
       // The ball is not caught
-      dribblerSpeedIfLeavingField = 0;
+      //dribblerSpeedIfLeavingField = 0;
       if (oLDI.hasValue() && oLBI.hasValue()) {
         if (alignedWithBallAndGoal_D(fP, oLBI.value(), oLDI.value(), oBP.value())) {
+          SerialDebug.println("alignedWithBallAndGoal");
           return FutureAction(
                 oBP.value(),
                 maxRobotSpeed,
@@ -324,7 +323,7 @@ FutureAction refrainLeavingField_D(FieldProperties fP, LidarDetailedInfos lDI) {
       speedmotors,
       lDI.orientation(),
       false,
-      dribblerSpeedIfLeavingField);
+      255);
 }
 
 FutureAction refrainLeavingField_B(FieldProperties fP, LidarBasicInfos lBI) {
@@ -338,7 +337,7 @@ FutureAction refrainLeavingField_B(FieldProperties fP, LidarBasicInfos lBI) {
       speedmotors,
       0,
       false,
-      dribblerSpeedIfLeavingField);
+      255);
 }
 
 FutureAction refrainEnterInMyGoal_C(FieldProperties fP, MyGoalPos mGP) {
@@ -352,7 +351,7 @@ FutureAction refrainEnterInMyGoal_C(FieldProperties fP, MyGoalPos mGP) {
       speedmotors,
       0,
       false,
-      dribblerSpeedIfLeavingField);
+      255);
 }
 
 FutureAction refrainEnterInEnemyGoal_C(FieldProperties fP, EnemyGoalPos eGP) {
@@ -366,7 +365,7 @@ FutureAction refrainEnterInEnemyGoal_C(FieldProperties fP, EnemyGoalPos eGP) {
       speedmotors,
       0,
       false,
-      dribblerSpeedIfLeavingField);
+      255);
 }
 
 FutureAction goToBallChangingOrientation_CD(FieldProperties fP, BallPos bP, LidarDetailedInfos lDI) {
@@ -418,7 +417,7 @@ FutureAction goToBallAvoidingBall_C(FieldProperties fP, BallPos bP) {
         speedmotors,
         0,
         false,
-        0);
+        255);
 
   } else if (bP.x() < 0) {
     return FutureAction(
@@ -426,7 +425,7 @@ FutureAction goToBallAvoidingBall_C(FieldProperties fP, BallPos bP) {
         speedmotors,
         0,
         false,
-        0);
+        255);
 
   } else if (bP.x() >= 0) {
     return FutureAction(
@@ -434,7 +433,7 @@ FutureAction goToBallAvoidingBall_C(FieldProperties fP, BallPos bP) {
         speedmotors,
         0,
         false,
-        0);
+        255);
 
   } else {
     log_a(CriticalLevel, "goToBallAvoidingBall_C", "ERROR STRANGE");
@@ -454,7 +453,7 @@ FutureAction goToBallAvoidingBall_CD(FieldProperties fP, BallPos bP, LidarDetail
             maxRobotSpeed,
             0,
             false,
-            0);
+            255);
 
       } else {
         return FutureAction(
@@ -462,7 +461,7 @@ FutureAction goToBallAvoidingBall_CD(FieldProperties fP, BallPos bP, LidarDetail
             maxRobotSpeed,
             0,
             false,
-            0);
+            255);
       }
 
     } else {
@@ -473,7 +472,7 @@ FutureAction goToBallAvoidingBall_CD(FieldProperties fP, BallPos bP, LidarDetail
             maxRobotSpeed,
             0,
             false,
-            0);
+            255);
 
       } else {
         SerialDebug.println("2");
@@ -482,7 +481,7 @@ FutureAction goToBallAvoidingBall_CD(FieldProperties fP, BallPos bP, LidarDetail
             maxRobotSpeed,
             0,
             false,
-            0);
+            255);
       }
     }
 
@@ -493,7 +492,7 @@ FutureAction goToBallAvoidingBall_CD(FieldProperties fP, BallPos bP, LidarDetail
         maxRobotSpeed,
         0,
         false,
-        0);
+        255);
 
   } else if (bP.x() > 0 && bP.x() < 40) {
     SerialDebug.println("4");
@@ -502,7 +501,7 @@ FutureAction goToBallAvoidingBall_CD(FieldProperties fP, BallPos bP, LidarDetail
         maxRobotSpeed,
         0,
         false,
-        0);
+        255);
 
   } else {
     SerialDebug.println("5");
@@ -511,7 +510,7 @@ FutureAction goToBallAvoidingBall_CD(FieldProperties fP, BallPos bP, LidarDetail
         maxRobotSpeed,
         0,
         false,
-        0);
+        255);
   }
 }
 
@@ -553,7 +552,7 @@ FutureAction accelerateToGoal_D(FieldProperties fP, LidarDetailedInfos lDI, Lida
       speedmotors,
       -directionGoal.angle() + lDI.orientation(),
       false,
-      fP.maxDribblerSpeed());
+      0);
 }
 
 FutureAction spinToWin_D(FieldProperties fP, LidarDetailedInfos lDI) {
@@ -586,7 +585,7 @@ FutureAction shoot_C(FieldProperties fP, EnemyGoalPos eGP) {  // TODO refactor
       shootSpeed,
       0,
       closeEnoughToKick_C(fP, eGP),
-      fP.maxDribblerSpeed());
+      255);
 }
 
 FutureAction shoot_D(FieldProperties fP, LidarDetailedInfos lDI) {
@@ -598,7 +597,7 @@ FutureAction shoot_D(FieldProperties fP, LidarDetailedInfos lDI) {
       shootSpeed,
       -lDI.frontGoalCoordinates().angle() + lDI.orientation(),
       true,
-      0);
+      255);
 }
 
 FutureAction slalomingBackwards_D(FieldProperties fP, LidarDetailedInfos lDI) {
@@ -612,21 +611,21 @@ FutureAction slalomingBackwards_D(FieldProperties fP, LidarDetailedInfos lDI) {
           speedmotors,
           0,
           false,
-          0);
+          255);
     } else if (10 < lDI.coordinates().x()) {
       return FutureAction(
           Vector2(-10, 0),
           speedmotors,
           0,
           false,
-          0);
+          255);
     } else {
       return FutureAction(
           Vector2(0, 10),
           speedmotors,
           0,
           false,
-          0);
+          255);
     }
 
   } else if (50 < lDI.coordinates().y()) {
@@ -636,7 +635,7 @@ FutureAction slalomingBackwards_D(FieldProperties fP, LidarDetailedInfos lDI) {
         speedmotors,
         0,
         false,
-        0);
+        255);
 
   } else {
     if (lDI.coordinates().x() < -fP.fieldWidth() / 6) {
@@ -646,7 +645,7 @@ FutureAction slalomingBackwards_D(FieldProperties fP, LidarDetailedInfos lDI) {
           speedmotors,
           0,
           false,
-          0);
+          255);
     } else if (fP.fieldWidth() / 6 < lDI.coordinates().x()) {
       wasSlalomingBackwards = true;
       return FutureAction(
@@ -654,13 +653,13 @@ FutureAction slalomingBackwards_D(FieldProperties fP, LidarDetailedInfos lDI) {
           speedmotors,
           0,
           false,
-          0);
+          255);
     } else if (wasSlalomingBackwards) {
       return FutureAction(
           speedmotors,
           0,
           false,
-          0);
+          255);
     } else {
       wasSlalomingBackwards = true;
       return FutureAction(
@@ -668,7 +667,7 @@ FutureAction slalomingBackwards_D(FieldProperties fP, LidarDetailedInfos lDI) {
           speedmotors,
           0,
           false,
-          0);
+          255);
     }
   }
 }
@@ -714,7 +713,7 @@ FutureAction chooseStrategyDefender(
             speedmotors,
             0,
             false,
-            0);
+            255);
     } else if (target_x.hasValue()) {
       if (abs(yPositionToTargetDefenseLine) < 8) {
         if (abs(target_x.value()) <= 10) {
@@ -732,7 +731,7 @@ FutureAction chooseStrategyDefender(
               defenseSpeed,
               0,
               false,
-              0);
+              255);
         }
       } else {
         SerialDebug.println("realigning"); 
@@ -742,7 +741,7 @@ FutureAction chooseStrategyDefender(
             maxRobotSpeed,
             0,
             false,
-            0);
+            255);
       }
     } else if (abs(yPositionToTargetDefenseLine) < 8 && abs(oLDI.value().coordinates().x()) < 10) {
       SerialDebug.println("centered & awaiting");
@@ -756,7 +755,7 @@ FutureAction chooseStrategyDefender(
           speedmotors,
           0,
           false,
-          0);
+          255);
     }
   } else if (oMGP.hasValue()) {
     SerialDebug.println("no lidar");
@@ -766,28 +765,28 @@ FutureAction chooseStrategyDefender(
                 speedmotors,
                 0,
                 false,
-                0);
+                255);
     } else if (oMGP.value().norm() < goalMinDistance - 5) {
       return FutureAction(
               Vector2(-oMGP.value().x(), -oMGP.value().y()),
               speedmotors,
               0,
               false,
-              0);
+              255);
     } else if ((oMGP.value().angle() > 2*PI/3 || oMGP.value().angle() < -2*PI/3) && oBP.hasValue()) {
         return FutureAction(
               Vector2(oBP.value().x(), 0),
               speedmotors,
               0,
               false,
-              0);
+              255);
     } else {
         return FutureAction(
             oMGP.value(),
             speedmotors,
             0,
             false,
-            0);
+            255);
     }
   } else {
     return FutureAction::stopRobot();
