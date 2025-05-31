@@ -59,9 +59,20 @@ bool ledCounter = true;
 MutableVector2 previousTarget;
 Cache<LidarInfosGlue> cacheLidarInfos(140);
 
-void tloop() {
-  dribblerKicker.kick();
-  delay(3000);
+void aloop() {
+  motors.frontRight().move(255);
+  motors.frontLeft().move(-255);
+  motors.backRight().move(255);
+  motors.backLeft().move(-255);
+
+  // Flash the LED to make sure the code is running correctly
+  if (ledCounter) {
+    digitalWrite(pinLED, HIGH);
+    ledCounter = false;
+  } else {
+    digitalWrite(pinLED, LOW);
+    ledCounter = true;
+  }
 }
 
 void loop() {
@@ -83,7 +94,7 @@ void loop() {
   if (SerialLidar.available() < 2600 && cacheLidarInfosValue.hasValue()) {
     lidarInfos = cacheLidarInfosValue.value();
   } else {
-    lidarInfos = getLidarInfos(fieldProperties, true, false);
+    lidarInfos = getLidarInfos(fieldProperties, true, true);
     cacheLidarInfos.update(lidarInfos);
   }
 
@@ -135,6 +146,10 @@ void loop() {
     if (lidarInfos.oLBI.value().norm() < slowingDownWallDistance) {
       speedReductionRatio = minimumVelocityRatio * (lidarInfos.oLBI.value().distance(Vector2(0, 0)) / slowingDownWallDistance + 1);
     }
+  }
+
+  if (camInfos.ballPos.hasValue()) {
+    SerialDebug.println("BALL DATA OK");
   }
 
   if (camInfos.enemyGoalPos.hasValue()) {
@@ -228,17 +243,18 @@ void loop() {
   }
   full_log2 += "Vitesse : " + String(currentAction.celerity() * speedReductionRatio) + " Rotation : " + String(orientation);
   log_a(InfoLevel, "src.loop", full_log2);
-  
-  //dribblerKicker.dribble(currentAction.celerityDribbler());
+  SerialDebug.println(full_log2);
+
+  dribblerKicker.dribble(currentAction.celerityDribbler());
   if (currentAction.activeKicker()) {
     delay(100);  // A changer
     dribblerKicker.kick();
   }
 
-  dribblerKicker.dribble(255);  // TODO Rustine
+  //dribblerKicker.dribble(0);  // TODO Rustine
   // SerialDebug.println("********************************* " + String(currentAction.celerityDribbler()));
 
+  delay(20);
   unsigned long elapsed = millis() - start_millis;
   log_a(InfoLevel, "src.loop", "Temps loop : " + String(elapsed) + "ms");
-  delay(20);
 }

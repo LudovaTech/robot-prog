@@ -51,6 +51,7 @@ std::vector<LidarPoint> ancLidarAnalyzer_getPoints() {
   {
     if (!SerialLidar.find("T,")) {  // equivalent en char de 84 44 (decimal)
       log_a(DebugLevel, "lidar_reader.ancLidarAnalyzer_getPoints", "error, no header-verlen found in RX for the lidar LD19");
+      SerialDebug.println("here");
     } else {
       // The previous instruction (find) jumped to the beginning of the information
       // Now the stream is aligned

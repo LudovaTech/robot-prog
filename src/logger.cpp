@@ -26,8 +26,8 @@ void setupLog(int logLevel, unsigned int fixedMessageLength) {
 void log_a(unsigned int level, String fromFun, String message) {
   if (level >= _logLevel) {
     String formattedMessage = getTimestamp() + " : " + logGetName(level) + " from " + cutString(fromFun, _fixedMessageLength) + " : " + message;
-    Serial.println(formattedMessage);
-    Serial.flush();
+    //Serial.println(formattedMessage);
+    //Serial.flush();
     if (_logFile) {
       _logFile.println(formattedMessage);
       _logFile.flush();
